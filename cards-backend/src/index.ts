@@ -20,6 +20,7 @@ InitDatabase().then((db) => {
 	const expressAdapter = adapterFactory.express();
 	const passportAdapter = adapterFactory.passport();
 	const uuidAdapter = adapterFactory.uuid();
+	const swaggerAdapter = adapterFactory.swagger(expressAdapter.getApp());
 
 	// Initialize the database adapter for user repository
 	const mongoAdapter = createTypedMongoAdapter<UserEntitiesInterface>({
@@ -49,6 +50,8 @@ InitDatabase().then((db) => {
 	const userController = controllerFactory.UserController(bcryptAdapter, userService, loginService, idService, emailService);
 	const loginController = controllerFactory.LoginController(loginService);
 
+	cleanupService.removeUnconfirmedUsers();
+	swaggerAdapter.setupSwagger(expressAdapter);
 	// Initialize the routers
 	Router(expressAdapter, userService, [userController, loginController], middlewares);
 	http.createServer(expressAdapter.getApp()).listen(8000, () => {

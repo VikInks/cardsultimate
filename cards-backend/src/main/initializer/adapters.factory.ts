@@ -4,6 +4,7 @@ import { ExpressAdapter } from "../../infrastructure/adapters/express.adapter";
 import { PassportAdapter } from "../../infrastructure/adapters/passport.adapter";
 import { UuidAdapter } from "../../infrastructure/adapters/uuid.adapter";
 import { MongoAdapter } from "../../infrastructure/adapters/mongo.adapter";
+import {SwaggerAdapter} from "../../infrastructure/adapters/swagger.adapter";
 
 type AdapterClassMap<T> = {
 	bcrypt: BcryptAdapter,
@@ -12,6 +13,7 @@ type AdapterClassMap<T> = {
 	passport: PassportAdapter,
 	uuid: UuidAdapter,
 	mongo: MongoAdapter<T>,
+	swagger: SwaggerAdapter,
 };
 
 type AdapterConstructorMap<T> = {
@@ -25,6 +27,7 @@ const adapterClasses: AdapterConstructorMap<any> = {
 	passport: PassportAdapter,
 	uuid: UuidAdapter,
 	mongo: MongoAdapter,
+	swagger: SwaggerAdapter,
 };
 
 type AdapterInstanceMap<T> = {
