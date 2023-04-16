@@ -1,12 +1,14 @@
 import swaggerUi from 'swagger-ui-express';
 import swaggerJsdoc from 'swagger-jsdoc';
-import {SwaggerInterface} from "../../domain/interfaces/swagger.interface";
-import {INextFunction, IRequest, IResponse} from "../../domain/interfaces/requestHandler.interface";
+import { generateSwagger } from '../../domain/doc/swagger.doc';
+import { SwaggerInterface } from "../../domain/interfaces/swagger.interface";
+import { INextFunction, IRequest, IResponse } from "../../domain/interfaces/requestHandler.interface";
 
 export class SwaggerAdapter implements SwaggerInterface {
   private readonly swaggerSpec: any;
 
   constructor() {
+    const swaggerYamlPath = generateSwagger();
     const options = {
       definition: {
         openapi: '3.0.0',
@@ -15,7 +17,7 @@ export class SwaggerAdapter implements SwaggerInterface {
           version: '1.0.0',
         },
       },
-      apis: ['./src/**/*.ts'],
+      apis: [swaggerYamlPath],
     };
 
     this.swaggerSpec = swaggerJsdoc(options);

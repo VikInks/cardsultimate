@@ -9,6 +9,7 @@ import Router from "./main/router/generator/router";
 import * as http from "http";
 import {middlewareFactory} from "./main/initializer/middleware.factory";
 import {MiddlewareCollection} from "./domain/interfaces/middleware.interface";
+import {generateSwagger} from "./domain/doc/swagger.doc";
 
 dotenv.config({path: __dirname + '/.env'});
 
@@ -52,6 +53,8 @@ InitDatabase().then((db) => {
 
 	cleanupService.removeUnconfirmedUsers();
 	swaggerAdapter.setupSwagger(expressAdapter);
+	generateSwagger();
+
 	// Initialize the routers
 	Router(expressAdapter, userService, [userController, loginController], middlewares);
 	http.createServer(expressAdapter.getApp()).listen(8000, () => {
