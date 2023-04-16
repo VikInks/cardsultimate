@@ -1,0 +1,2 @@
+api adapter
+owner direct verif dans le controller et non sur la route via middleware
