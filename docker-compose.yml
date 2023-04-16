@@ -25,6 +25,7 @@ services:
       - cards-network
     volumes:
       - "./cards-web-platform:/app"
+      - "/app/node_modules"
 
   mongodb:
     image: mongo
