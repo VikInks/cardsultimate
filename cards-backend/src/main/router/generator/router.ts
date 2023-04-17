@@ -2,7 +2,7 @@ import { CustomError } from "../../error/customError";
 import { UserServiceInterface } from "../../../domain/interfaces/services/user.service.interface";
 import { ServerInterface } from "../../../domain/interfaces/server.interface";
 import { MiddlewareCollection } from "../../../domain/interfaces/middleware.interface";
-import {NextFunction, Response, Request} from "express";
+import {Response, Request} from "express";
 import swaggerUi from "swagger-ui-express";
 import swaggerJSDoc from "swagger-jsdoc";
 import {generateSwagger} from "../../../domain/doc/swagger.doc";
@@ -27,7 +27,7 @@ async function Router(expressAdapter: ServerInterface, userService: UserServiceI
 	const swaggerSpec = swaggerJSDoc(jsdocOptions);
 	app.use('/cards-api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
-	app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
+	app.use((err: Error, req: Request, res: Response) => {
 		if (err instanceof CustomError) {
 			res.status(err.statusCode).json({ message: err.message });
 		} else {
