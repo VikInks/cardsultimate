@@ -5,8 +5,10 @@ import { PassportAdapter } from "../../infrastructure/adapters/passport.adapter"
 import { UuidAdapter } from "../../infrastructure/adapters/uuid.adapter";
 import { MongoAdapter } from "../../infrastructure/adapters/mongo.adapter";
 import {SwaggerAdapter} from "../../infrastructure/adapters/swagger.adapter";
+import {Document} from "bson";
+import {Collection} from "mongodb";
 
-type AdapterClassMap<T> = {
+type AdapterClassMap<T extends Document> = {
 	bcrypt: BcryptAdapter,
 	email: EmailAdapter,
 	express: ExpressAdapter,
@@ -16,11 +18,11 @@ type AdapterClassMap<T> = {
 	swagger: SwaggerAdapter,
 };
 
-type AdapterConstructorMap<T> = {
+type AdapterConstructorMap<T extends Document> = {
 	[K in keyof AdapterClassMap<T>]: new (...args: any[]) => AdapterClassMap<T>[K];
 };
 
-const adapterClasses: AdapterConstructorMap<any> = {
+const adapterClasses: AdapterConstructorMap<Document> = {
 	bcrypt: BcryptAdapter,
 	email: EmailAdapter,
 	express: ExpressAdapter,
@@ -51,10 +53,10 @@ export const adapterFactory = createAdapterFactory(adapterClasses);
 
 type MongoAdapterInput = {
 	entityName: string;
-	db: any;
+	collection: Collection;
 };
 
-export function createTypedMongoAdapter<T>(input: MongoAdapterInput): MongoAdapter<T> {
+export function createTypedMongoAdapter<T extends Document>(input: MongoAdapterInput): MongoAdapter<T> {
 	return new MongoAdapter<T>(input);
 }
 

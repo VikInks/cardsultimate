@@ -1,26 +1,22 @@
-export interface WithOptionalIds<T = string> {
-	_id?: T;
+import {Collection, Document, InsertOneResult, ObjectId, OptionalId} from "mongodb";
+
+export interface WithOptionalIds {
+	_id?: ObjectId;
 	id?: string;
 }
 
-export interface DatabaseInterface<T> {
-	insertOne(document: any): Promise<any>;
+export interface DatabaseInterface<T extends Document> {
+	insertOne(doc: OptionalId<T>): Promise<InsertOneResult<T>>;
 	findOne(query: any): Promise<T | null>;
 	findOneAndUpdate(query: any, update: any, options?: any): Promise<T | null>;
 	deleteOne(query: any): Promise<boolean>;
 	withId(entity: T & WithOptionalIds): Promise<T>;
-	stringToObjectId(id: string): any;
-	find<T0>(collectionName: string): Promise<T0[]>;
+	stringToObjectId(id: string): ObjectId;
+	find(): Promise<T[]>;
 }
 
-export class IDatabaseConnection {
-	async connect() {
-		throw new Error('Not implemented');
-	}
-
-	async disconnect() {
-		throw new Error('Not implemented');
-	}
+export abstract class IDatabaseConnection {
+	abstract connect(): Promise<void>;
+	abstract disconnect(): Promise<void>;
+	abstract getCollection<T extends Document>(collectionName: string): Promise<Collection<T>>;
 }
-
-

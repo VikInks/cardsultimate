@@ -11,7 +11,6 @@ function Router(expressAdapter: ServerInterface, userService: UserServiceInterfa
 		const routePath = instance.routePath;
 		instance.routes.forEach((route: any) => {
 			const { method, path, action, middlewares: routeMiddlewareNames } = route;
-			console.log(routeMiddlewareNames);
 			if (method in app && typeof app[method] === "function") {
 				const routeMiddlewareInstances = routeMiddlewareNames.map((name: keyof MiddlewareCollection) => middlewares[name]);
 				(app as any)[method](routePath + path, ...routeMiddlewareInstances, action.bind(instance));

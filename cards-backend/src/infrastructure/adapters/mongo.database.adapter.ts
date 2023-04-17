@@ -1,5 +1,6 @@
 import {Collection, Db, MongoClient} from 'mongodb';
 import {IDatabaseConnection} from '../../domain/interfaces/database.interface';
+import { Document } from "mongodb";
 
 export default class MongoDatabaseConnection extends IDatabaseConnection {
 	client: MongoClient;
@@ -25,7 +26,7 @@ export default class MongoDatabaseConnection extends IDatabaseConnection {
 		await this.client.close();
 	}
 
-	async getCollection(collectionName: string): Promise<Collection> {
-		return this.db.collection(collectionName);
+	async getCollection<T extends Document>(collectionName: string): Promise<Collection<T>> {
+		return this.db.collection<T>(collectionName);
 	}
 }

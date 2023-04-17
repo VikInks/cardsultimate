@@ -1,30 +1,32 @@
 import {DatabaseInterface, WithOptionalIds} from '../../domain/interfaces/database.interface';
-import { ObjectId } from 'bson';
-export class MongoAdapter<T> implements DatabaseInterface<T> {
-	private readonly collectionName: string;
-	private readonly db: any
+import {Document, ObjectId} from 'bson';
+import {Collection, InsertOneResult, OptionalId} from "mongodb";
 
-	constructor(private readonly input: { entityName: string, db: any }) {
+export class MongoAdapter<T extends Document> implements DatabaseInterface<T> {
+	private readonly collectionName: string;
+	private readonly collection: Collection
+
+	constructor(private readonly input: { entityName: string, collection: Collection }) {
 		this.collectionName = input.entityName.toLowerCase();
-		this.db = input.db;
+		this.collection = input.collection;
 	}
 
-	async insertOne(document: any): Promise<any> {
-		const result = await this.db.collection(this.collectionName).insertOne(document);
-		return { ...document, id: result.insertedId.toHexString() };
+	async insertOne(document: OptionalId<T>): Promise<InsertOneResult<T>> {
+		return await this.collection.insertOne(document);
 	}
 
 	async findOne(query: any): Promise<T | null> {
-		return await this.db.collection(this.collectionName).findOne(query);
+		const entity = await this.collection.findOne(query);
+		return entity ? await this.withId(entity._id?.toHexString() || entity.id) : null;
 	}
 
 	async findOneAndUpdate(query: any, update: any, options?: any): Promise<T | null> {
-		const result = await this.db.collection(this.collectionName).findOneAndUpdate(query, update, options);
-		return result.value;
+		const result = await this.collection.findOneAndUpdate(query, update, options);
+		return result.value ? await this.withId(result.value._id?.toHexString() || result.value.id) : null;
 	}
 
 	async deleteOne(query: any): Promise<boolean> {
-		const result = await this.db.collection(this.collectionName).deleteOne(query);
+		const result = await this.collection.deleteOne(query);
 		return result.deletedCount > 0;
 	}
 
@@ -32,13 +34,13 @@ export class MongoAdapter<T> implements DatabaseInterface<T> {
 		return new ObjectId(id);
 	}
 
-	async find<T>(collectionName: string): Promise<T[]> {
-		const entities = await this.db.collection(collectionName).find().toArray();
+	async find(): Promise<T[]> {
+		const entities = await this.collection.find().toArray();
 		if (!entities) throw new Error(`${this.collectionName} not found.`);
-		return entities.map((entity: T & WithOptionalIds<ObjectId>) => this.withId(entity));
+		return Promise.all(entities.map((entity) => this.withId(entity._id?.toHexString() || entity.id)));
 	}
 
-	async withId<T>(entity: T & WithOptionalIds<ObjectId>): Promise<T> {
+	async withId(entity: T & WithOptionalIds): Promise<T> {
 		const entityId = entity._id?.toHexString() || entity.id;
 		return { ...entity, id: entityId, _id: undefined } as T;
 	}

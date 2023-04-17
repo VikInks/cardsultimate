@@ -10,10 +10,11 @@ import * as http from "http";
 import {middlewareFactory} from "./main/initializer/middleware.factory";
 import {MiddlewareCollection} from "./domain/interfaces/middleware.interface";
 import {generateSwagger} from "./domain/doc/swagger.doc";
+import {createSuperUserIfNotExists} from "./dev/createsuperuser";
 
 dotenv.config({path: __dirname + '/.env'});
 
-InitDatabase().then((db) => {
+InitDatabase().then(async (db) => {
 
 	// Initialize the adapters
 	const bcryptAdapter = adapterFactory.bcrypt();
@@ -24,19 +25,25 @@ InitDatabase().then((db) => {
 	const swaggerAdapter = adapterFactory.swagger(expressAdapter.getApp());
 
 	// Initialize the database adapter for user repository
-	const mongoAdapter = createTypedMongoAdapter<UserEntitiesInterface>({
+	const mongUserAdapter = createTypedMongoAdapter<UserEntitiesInterface>({
 		entityName: 'user',
-		db: db
+		collection: await db.getCollection('user')
 	});
+	console.log("--------------------------------------")
+	console.log(mongUserAdapter);
+
+	const repositoryFactory = initRepositories({
+		user: mongUserAdapter,
+	});
+	console.log("--------------------------------------")
+	console.log(repositoryFactory);
 
 	// Initialize the repositories
-	const repositories = initRepositories({
-		user: mongoAdapter,
-	});
+	const userRepositories = repositoryFactory.user;
 
 	// Initialize the services
 	const emailService = serviceFactory.EmailService(emailAdapter);
-	const userService = serviceFactory.UserService(repositories.user, emailService)
+	const userService = serviceFactory.UserService(userRepositories, emailService)
 	const idService = serviceFactory.IdService(uuidAdapter);
 	const cleanupService = serviceFactory.CleanupService(userService);
 	const loginService = serviceFactory.LoginService(userService, passportAdapter, bcryptAdapter);
@@ -50,6 +57,8 @@ InitDatabase().then((db) => {
 	// Initialize the controllers
 	const userController = controllerFactory.UserController(bcryptAdapter, userService, loginService, idService, emailService);
 	const loginController = controllerFactory.LoginController(loginService);
+
+	createSuperUserIfNotExists(userRepositories, bcryptAdapter, uuidAdapter).then(r => console.log(r));
 
 	cleanupService.removeUnconfirmedUsers();
 	swaggerAdapter.setupSwagger(expressAdapter);
