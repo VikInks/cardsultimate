@@ -1,10 +1,9 @@
 import { UserEntitiesInterface as User } from "../../domain/interfaces/entities/user.entities.interface";
 import { UserRepositoryInterface } from "../../domain/interfaces/repositories/user.repository.interface";
 import { DatabaseInterface } from "../../domain/interfaces/database.interface";
-import {InsertOneResult, ObjectId, OptionalId} from "mongodb";
+import {OptionalId} from "mongodb";
 
 export class UserRepository implements UserRepositoryInterface {
-	private readonly collectionName = "users";
 	constructor(private readonly mongoAdapter: DatabaseInterface<User>) {}
 
 	// generic methods
