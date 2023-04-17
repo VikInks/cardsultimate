@@ -30,5 +30,3 @@ export const generateSwagger = () => {
 	console.log('Swagger YAML generated at:', filePath);
 	return filePath;
 };
-
-generateSwagger();

@@ -4,11 +4,8 @@ import {UserEntitiesInterface} from "../domain/interfaces/entities/user.entities
 import {UserRepositoryInterface} from "../domain/interfaces/repositories/user.repository.interface";
 
 export async function createSuperUserIfNotExists(userRepository: UserRepositoryInterface, bcryptAdapter: BcryptAdapter, uuidAdapter: UuidAdapter) {
-
-	console.log('------------------------------------------------------');
 	const existingSuperUser = await userRepository.findByRole('SuperUser');
 	console.log('existingSuperUser', existingSuperUser);
-	console.log('------------------------------------------------------');
 	// Si un SuperUser existe déjà, ne faites rien
 	if (existingSuperUser) {
 		console.log('SuperUser already exists.');

@@ -9,12 +9,12 @@ import Router from "./main/router/generator/router";
 import * as http from "http";
 import {middlewareFactory} from "./main/initializer/middleware.factory";
 import {MiddlewareCollection} from "./domain/interfaces/middleware.interface";
-import {generateSwagger} from "./domain/doc/swagger.doc";
 import {createSuperUserIfNotExists} from "./dev/createsuperuser";
 
 dotenv.config({path: __dirname + '/.env'});
 
 InitDatabase().then(async (db) => {
+	console.log('Database connected');
 
 	// Initialize the adapters
 	const bcryptAdapter = adapterFactory.bcrypt();
@@ -29,14 +29,10 @@ InitDatabase().then(async (db) => {
 		entityName: 'user',
 		collection: await db.getCollection('user')
 	});
-	console.log("--------------------------------------")
-	console.log(mongUserAdapter);
 
 	const repositoryFactory = initRepositories({
 		user: mongUserAdapter,
 	});
-	console.log("--------------------------------------")
-	console.log(repositoryFactory);
 
 	// Initialize the repositories
 	const userRepositories = repositoryFactory.user;
@@ -62,7 +58,6 @@ InitDatabase().then(async (db) => {
 
 	cleanupService.removeUnconfirmedUsers();
 	swaggerAdapter.setupSwagger(expressAdapter);
-	generateSwagger();
 
 	// Initialize the routers
 	Router(expressAdapter, userService, [userController, loginController], middlewares);

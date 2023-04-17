@@ -9,6 +9,40 @@ export class LoginController implements LoginInterface {
 		this.loginService = loginServ;
 	}
 
+	/**
+	 * @swagger
+	 * /login/{email}/{password}:
+	 *   post:
+	 *     summary: Log in a user
+	 *     tags: [Login]
+	 *     parameters:
+	 *       - in: path
+	 *         name: email
+	 *         schema:
+	 *           type: string
+	 *         required: true
+	 *         description: The email of the user
+	 *       - in: path
+	 *         name: password
+	 *         schema:
+	 *           type: string
+	 *         required: true
+	 *         description: The password of the user
+	 *     responses:
+	 *       200:
+	 *         description: User logged in successfully
+	 *         content:
+	 *           application/json:
+	 *             schema:
+	 *               type: object
+	 *               properties:
+	 *                 access_token:
+	 *                   type: string
+	 *       401:
+	 *         description: Invalid credentials
+	 *       500:
+	 *         description: Something went wrong
+	 */
 	@Post("/:email/:password")
 	async login(req: ExpressTypes["Request"], res: ExpressTypes["Response"], next: ExpressTypes["NextFunction"]) {
 		try {
@@ -24,6 +58,20 @@ export class LoginController implements LoginInterface {
 		}
 	}
 
+	/**
+	 * @swagger
+	 * /login/disconnect:
+	 *   post:
+	 *     summary: Disconnect a user
+	 *     tags: [Login]
+	 *     security:
+	 *       - BearerAuth: []
+	 *     responses:
+	 *       200:
+	 *         description: User disconnected successfully
+	 *       500:
+	 *         description: Internal server error
+	 */
 	@Post("/disconnect")
 	async disconnect(req: ExpressTypes["Request"], res: ExpressTypes["Response"]) {
 		try {
