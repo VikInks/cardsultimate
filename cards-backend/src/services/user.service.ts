@@ -1,4 +1,4 @@
-import { UserEntitiesInterface } from '../domain/interfaces/entities/user.entities.interface';
+import { UserEntitiesInterface } from '../domain/interfaces/endpoints/entities/user.entities.interface';
 import {EmailServiceInterface} from "../domain/interfaces/services/emailServiceInterface";
 import {UserServiceInterface} from "../domain/interfaces/services/user.service.interface";
 import {UserRepositoryInterface} from "../domain/interfaces/repositories/user.repository.interface";

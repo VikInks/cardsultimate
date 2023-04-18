@@ -1,6 +1,6 @@
 import {INextFunction, IRequest, IResponse} from "../../domain/interfaces/requestHandler.interface";
 import { UserServiceInterface } from "../../domain/interfaces/services/user.service.interface";
-import { UserEntitiesInterface } from "../../domain/interfaces/entities/user.entities.interface";
+import { UserEntitiesInterface } from "../../domain/interfaces/endpoints/entities/user.entities.interface";
 import jwt from "jsonwebtoken";
 
 export function AdminMiddleware(userService: UserServiceInterface) {

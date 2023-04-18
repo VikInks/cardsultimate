@@ -18,5 +18,6 @@ node_modules/
 /mapper/
 /venv/
 /cards-neurone/data/
-/cards-backend/src/domain/doc/swagger/swagger.yaml
-/cards-backend/src/domain/doc/swagger/
+
+
+/cards-backend/src/domain/doc/swagger/swagger.json

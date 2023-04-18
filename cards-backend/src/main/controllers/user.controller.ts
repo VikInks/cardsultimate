@@ -1,5 +1,5 @@
 import {ExpressTypes} from "../../domain/interfaces/requestHandler.interface";
-import {UserEntitiesInterface} from '../../domain/interfaces/entities/user.entities.interface';
+import {UserEntitiesInterface} from '../../domain/interfaces/endpoints/entities/user.entities.interface';
 import {Delete, Post, Route} from "../router/custom/decorator";
 import {HasherInterface} from "../../domain/interfaces/hasher.interface";
 import {UserServiceInterface} from "../../domain/interfaces/services/user.service.interface";
@@ -39,23 +39,23 @@ export class UserController {
 	 *       content:
 	 *         application/json:
 	 *           schema:
-	 *             $ref: '#/components/schemas/User'
+	 *             $ref: '#/components/schemas/UserEntities'
 	 *     responses:
 	 *       201:
 	 *         description: User created successfully
 	 *         content:
 	 *           application/json:
 	 *             schema:
-	 *               $ref: '#/components/schemas/User'
+	 *               $ref: '#/components/schemas/UserEntities'
 	 *       409:
 	 *         description: User already exists
 	 *       500:
 	 *         description: Something went wrong
 	 */
-	@Post('/register')
+	@Post('/register/:items')
 	async register(req: ExpressTypes['Request'], res: ExpressTypes['Response'], next: ExpressTypes['NextFunction']): Promise<void> {
 		try {
-			const items: UserEntitiesInterface = req.body;
+			const items: UserEntitiesInterface = req.params.items;
 			const exist = await this.userService.findByEmail(items.email);
 			if (exist) {
 				res.status(409).json({message: 'User already exists'});

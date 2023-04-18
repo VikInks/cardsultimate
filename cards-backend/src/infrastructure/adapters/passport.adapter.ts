@@ -1,9 +1,9 @@
 import passport from 'passport';
 import jwt from 'jsonwebtoken';
 import {PassportInterface} from "../../domain/interfaces/passport.interface";
-import { UserEntitiesInterface as user } from "../../domain/interfaces/entities/user.entities.interface";
+import { UserEntitiesInterface as user } from "../../domain/interfaces/endpoints/entities/user.entities.interface";
 import { IRequest, IResponse, INextFunction } from "../../domain/interfaces/requestHandler.interface";
-import {LocalityInformationsInterface} from "../../domain/interfaces/informations/locality.informations.interface";
+import {LocalityInformationsInterface} from "../../domain/interfaces/endpoints/informations/locality.informations.interface";
 
 export class PassportAdapter implements PassportInterface {
 	public initialize() {

@@ -23,7 +23,7 @@ async function Router(expressAdapter: ServerInterface, userService: UserServiceI
 	});
 
 	// Générer le document Swagger
-	const swaggerSpec = generateSwagger();
+	const swaggerSpec = await generateSwagger();
 	app.use('/cards-api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 	app.use((err: Error, req: Request, res: Response) => {

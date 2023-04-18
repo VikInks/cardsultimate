@@ -1,4 +1,4 @@
-import {UserEntitiesInterface} from "../entities/user.entities.interface";
+import {UserEntitiesInterface} from "../endpoints/entities/user.entities.interface";
 
 export interface UserServiceInterface {
 	create(item: UserEntitiesInterface): Promise<UserEntitiesInterface>;

@@ -4,7 +4,7 @@ import {InitDatabase} from "./main/initializer/initDatabase";
 import {serviceFactory} from "./main/initializer/services.factory";
 import {controllerFactory} from "./main/initializer/controllers.factory";
 import {initRepositories} from "./main/initializer/repositories.factory";
-import {UserEntitiesInterface} from "./domain/interfaces/entities/user.entities.interface";
+import {UserEntitiesInterface} from "./domain/interfaces/endpoints/entities/user.entities.interface";
 import Router from "./main/router/generator/router";
 import * as http from "http";
 import {middlewareFactory} from "./main/initializer/middleware.factory";

@@ -1,5 +1,5 @@
 import {UserServiceInterface} from "../domain/interfaces/services/user.service.interface";
-import {UserEntitiesInterface} from "../domain/interfaces/entities/user.entities.interface";
+import {UserEntitiesInterface} from "../domain/interfaces/endpoints/entities/user.entities.interface";
 import {PassportInterface} from "../domain/interfaces/passport.interface";
 import {HasherInterface} from "../domain/interfaces/hasher.interface";
 import {LoginInterface} from "../domain/interfaces/login.interface";

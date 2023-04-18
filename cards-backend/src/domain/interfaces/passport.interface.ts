@@ -1,6 +1,6 @@
-import { UserEntitiesInterface as user} from "./entities/user.entities.interface";
+import { UserEntitiesInterface as user} from "./endpoints/entities/user.entities.interface";
 import {INextFunction, IRequest, IResponse} from "./requestHandler.interface";
-import {LocalityInformationsInterface} from "./informations/locality.informations.interface";
+import {LocalityInformationsInterface} from "./endpoints/informations/locality.informations.interface";
 
 export interface PassportInterface {
 	initialize(): any;

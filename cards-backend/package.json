@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc",
-    "start": "nodemon --watch src --ext ts --exec 'ts-node' src/index.ts"
+    "start": "nodemon --legacy-watch --watch src --ext ts --exec 'ts-node' src/index.ts"
   },
   "keywords": [],
   "author": "",
@@ -30,6 +30,8 @@
     "swagger-autogen": "^2.23.1",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^4.6.2",
+    "ts-morph": "^18.0.0",
+    "typescript": "^4.9.5",
     "uuid": "^9.0.0"
   },
   "devDependencies": {
@@ -44,7 +46,6 @@
     "@types/swagger-ui-express": "^4.1.3",
     "@types/uuid": "^9.0.1",
     "ts-node": "^10.9.1",
-    "ts-node-dev": "^2.0.0",
-    "typescript": "^5.0.2"
+    "ts-node-dev": "^2.0.0"
   }
 }

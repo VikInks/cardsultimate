@@ -1,4 +1,4 @@
-import { UserEntitiesInterface as User } from "../../domain/interfaces/entities/user.entities.interface";
+import { UserEntitiesInterface as User } from "../../domain/interfaces/endpoints/entities/user.entities.interface";
 import { UserRepositoryInterface } from "../../domain/interfaces/repositories/user.repository.interface";
 import { DatabaseInterface } from "../../domain/interfaces/database.interface";
 import {OptionalId} from "mongodb";

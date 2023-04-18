@@ -1,6 +1,6 @@
 import {BcryptAdapter} from "../infrastructure/adapters/bcrypt.adapter";
 import {UuidAdapter} from "../infrastructure/adapters/uuid.adapter";
-import {UserEntitiesInterface} from "../domain/interfaces/entities/user.entities.interface";
+import {UserEntitiesInterface} from "../domain/interfaces/endpoints/entities/user.entities.interface";
 import {UserRepositoryInterface} from "../domain/interfaces/repositories/user.repository.interface";
 
 export async function createSuperUserIfNotExists(userRepository: UserRepositoryInterface, bcryptAdapter: BcryptAdapter, uuidAdapter: UuidAdapter) {
