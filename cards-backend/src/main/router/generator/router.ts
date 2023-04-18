@@ -2,10 +2,9 @@ import { CustomError } from "../../error/customError";
 import { UserServiceInterface } from "../../../domain/interfaces/services/user.service.interface";
 import { ServerInterface } from "../../../domain/interfaces/server.interface";
 import { MiddlewareCollection } from "../../../domain/interfaces/middleware.interface";
-import {Response, Request} from "express";
+import { Response, Request } from "express";
 import swaggerUi from "swagger-ui-express";
-import swaggerJSDoc from "swagger-jsdoc";
-import {generateSwagger} from "../../../domain/doc/swagger.doc";
+import { generateSwagger } from "../../../domain/doc/swagger.doc"
 
 async function Router(expressAdapter: ServerInterface, userService: UserServiceInterface, controllerInstances: any[], middlewares: MiddlewareCollection) {
 	const app = expressAdapter.getApp();
@@ -23,8 +22,8 @@ async function Router(expressAdapter: ServerInterface, userService: UserServiceI
 		});
 	});
 
-	const jsdocOptions = await require(generateSwagger());
-	const swaggerSpec = swaggerJSDoc(jsdocOptions);
+	// Générer le document Swagger
+	const swaggerSpec = generateSwagger();
 	app.use('/cards-api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 	app.use((err: Error, req: Request, res: Response) => {

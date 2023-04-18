@@ -4,7 +4,6 @@ import { ExpressAdapter } from "../../infrastructure/adapters/express.adapter";
 import { PassportAdapter } from "../../infrastructure/adapters/passport.adapter";
 import { UuidAdapter } from "../../infrastructure/adapters/uuid.adapter";
 import { MongoAdapter } from "../../infrastructure/adapters/mongo.adapter";
-import {SwaggerAdapter} from "../../infrastructure/adapters/swagger.adapter";
 import {Document} from "bson";
 import {Collection} from "mongodb";
 
@@ -15,7 +14,6 @@ type AdapterClassMap<T extends Document> = {
 	passport: PassportAdapter,
 	uuid: UuidAdapter,
 	mongo: MongoAdapter<T>,
-	swagger: SwaggerAdapter,
 };
 
 type AdapterConstructorMap<T extends Document> = {
@@ -29,7 +27,6 @@ const adapterClasses: AdapterConstructorMap<Document> = {
 	passport: PassportAdapter,
 	uuid: UuidAdapter,
 	mongo: MongoAdapter,
-	swagger: SwaggerAdapter,
 };
 
 type AdapterInstanceMap<T> = {

@@ -22,7 +22,6 @@ InitDatabase().then(async (db) => {
 	const expressAdapter = adapterFactory.express();
 	const passportAdapter = adapterFactory.passport();
 	const uuidAdapter = adapterFactory.uuid();
-	const swaggerAdapter = adapterFactory.swagger(expressAdapter.getApp());
 
 	// Initialize the database adapter for user repository
 	const mongUserAdapter = createTypedMongoAdapter<UserEntitiesInterface>({
@@ -57,10 +56,9 @@ InitDatabase().then(async (db) => {
 	createSuperUserIfNotExists(userRepositories, bcryptAdapter, uuidAdapter).then(r => console.log(r));
 
 	cleanupService.removeUnconfirmedUsers();
-	swaggerAdapter.setupSwagger(expressAdapter);
 
 	// Initialize the routers
-	Router(expressAdapter, userService, [userController, loginController], middlewares);
+	await Router(expressAdapter, userService, [userController, loginController], middlewares);
 	http.createServer(expressAdapter.getApp()).listen(8000, () => {
 		console.log('Server started on port 8000');
 	});
