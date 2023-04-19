@@ -39,14 +39,14 @@ export class UserController {
 	 *       content:
 	 *         application/json:
 	 *           schema:
-	 *             $ref: '#/components/schemas/UserEntities'
+	 *             $ref: '#/components/schemas/UserEntitiesInterface'
 	 *     responses:
 	 *       201:
 	 *         description: User created successfully
 	 *         content:
 	 *           application/json:
 	 *             schema:
-	 *               $ref: '#/components/schemas/UserEntities'
+	 *               $ref: '#/components/schemas/UserEntitiesInterface'
 	 *       409:
 	 *         description: User already exists
 	 *       500:
@@ -96,7 +96,7 @@ export class UserController {
 	 *         content:
 	 *           application/json:
 	 *             schema:
-	 *               $ref: '#/components/schemas/User'
+	 *               $ref: '#/components/schemas/UserEntitiesInterface'
 	 *       404:
 	 *         description: The user was not found
 	 *       500:
@@ -137,10 +137,10 @@ export class UserController {
 	 *       500:
 	 *         description: Something went wrong
 	 */
-	@Post('/verify-password')
+	@Post('/verify-password/:email/:password')
 	async verifyPassword(req: ExpressTypes['Request'], res: ExpressTypes['Response'], next: ExpressTypes['NextFunction']): Promise<void> {
 		try {
-			const {email, password} = req.params.email;
+			const {email, password} = req.params;
 			const user = await this.userService.findByEmail(email);
 			if (!user) {
 				res.status(401).json({message: 'User not found'});
@@ -173,14 +173,14 @@ export class UserController {
 	 *       content:
 	 *         application/json:
 	 *           schema:
-	 *             $ref: '#/components/schemas/User'
+	 *             $ref: '#/components/schemas/UserEntitiesInterface'
 	 *     responses:
 	 *       200:
 	 *         description: User updated
 	 *         content:
 	 *           application/json:
 	 *             schema:
-	 *               $ref: '#/components/schemas/User'
+	 *               $ref: '#/components/schemas/UserEntitiesInterface'
 	 *       403:
 	 *         description: Forbidden: Only the user can update his profile
 	 *       404:
@@ -191,14 +191,14 @@ export class UserController {
 	@Post('/update/:email', {middlewares: ["auth"]})
 	async update(req: ExpressTypes['Request'], res: ExpressTypes['Response'], next: ExpressTypes['NextFunction']): Promise<void> {
 		try {
-			const items: UserEntitiesInterface = req.params.email;
+			const items: UserEntitiesInterface = req.params;
 			const user = await this.userService.findByEmail(req.user.email);
 			if (!user) {
 				res.status(404).json({message: 'User not found'});
 				return;
 			}
 			const connectedUser = req.user;
-			if (connectedUser.email !== user.email || connectedUser.role !== 'SuperUser') {
+			if (connectedUser.email !== user.email || (connectedUser.role !== 'SuperUser' || 'admin')) {
 				res.status(403).json({message: 'Forbidden: Only the user can update his profile'});
 				return;
 			}
@@ -282,7 +282,7 @@ export class UserController {
 	@Post('/unarchive/:email', {middlewares: ['auth', 'isSuperUser', "isAdmin"]})
 	async unarchive(req: ExpressTypes['Request'], res: ExpressTypes['Response'], next: ExpressTypes['NextFunction']): Promise<void> {
 		try {
-			const {email} = req.params.email;
+			const {email} = req.params;
 			const user = await this.userService.findByEmail(email);
 			if (!user) {
 				res.status(404).json({message: 'User not found'});
@@ -324,7 +324,7 @@ export class UserController {
 	@Post('/ban/:email', {middlewares: ["auth", "isSuperUser", "isAdmin"]})
 	async ban(req: ExpressTypes['Request'], res: ExpressTypes['Response'], next: ExpressTypes['NextFunction']): Promise<void> {
 		try {
-			const {email} = req.params.email;
+			const {email} = req.params;
 			const user = await this.userService.findByEmail(email);
 			if (!user) {
 				res.status(404).json({message: 'User not found'});
@@ -366,7 +366,7 @@ export class UserController {
 	@Post('/unban/:email', {middlewares: ["auth", "isSuperUser", "isAdmin"]})
 	async unban(req: ExpressTypes['Request'], res: ExpressTypes['Response'], next: ExpressTypes['NextFunction']): Promise<void> {
 		try {
-			const {email} = req.params.email;
+			const {email} = req.params;
 			const user = await this.userService.findByEmail(email);
 			if (!user) {
 				res.status(404).json({message: 'User not found'});
@@ -402,6 +402,8 @@ export class UserController {
 	 *     responses:
 	 *       200:
 	 *         description: Password changed
+	 *       403:
+	 *         description: Forbidden
 	 *       404:
 	 *         description: User not found
 	 *       500:
@@ -410,12 +412,14 @@ export class UserController {
 	@Post('/change-password', {middlewares: ["auth"]})
 	async changePassword(req: ExpressTypes['Request'], res: ExpressTypes['Response'], next: ExpressTypes['NextFunction']): Promise<void> {
 		try {
-			const {email, password} = req.params.email;
+			const {email, password} = req.params;
 			const user = await this.userService.findByEmail(email);
 			if (!user) {
 				res.status(404).json({message: 'User not found'});
 				return;
 			}
+			const currentUser = await this.userService.findByEmail(req.user.email);
+			if (currentUser.id !== user.id || (user.role !== 'superuser' || 'admin')) return res.status(403).json({message: 'Forbidden'});
 			user.password = await this.hasher.hash(password, 10);
 			await this.userService.update(user.id, user);
 			res.status(200).json({message: 'Password changed'});

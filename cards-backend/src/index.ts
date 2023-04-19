@@ -53,7 +53,7 @@ InitDatabase().then(async (db) => {
 	const userController = controllerFactory.UserController(bcryptAdapter, userService, loginService, idService, emailService);
 	const loginController = controllerFactory.LoginController(loginService);
 
-	createSuperUserIfNotExists(userRepositories, bcryptAdapter, uuidAdapter).then(r => console.log(r));
+	createSuperUserIfNotExists(userRepositories, bcryptAdapter, uuidAdapter).then(() => console.log('user initialized'));
 
 	cleanupService.removeUnconfirmedUsers();
 

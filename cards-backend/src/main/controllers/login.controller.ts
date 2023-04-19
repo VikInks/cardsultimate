@@ -1,9 +1,9 @@
 import { ExpressTypes } from "../../domain/interfaces/requestHandler.interface";
 import { Post, Route } from "../router/custom/decorator";
-import { LoginInterface } from "../../domain/interfaces/login.interface";
+import {LoginControllerInterface, LoginInterface} from "../../domain/interfaces/login.interface";
 
 @Route("/login")
-export class LoginController implements LoginInterface {
+export class LoginController implements LoginControllerInterface {
 	private readonly loginService: LoginInterface
 	constructor(private readonly loginServ: LoginInterface) {
 		this.loginService = loginServ;
@@ -11,23 +11,23 @@ export class LoginController implements LoginInterface {
 
 	/**
 	 * @swagger
-	 * /login/{email}/{password}:
+	 * /login:
 	 *   post:
 	 *     summary: Log in a user
 	 *     tags: [Login]
-	 *     parameters:
-	 *       - in: path
-	 *         name: email
-	 *         schema:
-	 *           type: string
-	 *         required: true
-	 *         description: The email of the user
-	 *       - in: path
-	 *         name: password
-	 *         schema:
-	 *           type: string
-	 *         required: true
-	 *         description: The password of the user
+	 *     requestBody:
+	 *       required: true
+	 *       content:
+	 *         application/json:
+	 *           schema:
+	 *             type: object
+	 *             properties:
+	 *               email:
+	 *                 type: string
+	 *                 required: true
+	 *               password:
+	 *                 type: string
+	 *                 required: true
 	 *     responses:
 	 *       200:
 	 *         description: User logged in successfully
@@ -43,7 +43,7 @@ export class LoginController implements LoginInterface {
 	 *       500:
 	 *         description: Something went wrong
 	 */
-	@Post("/:email/:password")
+	@Post("/")
 	async login(req: ExpressTypes["Request"], res: ExpressTypes["Response"], next: ExpressTypes["NextFunction"]) {
 		try {
 			const { email, password } = req.body;
@@ -54,6 +54,7 @@ export class LoginController implements LoginInterface {
 			}
 			return res.status(401).json({ message: "Invalid credentials" });
 		} catch (error) {
+			console.log(error);
 			next(error);
 		}
 	}
@@ -75,7 +76,7 @@ export class LoginController implements LoginInterface {
 	@Post("/disconnect")
 	async disconnect(req: ExpressTypes["Request"], res: ExpressTypes["Response"]) {
 		try {
-			const result = await this.loginService.disconnect(req, res);
+			const result = await this.loginService.disconnect();
 			res.status(200).json(result);
 			return result;
 		} catch (error) {

@@ -37,7 +37,7 @@ export class UserRepository implements UserRepositoryInterface {
 	}
 	async deleteById(id: string): Promise<boolean> {
 		const objectId = this.mongoAdapter.stringToObjectId(id);
-		return await this.mongoAdapter.deleteOne({ _id: objectId });
+		return await this.mongoAdapter.deleteOne({ id: objectId });
 	}
 	async findAll(): Promise<User[]> {
 		const users = await this.mongoAdapter.find();
@@ -53,12 +53,12 @@ export class UserRepository implements UserRepositoryInterface {
 		return await this.mongoAdapter.findOne({ email });
 	}
 	async getUserByEmail(email: string): Promise<User | null> {
-		const objectEmail = this.mongoAdapter.findOne({ _email: email });
-		return await this.mongoAdapter.findOne({ _email: objectEmail });
+		const objectEmail = this.mongoAdapter.findOne({ email: email });
+		return await this.mongoAdapter.findOne({ email: objectEmail });
 	}
 	async getUserById(id: string): Promise<User | null> {
-		const objectId = this.mongoAdapter.findOne({ _id: id });
-		return await this.mongoAdapter.findOne({ _id: objectId });
+		const objectId = this.mongoAdapter.findOne({ id: id });
+		return await this.mongoAdapter.findOne({ id: objectId });
 	}
 	async findUserByConfirmationCode(confirmationCode: string) {
 		const user = await this.mongoAdapter.findOne({
@@ -83,7 +83,7 @@ export class UserRepository implements UserRepositoryInterface {
 	}
 
 	async findByRole(role: string): Promise<User | null> {
-		const user = this.mongoAdapter.findOne({ _role: role });
+		const user = this.mongoAdapter.findOne({ role: role });
 		if (!user) {
 			throw new Error("User not found");
 		}

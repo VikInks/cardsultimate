@@ -1,16 +1,10 @@
-import {Collection, Document, InsertOneResult, ObjectId, OptionalId} from "mongodb";
-
-export interface WithOptionalIds {
-	_id?: ObjectId;
-	id?: string;
-}
+import { Collection, Document, InsertOneResult, ObjectId, OptionalId } from "mongodb";
 
 export interface DatabaseInterface<T extends Document> {
 	insertOne(doc: OptionalId<T>): Promise<InsertOneResult<T>>;
 	findOne(query: any): Promise<T | null>;
 	findOneAndUpdate(query: any, update: any, options?: any): Promise<T | null>;
 	deleteOne(query: any): Promise<boolean>;
-	withId(entity: T & WithOptionalIds): Promise<T>;
 	stringToObjectId(id: string): ObjectId;
 	find(): Promise<T[]>;
 }

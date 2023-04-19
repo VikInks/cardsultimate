@@ -3,7 +3,7 @@ import {UserEntitiesInterface} from "../domain/interfaces/endpoints/entities/use
 import {PassportInterface} from "../domain/interfaces/passport.interface";
 import {HasherInterface} from "../domain/interfaces/hasher.interface";
 import {LoginInterface} from "../domain/interfaces/login.interface";
-import {IRequest} from "../domain/interfaces/requestHandler.interface";
+import {INextFunction} from "../domain/interfaces/requestHandler.interface";
 
 export class LoginService implements LoginInterface {
 	private readonly userService: UserServiceInterface;
@@ -20,9 +20,7 @@ export class LoginService implements LoginInterface {
 		this.bcryptAdapter = bcrypt;
 	}
 
-	async login(req: IRequest): Promise<{ access_token: string }> {
-		const email = req.body.email;
-		const password = req.body.password;
+	async login(email: string, password: string, next: INextFunction): Promise<{ access_token: string }> {
 		const user: UserEntitiesInterface = await this.userService.findByEmail(email);
 		const isValidated = user.isConfirmed;
 		if (!user) throw new Error('User not found');

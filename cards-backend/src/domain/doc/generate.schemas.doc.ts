@@ -1,4 +1,4 @@
-import { Project, Type } from 'ts-morph';
+import { Project, Type, InterfaceDeclaration, Node } from 'ts-morph';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -6,6 +6,7 @@ function getTypeName(type: Type): string {
 	if (type.isString()) return 'string';
 	if (type.isBoolean()) return 'boolean';
 	if (type.isNumber()) return 'number';
+	if (type.getText() === 'Date') return 'string'; // Ajout pour gérer les dates
 	if (type.isArray()) return getTypeName(type.getArrayElementTypeOrThrow()) + '[]';
 	if (type.isObject()) return 'object';
 	if (type.isUnion()) {
@@ -15,6 +16,31 @@ function getTypeName(type: Type): string {
 			.join(' | ');
 	}
 	return 'any';
+}
+
+function generateSchemaProperties(interfaceDeclaration: InterfaceDeclaration): any {
+	const properties: any = {};
+
+	for (const property of interfaceDeclaration.getProperties()) {
+		const propertyName = property.getName();
+		const propertyType = property.getType();
+
+		if (propertyType.isObject()) {
+			const subInterface = propertyType.getSymbol()?.getValueDeclaration();
+			if (subInterface && Node.isInterfaceDeclaration(subInterface)) {
+				properties[propertyName] = {
+					type: 'object',
+					properties: generateSchemaProperties(subInterface),
+				};
+			}
+		} else if (propertyType.getText() === 'Date') { // Ajout pour gérer les dates
+			properties[propertyName] = { type: 'string', format: 'date-time' };
+		} else {
+			properties[propertyName] = { type: getTypeName(propertyType) };
+		}
+	}
+
+	return properties;
 }
 
 function generateJsonSchema(filePath: string) {
@@ -29,15 +55,12 @@ function generateJsonSchema(filePath: string) {
 	for (const interfaceDeclaration of interfaces) {
 		const schema = {
 			type: 'object',
-			properties: {} as any,
+			properties: generateSchemaProperties(interfaceDeclaration),
 			required: [] as string[],
 		};
 
 		for (const property of interfaceDeclaration.getProperties()) {
 			const propertyName = property.getName();
-			const propertyType = getTypeName(property.getType());
-
-			schema.properties[propertyName] = { type: propertyType };
 
 			if (!property.hasQuestionToken()) {
 				schema.required.push(propertyName);

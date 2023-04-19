@@ -21,10 +21,8 @@ export class UserService implements UserServiceInterface {
 	}
 
 	async deleteUnconfirmedUsers(): Promise<UserEntitiesInterface[]> {
-		// Find unconfirmed users with expired confirmation links
 		const expiredUsers = await this.userRepository.findUnconfirmedUsersWithExpiredLinks();
 
-		// Delete expired users
 		for (const user of expiredUsers) {
 			await this.userRepository.deleteById(user.id);
 		}

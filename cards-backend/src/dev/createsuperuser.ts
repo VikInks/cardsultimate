@@ -18,23 +18,24 @@ export async function createSuperUserIfNotExists(userRepository: UserRepositoryI
 		banned: false,
 		confirmationToken: null,
 		createdAt: new Date(),
-		firstName: "",
-		lastName: "",
+		firstName: "a",
+		lastName: "a",
 		locality: {
-			city: "",
-			country: "",
-			npa: "",
-			street: "",
-			streetNumber: "",
-			region: ""
+			city: "a",
+			country: "a",
+			npa: "1",
+			street: "a",
+			streetNumber: "1",
+			region: "a"
 		},
 		updatedAt: new Date(),
-		username: "",
+		username: "publicagent",
 		id: uuidAdapter.uuid(),
 		email: 'a@a.com',
 		password: await bcryptAdapter.hash('a', 10),
 		role: 'SuperUser',
-		isConfirmed: true
+		isConfirmed: true,
+		confirmationExpiresAt: undefined
 	};
 
 	// Enregistrez le nouvel utilisateur SuperUser dans la base de données
