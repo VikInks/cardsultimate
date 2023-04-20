@@ -261,7 +261,6 @@ export class UserController {
 				return;
 			}
 			const id = user.id;
-			if(!id) throw new Error('User id not found');
 			const newUser = {...user, ...items};
 			const updatedUser = await this.userService.update(id, newUser);
 
