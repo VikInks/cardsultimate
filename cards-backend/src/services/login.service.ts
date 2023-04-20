@@ -21,13 +21,15 @@ export class LoginService implements LoginInterface {
 	}
 
 	async login(email: string, password: string, next: INextFunction): Promise<{ access_token: string }> {
-		const user: UserEntitiesInterface = await this.userService.findByEmail(email);
-		const isValidated = user.isConfirmed;
+		const user: UserEntitiesInterface | null = await this.userService.findByEmail(email);
 		if (!user) throw new Error('User not found');
+		const isValidated = user.isConfirmed;
 		if (!isValidated) throw new Error('User not validated');
 		const isPasswordValid = await this.bcryptAdapter.compare(password, user.password);
 		if (!isPasswordValid) throw new Error('Invalid password');
-		const payload = {email: email, username: user.username, role: user.role, locality: user.locality};
+		if(!user.role) throw new Error('Error: user role is not defined');
+		if(user.confirmationToken) throw new Error('Error: user is not confirmed');
+		const payload = {email: email, username: user.username, role: user.role};
 		return {
 			access_token: this.jwtService.sign(payload),
 		};

@@ -1,6 +1,6 @@
 import {ExpressTypes} from "../../domain/interfaces/requestHandler.interface";
 import {UserEntitiesInterface} from '../../domain/interfaces/endpoints/entities/user.entities.interface';
-import {Delete, Post, Route} from "../router/custom/decorator";
+import {Delete, Get, Post, Route} from "../router/custom/decorator";
 import {HasherInterface} from "../../domain/interfaces/hasher.interface";
 import {UserServiceInterface} from "../../domain/interfaces/services/user.service.interface";
 import {EmailServiceInterface} from "../../domain/interfaces/services/emailServiceInterface";
@@ -52,10 +52,10 @@ export class UserController {
 	 *       500:
 	 *         description: Something went wrong
 	 */
-	@Post('/register/:items')
+	@Post('/register')
 	async register(req: ExpressTypes['Request'], res: ExpressTypes['Response'], next: ExpressTypes['NextFunction']): Promise<void> {
 		try {
-			const items: UserEntitiesInterface = req.params.items;
+			const items: UserEntitiesInterface = req.body;
 			const exist = await this.userService.findByEmail(items.email);
 			if (exist) {
 				res.status(409).json({message: 'User already exists'});
@@ -64,13 +64,71 @@ export class UserController {
 			items.password = await this.hasher.hash(items.password, 10);
 			items.confirmationToken = this.idService.uuid();
 			const user = await this.userService.create(items);
+			console.log('register token', user.confirmationToken);
 			if (user.confirmationToken) {
-				const emailText = 'Please confirm your account by clicking the link below:';
-				const emailHtml = `<p>Please confirm your account by clicking the link below:</p><a href="https://cards.com/confirm/${user.id}">Confirm Account</a>`;
-				await this.emailService.sendConfirmationEmail(user.email, user.confirmationToken, emailText, emailHtml);
-				res.status(201).json(user);
+				try {
+					const emailText = 'Please confirm your account by clicking the link below:';
+					const baseURL = process.env.NODE_ENV === 'production'
+						? 'https://cards.com'
+						: 'http://localhost:8000'; // Remplacez 8000 par le numéro de port utilisé dans votre environnement de développement
+					const emailHtml = `<p>Please confirm your account by clicking the link below:</p><a href="${baseURL}/user/confirm/${user.confirmationToken}">Confirm Account</a>`;
+					await this.emailService.sendConfirmationEmail(user.email, user.confirmationToken, emailText, emailHtml);
+					res.status(201).json(user);
+				} catch (error) {
+					res.status(500).json({message: `Something went wrong ${error}`});
+				}
 			} else {
-				res.status(500).json({message: 'Something went wrong'});
+				res.status(500).json({message: `Something went wrong during the registering of ${user.email}`});
+			}
+		} catch (error) {
+			next(error);
+		}
+	}
+
+	/**
+	 * @swagger
+	 * /users/confirm/{token}:
+	 *   get:
+	 *     summary: Confirm a user account
+	 *     tags: [Users]
+	 *     parameters:
+	 *       - in: path
+	 *         name: token
+	 *         schema:
+	 *           type: string
+	 *         required: true
+	 *         description: The confirmation token
+	 *     responses:
+	 *       200:
+	 *         description: User account confirmed successfully
+	 *         content:
+	 *           application/json:
+	 *             schema:
+	 *               type: object
+	 *               properties:
+	 *                 id:
+	 *                   type: string
+	 *                 username:
+	 *                   type: string
+	 *                 email:
+	 *                   type: string
+	 *                 isConfirmed:
+	 *                   type: boolean
+	 *       404:
+	 *         description: User not found
+	 *       500:
+	 *         description: Something went wrong
+	 */
+	@Get('/confirm/:token')
+	async confirmAccount(req: ExpressTypes['Request'], res: ExpressTypes['Response'], next: ExpressTypes['NextFunction']): Promise<void> {
+		try {
+			const token = req.params.token
+			console.log('confirmation token', token);
+			const user = await this.userService.confirmUser(token);
+			if (user) {
+				res.status(200).json(user);
+			} else {
+				res.status(404).json({message: 'User not found'});
 			}
 		} catch (error) {
 			next(error);
@@ -203,6 +261,7 @@ export class UserController {
 				return;
 			}
 			const id = user.id;
+			if(!id) throw new Error('User id not found');
 			const newUser = {...user, ...items};
 			const updatedUser = await this.userService.update(id, newUser);
 
@@ -419,6 +478,7 @@ export class UserController {
 				return;
 			}
 			const currentUser = await this.userService.findByEmail(req.user.email);
+			if (!currentUser) return res.status(403).json({message: 'Forbidden'});
 			if (currentUser.id !== user.id || (user.role !== 'superuser' || 'admin')) return res.status(403).json({message: 'Forbidden'});
 			user.password = await this.hasher.hash(password, 10);
 			await this.userService.update(user.id, user);

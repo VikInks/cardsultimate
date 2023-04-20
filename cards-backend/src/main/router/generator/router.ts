@@ -31,7 +31,8 @@ async function Router(expressAdapter: ServerInterface, userService: UserServiceI
 		if (err instanceof CustomError) {
 			res.status(err.statusCode).json({ message: err.message });
 		} else {
-			res.status(500).json({ message: "Internal Server Error" });
+			console.error(err);
+			res.status(500).json({ message: `Internal Server Error` });
 		}
 	});
 }

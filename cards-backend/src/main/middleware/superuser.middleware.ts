@@ -17,6 +17,7 @@ export function SuperuserMiddleware(userService: UserServiceInterface) {
 				res.status(401).json({ message: "Unauthorized: Invalid token" });
 			}
 			await userService.findByEmail(user.email).then((userExist) => {
+				if(!userExist) throw new Error('User not found');
 				userExist.role === "superuser" ? next() : res.status(403).json({ message: "Forbidden: Only SuperUser have access" });
 			});
 		} else {

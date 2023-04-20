@@ -9,5 +9,5 @@ export interface PassportInterface {
 	authenticate(strategy: string, options?: object): (req: IRequest, res: IResponse, next: INextFunction) => void;
 	serializeUser(fn: (user: user, done: (err: any, id: any) => void) => void): void;
 	deserializeUser(fn: (id: any, done: (err: any, user: user) => void) => void): void;
-	sign(payload: { role: string; locality: LocalityInformationsInterface; email: string; username: string }): string;
+	sign(payload: { role: string; email: string; username: string }): string;
 }

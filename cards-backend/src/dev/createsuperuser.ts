@@ -5,14 +5,11 @@ import {UserRepositoryInterface} from "../domain/interfaces/repositories/user.re
 
 export async function createSuperUserIfNotExists(userRepository: UserRepositoryInterface, bcryptAdapter: BcryptAdapter, uuidAdapter: UuidAdapter) {
 	const existingSuperUser = await userRepository.findByRole('SuperUser');
-	console.log('existingSuperUser', existingSuperUser);
-	// Si un SuperUser existe déjà, ne faites rien
 	if (existingSuperUser) {
 		console.log('SuperUser already exists.');
 		return;
 	}
 
-	// Sinon, créez un nouvel utilisateur avec le rôle 'SuperUser'
 	const superUser : UserEntitiesInterface = {
 		archive: false,
 		banned: false,
@@ -38,7 +35,6 @@ export async function createSuperUserIfNotExists(userRepository: UserRepositoryI
 		confirmationExpiresAt: undefined
 	};
 
-	// Enregistrez le nouvel utilisateur SuperUser dans la base de données
 	await userRepository.create(superUser);
 	console.log('SuperUser created successfully.');
 }

@@ -56,4 +56,3 @@ type MongoAdapterInput = {
 export function createTypedMongoAdapter<T extends Document>(input: MongoAdapterInput): MongoAdapter<T> {
 	return new MongoAdapter<T>(input);
 }
-

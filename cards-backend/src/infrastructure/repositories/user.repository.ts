@@ -24,7 +24,7 @@ export class UserRepository implements UserRepositoryInterface {
 	}
 	async update(id: string, user: User): Promise<User> {
 		const objectId = this.mongoAdapter.stringToObjectId(id);
-		const { id: _, ...userFields } = user;
+		const { _id, ...userFields } = user as any;
 		const result = await this.mongoAdapter.findOneAndUpdate(
 			{ _id: objectId },
 			{ $set: userFields },
@@ -35,6 +35,7 @@ export class UserRepository implements UserRepositoryInterface {
 		}
 		return result;
 	}
+
 	async deleteById(id: string): Promise<boolean> {
 		const objectId = this.mongoAdapter.stringToObjectId(id);
 		return await this.mongoAdapter.deleteOne({ id: objectId });
@@ -50,7 +51,7 @@ export class UserRepository implements UserRepositoryInterface {
 
 	// custom methods
 	async findUserByEmail(email: string): Promise<User | null> {
-		return await this.mongoAdapter.findOne({ email });
+		return await this.mongoAdapter.findOne({ email: email });
 	}
 	async getUserByEmail(email: string): Promise<User | null> {
 		const objectEmail = this.mongoAdapter.findOne({ email: email });
@@ -60,9 +61,9 @@ export class UserRepository implements UserRepositoryInterface {
 		const objectId = this.mongoAdapter.findOne({ id: id });
 		return await this.mongoAdapter.findOne({ id: objectId });
 	}
-	async findUserByConfirmationCode(confirmationCode: string) {
+	async findUserByConfirmationCode(confirmationToken: string) {
 		const user = await this.mongoAdapter.findOne({
-			confirmationCode,
+			confirmationToken: confirmationToken,
 		});
 		if (!user) {
 			throw new Error("Invalid confirmation code");

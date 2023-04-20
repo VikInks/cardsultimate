@@ -21,3 +21,4 @@ node_modules/
 
 
 /cards-backend/src/domain/doc/swagger/swagger.json
+/cards-backend/src/log/email/

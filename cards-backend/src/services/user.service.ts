@@ -2,6 +2,7 @@ import { UserEntitiesInterface } from '../domain/interfaces/endpoints/entities/u
 import {EmailServiceInterface} from "../domain/interfaces/services/emailServiceInterface";
 import {UserServiceInterface} from "../domain/interfaces/services/user.service.interface";
 import {UserRepositoryInterface} from "../domain/interfaces/repositories/user.repository.interface";
+import {CustomError} from "../main/error/customError";
 
 export class UserService implements UserServiceInterface {
 	private readonly userRepository: UserRepositoryInterface;
@@ -12,10 +13,12 @@ export class UserService implements UserServiceInterface {
 		this.mailService = email;
 	}
 
-	async findByEmail(email: string): Promise<UserEntitiesInterface> {
-		const user = await this.userRepository.findUserByEmail(email);
+	async findByEmail(email: string): Promise<UserEntitiesInterface | null> {
+		console.log(`findByEmail: ${email}`);
+		let user = await this.userRepository.findUserByEmail(email);
+		console.log(`findByEmail: ${user}`);
 		if (!user) {
-			throw new Error('User not found');
+			user = null
 		}
 		return user;
 	}
@@ -24,7 +27,7 @@ export class UserService implements UserServiceInterface {
 		const expiredUsers = await this.userRepository.findUnconfirmedUsersWithExpiredLinks();
 
 		for (const user of expiredUsers) {
-			await this.userRepository.deleteById(user.id);
+			if(user.id) await this.userRepository.deleteById(user.id);
 		}
 		return expiredUsers;
 	}
@@ -33,32 +36,37 @@ export class UserService implements UserServiceInterface {
 		return await this.userRepository.findUnconfirmedUsersWithExpiredLinks();
 	}
 
-	async confirmUser(confirmationCode: string): Promise<UserEntitiesInterface> {
+	async confirmUser(confirmationCode: string): Promise<{message: string}> {
 		const user = await this.userRepository.findUserByConfirmationCode(confirmationCode);
-
+		console.log(`user confirmation token find: ${user?.confirmationToken}`);
 		if (!user) {
-			throw new Error('Invalid confirmation code');
+			throw new CustomError(404, 'Invalid confirmation code');
 		}
 
 		if (user.isConfirmed) {
-			throw new Error('User is already confirmed');
+			throw new CustomError(400, 'User is already confirmed');
 		}
 
 		if (user.confirmationExpiresAt && user.confirmationExpiresAt < new Date()) {
-			throw new Error('Confirmation link has expired');
+			throw new CustomError(400, 'Confirmation link has expired');
 		}
 
 		user.isConfirmed = true;
 		user.confirmationExpiresAt = undefined;
 		user.confirmationToken = null;
 
-		return this.userRepository.update(user.id, user);
+		const userSave = await this.userRepository.update(user.id, user);
+		console.log(`userSave: ${userSave}`);
+
+		return { message: 'User confirmed successfully'}
 	}
 
 	async create(item: UserEntitiesInterface): Promise<UserEntitiesInterface> {
 		const confirmationExpiresIn = 24 * 60 * 60 * 1000; // 24 hours
 		const confirmationExpiresAt = new Date(Date.now() + confirmationExpiresIn);
-		const user = {...item}
+		const user =
+			{...item};
+		user.role = 'user';
 		user.archive = false;
 		user.banned = false;
 		user.createdAt = new Date();

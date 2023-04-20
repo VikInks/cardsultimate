@@ -17,6 +17,7 @@ export function AdminMiddleware(userService: UserServiceInterface) {
 				res.status(401).json({ message: "Unauthorized: Invalid token" });
 			}
 			await userService.findByEmail(user.email).then((userExist) => {
+				if(!userExist) throw new Error('User not found');
 				userExist.role === "admin" ? next() : res.status(403).json({ message: "Forbidden: Only Admins have access" });
 			});
 		} else {

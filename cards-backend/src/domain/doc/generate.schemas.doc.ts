@@ -1,4 +1,4 @@
-import { Project, Type, InterfaceDeclaration, Node } from 'ts-morph';
+import {Project, Type, InterfaceDeclaration, Node, JSDocTag} from 'ts-morph';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -6,7 +6,7 @@ function getTypeName(type: Type): string {
 	if (type.isString()) return 'string';
 	if (type.isBoolean()) return 'boolean';
 	if (type.isNumber()) return 'number';
-	if (type.getText() === 'Date') return 'string'; // Ajout pour gérer les dates
+	if (type.getText() === 'Date') return 'string';
 	if (type.isArray()) return getTypeName(type.getArrayElementTypeOrThrow()) + '[]';
 	if (type.isObject()) return 'object';
 	if (type.isUnion()) {
@@ -24,19 +24,38 @@ function generateSchemaProperties(interfaceDeclaration: InterfaceDeclaration): a
 	for (const property of interfaceDeclaration.getProperties()) {
 		const propertyName = property.getName();
 		const propertyType = property.getType();
+		const propertyDocs = property.getJsDocs()[0]?.getTags() || [];
 
-		if (propertyType.isObject()) {
-			const subInterface = propertyType.getSymbol()?.getValueDeclaration();
+		// Ignorer les propriétés avec @nodisplay
+		if (propertyDocs.some((tag: JSDocTag) => tag.getTagName() === 'nodisplay')) {
+			continue;
+		}
+
+		const typeDeclaration = propertyType.getSymbol()?.getDeclarations()?.[0];
+
+		if (Node.isInterfaceDeclaration(typeDeclaration)) {
+			properties[propertyName] = {
+				type: 'object',
+				properties: generateSchemaProperties(typeDeclaration),
+			};
+		} else if (propertyType.isObject()) {
+			const subInterface = propertyType.getApparentType().getSymbol()?.getValueDeclaration();
 			if (subInterface && Node.isInterfaceDeclaration(subInterface)) {
 				properties[propertyName] = {
 					type: 'object',
 					properties: generateSchemaProperties(subInterface),
 				};
 			}
-		} else if (propertyType.getText() === 'Date') { // Ajout pour gérer les dates
+		} else if (propertyType.getText() === 'Date') {
 			properties[propertyName] = { type: 'string', format: 'date-time' };
 		} else {
 			properties[propertyName] = { type: getTypeName(propertyType) };
+		}
+
+		// Ajouter des exemples à partir des balises JSDoc
+		const exampleTag = propertyDocs.find((tag: JSDocTag) => tag.getTagName() === 'example');
+		if (exampleTag) {
+			properties[propertyName].example = exampleTag.getComment();
 		}
 	}
 
@@ -61,8 +80,14 @@ function generateJsonSchema(filePath: string) {
 
 		for (const property of interfaceDeclaration.getProperties()) {
 			const propertyName = property.getName();
+			const propertyDocs = property.getJsDocs()[0]?.getTags() || [];
 
-			if (!property.hasQuestionToken()) {
+			// Ignorer les propriétés avec @nodisplay
+			if (propertyDocs.some((tag: JSDocTag) => tag.getTagName() === 'nodisplay')) {
+				continue;
+			}
+
+			if (!property.hasQuestionToken() || propertyDocs.some((tag: JSDocTag) => tag.getTagName() === 'required')) {
 				schema.required.push(propertyName);
 			}
 		}
@@ -72,6 +97,7 @@ function generateJsonSchema(filePath: string) {
 
 	return schemas;
 }
+
 
 function findFilesInDir(directory: string, extension: string): string[] {
 	let result: string[] = [];
