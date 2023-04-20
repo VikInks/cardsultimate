@@ -27,7 +27,7 @@ async function Router(expressAdapter: ServerInterface, userService: UserServiceI
 	const swaggerSpec = await generateSwagger();
 	app.use('/cards-api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
-	/*tslint:disable:no-unused-expression*/
+	/*tslint:disable:unused-expression*/
 	app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
 		if (err instanceof CustomError) {
 			res.status(err.statusCode).json({ message: err.message });
