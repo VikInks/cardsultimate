@@ -30,7 +30,7 @@ export async function createSuperUserIfNotExists(userRepository: UserRepositoryI
 		id: uuidAdapter.uuid(),
 		email: 'a@a.com',
 		password: await bcryptAdapter.hash('a', 10),
-		role: 'SuperUser',
+		role: 'superuser',
 		isConfirmed: true,
 		confirmationExpiresAt: undefined
 	};

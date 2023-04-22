@@ -5,14 +5,15 @@ export interface IRequest {
 	body: any;
 	params: any;
 	query: any;
+	cookies: any;
+	path: string;
 }
 
 export interface IResponse {
 	status(code: number): IResponse;
-
 	send(body: any): void;
-
 	json(param: any): void;
+	redirect(path: string): void;
 }
 
 export interface INextFunction {

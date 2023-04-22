@@ -1,11 +1,12 @@
 import { ExpressTypes } from "../../domain/interfaces/requestHandler.interface";
 import { Post, Route } from "../router/custom/decorator";
-import {LoginControllerInterface, LoginInterface} from "../../domain/interfaces/login.interface";
+import { LoginServiceInterface} from "../../domain/interfaces/services/login.service.interface";
+import {LoginControllerInterface} from "../../domain/interfaces/endpoints/controllers/login.controller.interface";
 
 @Route("/login")
 export class LoginController implements LoginControllerInterface {
-	private readonly loginService: LoginInterface
-	constructor(private readonly loginServ: LoginInterface) {
+	private readonly loginService: LoginServiceInterface
+	constructor(private readonly loginServ: LoginServiceInterface) {
 		this.loginService = loginServ;
 	}
 
@@ -43,19 +44,18 @@ export class LoginController implements LoginControllerInterface {
 	 *       500:
 	 *         description: Something went wrong
 	 */
-	@Post("/")
-	async login(req: ExpressTypes["Request"], res: ExpressTypes["Response"], next: ExpressTypes["NextFunction"]) {
+	@Post("/signin")
+	async login(req: ExpressTypes["Request"], res: ExpressTypes["Response"]) {
 		try {
 			const { email, password } = req.body;
-			const result = await this.loginService.login(email, password, next);
+			const result = await this.loginService.login(email, password);
 			if (result) {
 				res.status(200).json(result);
 				return result as { access_token: string };
 			}
 			return res.status(401).json({ message: "Invalid credentials" });
 		} catch (error) {
-			console.log(error);
-			next(error);
+			return res.status(500).json({ message: "Something went wrong" });
 		}
 	}
 

@@ -5,11 +5,13 @@ import {serviceFactory} from "./main/initializer/services.factory";
 import {controllerFactory} from "./main/initializer/controllers.factory";
 import {initRepositories} from "./main/initializer/repositories.factory";
 import {UserEntitiesInterface} from "./domain/interfaces/endpoints/entities/user.entities.interface";
-import Router from "./main/router/generator/router";
 import * as http from "http";
-import {middlewareFactory} from "./main/initializer/middleware.factory";
-import {MiddlewareCollection} from "./domain/interfaces/middleware.interface";
 import {createSuperUserIfNotExists} from "./dev/createsuperuser";
+import { Router } from './main/router/generator/router';
+import {ServiceInterfaces} from "./domain/interfaces/types/services.interfaces";
+import {ControllersInterfaces} from "./domain/interfaces/types/controllers.interfaces";
+import {createRouteController} from "./main/initializer/route.controller.factory";
+
 
 dotenv.config({path: __dirname + '/.env'});
 
@@ -23,17 +25,16 @@ InitDatabase().then(async (db) => {
 	const passportAdapter = adapterFactory.passport();
 	const uuidAdapter = adapterFactory.uuid();
 
-	// Initialize the database adapter for user repository
+	// Initialize the database user adapter for user repository
 	const mongUserAdapter = createTypedMongoAdapter<UserEntitiesInterface>({
 		entityName: 'user',
 		collection: await db.getCollection('user')
 	});
 
+	// Initialize the repositories
 	const repositoryFactory = initRepositories({
 		user: mongUserAdapter,
 	});
-
-	// Initialize the repositories
 	const userRepositories = repositoryFactory.user;
 
 	// Initialize the services
@@ -43,24 +44,33 @@ InitDatabase().then(async (db) => {
 	const cleanupService = serviceFactory.CleanupService(userService);
 	const loginService = serviceFactory.LoginService(userService, passportAdapter, bcryptAdapter);
 
-	const middlewares: MiddlewareCollection = {
-		auth: middlewareFactory.auth(),
-		isSuperUser: middlewareFactory.isSuperUser(userService),
-		isAdmin: middlewareFactory.isAdmin(userService),
+	const services: ServiceInterfaces = {
+		userService,
+		loginService,
+		emailService,
+		idService,
+		hasher: bcryptAdapter,
 	};
 
 	// Initialize the controllers
-	const userController = controllerFactory.UserController(bcryptAdapter, userService, loginService, idService, emailService);
 	const loginController = controllerFactory.LoginController(loginService);
+	const userController = controllerFactory.UserController(bcryptAdapter, userService, loginService, idService, emailService);
+	const swaggerAuthController = controllerFactory.SwaggerAuthController(bcryptAdapter, userService, loginService);
+	const controllerInstances: ControllersInterfaces = {
+		loginController: createRouteController(loginController),
+		userController: createRouteController(userController),
+		swaggerAuthController: createRouteController(swaggerAuthController),
+	};
 
 	createSuperUserIfNotExists(userRepositories, bcryptAdapter, uuidAdapter).then(() => console.log('user initialized'));
 
 	cleanupService.removeUnconfirmedUsers();
 
-	// Initialize the routers
-	await Router(expressAdapter, userService, [userController, loginController], middlewares);
+	// Initialize the router
+	const router = new Router(expressAdapter, services, controllerInstances);
+	await router.configureRoutes();
+
 	http.createServer(expressAdapter.getApp()).listen(8000, () => {
 		console.log('Server started on port 8000');
 	});
 });
-

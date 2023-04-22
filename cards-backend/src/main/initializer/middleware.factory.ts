@@ -1,6 +1,6 @@
-import { AuthMiddleware } from "../middleware/auth.middleware";
-import { AdminMiddleware } from "../middleware/admin.middleware";
-import { SuperuserMiddleware } from "../middleware/superuser.middleware";
+import {AuthMiddleware} from "../middleware/auth.middleware";
+import {AdminMiddleware} from "../middleware/admin.middleware";
+import {SuperuserMiddleware} from "../middleware/superuser.middleware";
 
 type MiddlewareFactoryMap = {
 	auth: typeof AuthMiddleware;
@@ -14,16 +14,16 @@ const middlewareFactories: MiddlewareFactoryMap = {
 };
 
 type MiddlewareInstanceMap<T> = {
-	[K in keyof T]: T[K] extends (...args: infer P) => infer R ? (...args: P) => R : never;
+	[K in keyof T]: T[K] extends new (...args: infer P) => infer R ? (...args: P) => R : never;
 };
 
-function createMiddlewareFactory<T extends Record<string, (...args: any[]) => any>>(middlewareFactories: T): MiddlewareInstanceMap<T> {
+function createMiddlewareFactory<T extends Record<string, new (...args: any[]) => any>>(middlewareFactories: T): MiddlewareInstanceMap<T> {
 	const middlewareFactory: Partial<MiddlewareInstanceMap<T>> = {};
 
 	for (const key in middlewareFactories) {
 		middlewareFactory[key as keyof T] = ((...args: any[]) => {
-			const MiddlewareFunction = middlewareFactories[key as keyof T];
-			return MiddlewareFunction(...args);
+			const MiddlewareClass = middlewareFactories[key as keyof T];
+			return new MiddlewareClass(...args);
 		}) as any;
 	}
 

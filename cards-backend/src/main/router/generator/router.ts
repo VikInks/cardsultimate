@@ -1,41 +1,70 @@
-import { CustomError } from "../../error/customError";
-import { UserServiceInterface } from "../../../domain/interfaces/services/user.service.interface";
-import { ServerInterface } from "../../../domain/interfaces/server.interface";
-import { MiddlewareCollection } from "../../../domain/interfaces/middleware.interface";
+import {CustomError} from "../../error/customError";
+import {MiddlewareInterface} from "../../../domain/interfaces/middleware.interface";
 import express, {Response, Request, NextFunction} from "express";
-import swaggerUi from "swagger-ui-express";
-import { generateSwagger } from "../../../domain/doc/swagger.doc"
+import cookieParser from 'cookie-parser';
+import {ServerInterface} from "../../../domain/interfaces/server.interface";
+import {ServiceInterfaces} from "../../../domain/interfaces/types/services.interfaces";
+import {ControllersInterfaces} from "../../../domain/interfaces/types/controllers.interfaces";
+import {RouteController} from "../../../domain/interfaces/controller/route/route.controller";
+import cors from "cors";
+import {middlewareFactory} from "../../initializer/middleware.factory";
 
-async function Router(expressAdapter: ServerInterface, userService: UserServiceInterface, controllerInstances: any[], middlewares: MiddlewareCollection) {
-	const app = expressAdapter.getApp();
-	app.use(express.json());
 
-	controllerInstances.forEach((instance) => {
-		const routePath = instance.routePath;
-		instance.routes.forEach((route: any) => {
-			const { method, path, action, middlewares: routeMiddlewareNames } = route;
-			if (method in app && typeof app[method] === "function") {
-				const routeMiddlewareInstances = routeMiddlewareNames.map((name: keyof MiddlewareCollection) => middlewares[name]);
-				(app as any)[method](routePath + path, ...routeMiddlewareInstances, action.bind(instance));
-			} else {
-				throw new Error(`Invalid method: ${method}`);
-			}
-		});
-	});
-
-	// Générer le document Swagger
-	const swaggerSpec = await generateSwagger();
-	app.use('/cards-api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
-
-	// next is required for express to recognize this as an error handler
-	app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
-		if (err instanceof CustomError) {
-			res.status(err.statusCode).json({ message: err.message });
-		} else {
-			console.error(err);
-			res.status(500).json({ message: `Internal Server Error` });
-		}
-	});
+function isRouteController(obj: any): obj is RouteController {
+	return 'routePath' in obj && 'routes' in obj;
 }
 
-export default Router;
+export class Router {
+	constructor(
+		private expressAdapter: ServerInterface,
+		private services: ServiceInterfaces,
+		private controllerInstances: ControllersInterfaces
+	) {
+		this.configureRoutes();
+	}
+
+	private authMiddleware: MiddlewareInterface = middlewareFactory.auth()
+	private adminMiddleware: MiddlewareInterface = middlewareFactory.isAdmin(this.services.userService);
+	private superuserMiddleware: MiddlewareInterface = middlewareFactory.isSuperUser(this.services.userService);
+
+	private middlewares: { [key: string]: MiddlewareInterface } = {
+		authMiddleware: this.authMiddleware,
+		adminMiddleware: this.adminMiddleware,
+		superuserMiddleware: this.superuserMiddleware,
+	};
+
+	async configureRoutes() {
+		const app = this.expressAdapter.getApp();
+		app.use(express.json());
+		app.use(cookieParser());
+		app.use(cors());
+
+		for (const controllerKey in this.controllerInstances) {
+			const controller = this.controllerInstances[controllerKey];
+			if (isRouteController(controller)) {
+				const routePath = controller.routePath;
+				const routes = controller.routes;
+
+				routes.forEach((route) => {
+					const middlewares = route.middlewares.map((middlewareName) => this.middlewares[middlewareName]);
+					this.expressAdapter.addRoute(route.method, routePath + route.path, middlewares, route.action);
+				});
+			}
+		}
+
+		app.get("/swagger-admin/docs", this.superuserMiddleware.handle.bind(
+			this.middlewares.isSuperUser),
+			this.controllerInstances.swaggerAuthController.docs
+		);
+
+		// next is required for express to recognize this as an error handler
+		app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
+			if (err instanceof CustomError) {
+				res.status(err.statusCode).json({message: err.message});
+			} else {
+				console.error(err);
+				res.status(500).json({message: "Internal Server Error"});
+			}
+		});
+	}
+}

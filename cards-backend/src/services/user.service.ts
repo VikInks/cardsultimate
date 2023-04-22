@@ -14,9 +14,8 @@ export class UserService implements UserServiceInterface {
 	}
 
 	async findByEmail(email: string): Promise<UserEntitiesInterface | null> {
-		console.log(`findByEmail: ${email}`);
 		let user = await this.userRepository.findUserByEmail(email);
-		console.log(`findByEmail: ${user}`);
+		console.log(`user find: ${user?.email}`);
 		if (!user) {
 			user = null
 		}
@@ -118,4 +117,11 @@ export class UserService implements UserServiceInterface {
 		const userUpdate = {...user, ...item};
 		return this.userRepository.update(id, userUpdate);
 	}
+
+	// async checkPassword(password: string, password2: string): Promise<boolean> {
+	// 	if(password !== password2) {
+	// 		throw new Error('Passwords do not match');
+	// 	}
+	// 	return Promise.resolve(true);
+	// }
 }

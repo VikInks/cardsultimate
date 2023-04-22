@@ -3,7 +3,7 @@ import { generateSchemasJson } from './generate.schemas.doc';
 import * as fs from 'fs';
 import * as path from 'path';
 
-export const generateSwagger = async () => {
+export const  generateSwagger = async () => {
 	await generateSchemasJson();
 
 	const swaggerJsonPath = path.join(__dirname, 'swagger', 'swagger.json');
@@ -24,10 +24,23 @@ export const generateSwagger = async () => {
 			},
 			components: {
 				schemas: swaggerJson,
+				securitySchemes: {
+					BearerAuth: {
+						type: 'http',
+						scheme: 'bearer',
+						bearerFormat: 'JWT',
+					},
+				},
 			},
+			security: [
+				{
+					BearerAuth: [],
+				},
+			],
 		},
 		apis: ['./src/**/*.ts'],
 	};
+
 
 	return swaggerJSDoc(options);
 };

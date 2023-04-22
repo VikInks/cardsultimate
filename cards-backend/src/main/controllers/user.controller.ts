@@ -4,21 +4,22 @@ import {Delete, Get, Post, Route} from "../router/custom/decorator";
 import {HasherInterface} from "../../domain/interfaces/hasher.interface";
 import {UserServiceInterface} from "../../domain/interfaces/services/user.service.interface";
 import {EmailServiceInterface} from "../../domain/interfaces/services/emailServiceInterface";
-import {LoginInterface} from "../../domain/interfaces/login.interface";
+import {LoginServiceInterface} from "../../domain/interfaces/services/login.service.interface";
 import {IdInterface} from "../../domain/interfaces/id.interface";
+import {UserControllerInterface} from "../../domain/interfaces/endpoints/controllers/user.controller.interface";
 
 @Route('/user')
-export class UserController {
+export class UserController implements UserControllerInterface {
 	private readonly hasher: HasherInterface
 	private readonly userService: UserServiceInterface
-	private readonly loginService: LoginInterface
+	private readonly loginService: LoginServiceInterface
 	private readonly idService: IdInterface
 	private readonly emailService: EmailServiceInterface
 
 	constructor(
 		private readonly crypt: HasherInterface,
 		private readonly userServ: UserServiceInterface,
-		private readonly loginServ: LoginInterface,
+		private readonly loginServ: LoginServiceInterface,
 		private readonly idServ: IdInterface,
 		private readonly emailServ: EmailServiceInterface) {
 		this.hasher = crypt;
@@ -240,7 +241,7 @@ export class UserController {
 	 *             schema:
 	 *               $ref: '#/components/schemas/UserEntitiesInterface'
 	 *       403:
-	 *         description: Forbidden: Only the user can update his profile
+	 *         description: Only the user can update his profile
 	 *       404:
 	 *         description: User not found
 	 *       500:
