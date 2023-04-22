@@ -1,15 +1,13 @@
+import { IRequest, IResponse, INextFunction } from "../../domain/interfaces/requestHandler.interface";
+import { UserEntitiesInterface } from "../../domain/interfaces/endpoints/entities/user.entities.interface";
+import {AuthorizationServiceInterface} from "../../domain/interfaces/services/authorization.service.interface";
+
 export abstract class BaseMiddleware {
-	protected getTokenFromHeader(authorization: string | undefined): string | null {
-		if (!authorization) {
-			return null;
-		}
-		return authorization.split(" ")[1];
+	constructor(protected authorizationService: AuthorizationServiceInterface) {}
+
+	protected async getUserFromToken(token: string): Promise<UserEntitiesInterface | null> {
+		return await this.authorizationService.verifyToken(token);
 	}
 
-	protected getTokenFromCookie(cookies: { [key: string]: string } | undefined, cookieName: string): string | null {
-		if (!cookies || !cookies[cookieName]) {
-			return null;
-		}
-		return cookies[cookieName];
-	}
+	public abstract handle(req: IRequest, res: IResponse, next: INextFunction): Promise<void>;
 }

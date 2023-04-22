@@ -1,23 +1,27 @@
+import { IRequest, IResponse, INextFunction } from "../../domain/interfaces/requestHandler.interface";
 import { BaseMiddleware } from "./base.middleware";
-import { INextFunction, IRequest, IResponse } from "../../domain/interfaces/requestHandler.interface";
-import { UserServiceInterface } from "../../domain/interfaces/services/user.service.interface";
-import { UserEntitiesInterface } from "../../domain/interfaces/endpoints/entities/user.entities.interface";
-import {MiddlewareInterface} from "../../domain/interfaces/middleware.interface";
 
-export class SuperuserMiddleware extends BaseMiddleware implements MiddlewareInterface {
-	constructor(private userService: UserServiceInterface) {
-		super();
-	}
+export class SuperuserMiddleware extends BaseMiddleware {
+	public async handle(req: IRequest, res: IResponse, next: INextFunction): Promise<void> {
+		const token = req.cookies.token;
 
-	async handle(req: IRequest, res: IResponse, next: INextFunction): Promise<void> {
-		const user = req.user as UserEntitiesInterface;
-		if (user) {
-			await this.userService.findByEmail(user.email).then((userExist) => {
-				if (!userExist) throw new Error("User not found");
-				userExist.role.toLowerCase() === "superuser" ? next() : res.status(403).json({ message: "Forbidden: Only Superusers have access" });
-			});
-		} else {
-			res.status(401).json({ message: "Unauthorized: User not authenticated" });
+		if (!token) {
+			res.status(401).send("Access denied. No token provided.");
+			return;
 		}
+
+		const user = await this.getUserFromToken(token);
+
+		if (!user) {
+			res.status(401).send("Access denied. Invalid token.");
+			return;
+		}
+
+		if (!(await this.authorizationService.isSuperUser(user))) {
+			res.status(403).send("Access denied. Insufficient permissions.");
+			return;
+		}
+
+		next();
 	}
 }

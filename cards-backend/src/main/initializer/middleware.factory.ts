@@ -1,36 +1,25 @@
-import {AuthMiddleware} from "../middleware/auth.middleware";
-import {AdminMiddleware} from "../middleware/admin.middleware";
-import {SuperuserMiddleware} from "../middleware/superuser.middleware";
+import { IRequest, IResponse, INextFunction } from "../../domain/interfaces/requestHandler.interface";
+import { AdminMiddleware } from "../middleware/admin.middleware";
+import { SuperuserMiddleware } from "../middleware/superuser.middleware";
+import {AuthorizationServiceInterface} from "../../domain/interfaces/services/authorization.service.interface";
 
-type MiddlewareFactoryMap = {
-	auth: typeof AuthMiddleware;
-	isAdmin: typeof AdminMiddleware;
-	isSuperUser: typeof SuperuserMiddleware;
-};
-const middlewareFactories: MiddlewareFactoryMap = {
-	auth: AuthMiddleware,
-	isAdmin: AdminMiddleware,
-	isSuperUser: SuperuserMiddleware,
-};
-
-type MiddlewareInstanceMap<T> = {
-	[K in keyof T]: T[K] extends new (...args: infer P) => infer R ? (...args: P) => R : never;
-};
-
-function createMiddlewareFactory<T extends Record<string, new (...args: any[]) => any>>(middlewareFactories: T): MiddlewareInstanceMap<T> {
-	const middlewareFactory: Partial<MiddlewareInstanceMap<T>> = {};
-
-	for (const key in middlewareFactories) {
-		middlewareFactory[key as keyof T] = ((...args: any[]) => {
-			const MiddlewareClass = middlewareFactories[key as keyof T];
-			return new MiddlewareClass(...args);
-		}) as any;
-	}
-
-	return middlewareFactory as MiddlewareInstanceMap<T>;
+function createAdminMiddleware(authorizationService: AuthorizationServiceInterface) {
+	return new AdminMiddleware(authorizationService);
 }
 
-export const middlewareFactory = createMiddlewareFactory(middlewareFactories);
-
-export class Middlewares {
+function createSuperuserMiddleware(authorizationService: AuthorizationServiceInterface) {
+	return new SuperuserMiddleware(authorizationService);
 }
+
+export const middlewareFactory = {
+	isAdmin: (authorizationService: AuthorizationServiceInterface) => (
+		req: IRequest,
+		res: IResponse,
+		next: INextFunction
+	) => createAdminMiddleware(authorizationService).handle(req, res, next),
+	isSuperUser: (authorizationService: AuthorizationServiceInterface) => (
+		req: IRequest,
+		res: IResponse,
+		next: INextFunction
+	) => createSuperuserMiddleware(authorizationService).handle(req, res, next),
+};
