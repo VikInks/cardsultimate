@@ -1,4 +1,5 @@
-import {CustomError} from "../../core/framework/error/customError";
+import {CustomError} from "../error/customError";
+
 
 export function ValidateMiddleware(input: any) {
 	if (typeof input.email !== "string" || !input.email.includes("@")) {

@@ -1,6 +1,12 @@
-import { ServerInterface } from "../../core/domain/interfaces/server.interface";
-import { IRequest, IResponse, INextFunction, IExpressApplication } from "../../core/domain/interfaces/requestHandler.interface";
+
 import express from 'express';
+import {ServerInterface} from "../../domain/interfaces/adapters/server.interface";
+import {
+	IExpressApplication,
+	INextFunction,
+	IRequest,
+	IResponse
+} from "../../domain/interfaces/adapters/requestHandler.interface";
 
 export class ExpressAdapter implements ServerInterface {
 	public readonly app: express.Application;

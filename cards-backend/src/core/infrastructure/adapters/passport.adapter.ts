@@ -1,11 +1,13 @@
 import passport from 'passport';
-import jwt from 'jsonwebtoken';
-import {PassportInterface} from "../../core/domain/interfaces/passport.interface";
-import { UserEntitiesInterface as user } from "../../core/domain/interfaces/endpoints/entities/user.entities.interface";
-import { IRequest, IResponse, INextFunction } from "../../core/domain/interfaces/requestHandler.interface";
-import {LocalityInformationsInterface} from "../../core/domain/interfaces/endpoints/informations/locality.informations.interface";
+import {PassportInterface} from "../../domain/interfaces/adapters/passport.interface";
+import {INextFunction, IRequest, IResponse} from "../../domain/interfaces/adapters/requestHandler.interface";
+import { UserEntitiesInterface as user} from "../../domain/endpoints/user.entities.interface";
+import {LocalityInformationsInterface} from "../../domain/endpoints/locality.informations.interface";
+import {TokenInterface} from "../../domain/interfaces/adapters/token.interface";
 
 export class PassportAdapter implements PassportInterface {
+	constructor(private readonly token: TokenInterface) {
+	}
 	public initialize() {
 		return passport.initialize();
 	}
@@ -45,6 +47,6 @@ export class PassportAdapter implements PassportInterface {
 			expiresIn: '1h',
 		};
 
-		return jwt.sign(payload, secret, options);
+		return this.token.sign(payload, secret, options);
 	}
 }

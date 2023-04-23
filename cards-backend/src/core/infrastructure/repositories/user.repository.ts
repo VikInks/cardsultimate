@@ -1,7 +1,7 @@
-import { UserEntitiesInterface as User } from "../../core/domain/interfaces/endpoints/entities/user.entities.interface";
-import { UserRepositoryInterface } from "../../core/domain/interfaces/repositories/user.repository.interface";
-import { DatabaseInterface } from "../../core/domain/interfaces/database.interface";
+import { UserEntitiesInterface as User } from "../../domain/endpoints/user.entities.interface";
 import {OptionalId} from "mongodb";
+import {UserRepositoryInterface} from "../../domain/interfaces/repositories/user.repository.interface";
+import {DatabaseInterface} from "../../domain/interfaces/adapters/database.interface";
 
 export class UserRepository implements UserRepositoryInterface {
 	constructor(private readonly mongoAdapter: DatabaseInterface<User>) {}

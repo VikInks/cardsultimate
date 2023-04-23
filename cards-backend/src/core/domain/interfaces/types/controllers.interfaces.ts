@@ -6,5 +6,4 @@ export type ControllersInterfaces = {
 	[key: string]: any;
 	loginController: LoginControllerInterface;
 	userController: UserControllerInterface;
-	swaggerAuthController: SwaggerAuthControllerInterface;
 };

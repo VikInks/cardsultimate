@@ -1,12 +1,10 @@
 import { UserController } from "../../application/controllers/user.controller";
 import { LoginController } from "../../application/controllers/login.controller";
-import {SwaggerAuthController} from "../../core/application/controllers/swagger.auth.controller";
 
 
 type ControllerClassMap = {
 	UserController: UserController;
 	LoginController: LoginController;
-	SwaggerAuthController: SwaggerAuthController;
 };
 
 type ControllerConstructorMap = {
@@ -16,7 +14,6 @@ type ControllerConstructorMap = {
 const controllerClasses: ControllerConstructorMap = {
 	UserController,
 	LoginController,
-	SwaggerAuthController
 };
 
 type ControllerInstanceMap<T> = {

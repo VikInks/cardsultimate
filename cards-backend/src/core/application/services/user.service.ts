@@ -1,8 +1,9 @@
-import { UserEntitiesInterface } from '../core/domain/entities/user.entities.interface';
-import {EmailServiceInterface} from "../core/domain/interfaces/services/emailServiceInterface";
-import {UserServiceInterface} from "../core/domain/interfaces/services/user.service.interface";
-import {UserRepositoryInterface} from "../core/domain/interfaces/repositories/user.repository.interface";
-import {CustomError} from "../main/error/customError";
+import {UserServiceInterface} from "../../domain/interfaces/services/user.service.interface";
+import {UserRepositoryInterface} from "../../domain/interfaces/repositories/user.repository.interface";
+import {EmailServiceInterface} from "../../domain/interfaces/services/emailServiceInterface";
+import {UserEntitiesInterface} from "../../domain/endpoints/user.entities.interface";
+import {CustomError} from "../../framework/error/customError";
+
 
 export class UserService implements UserServiceInterface {
 	private readonly userRepository: UserRepositoryInterface;

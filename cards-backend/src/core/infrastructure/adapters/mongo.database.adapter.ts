@@ -1,6 +1,6 @@
 import {Collection, Db, MongoClient} from 'mongodb';
-import {IDatabaseConnection} from '../../core/domain/interfaces/database.interface';
 import { Document } from "mongodb";
+import {IDatabaseConnection} from "../../domain/interfaces/adapters/database.interface";
 
 export default class MongoDatabaseConnection extends IDatabaseConnection {
 	client: MongoClient;

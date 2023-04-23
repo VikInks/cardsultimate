@@ -1,4 +1,4 @@
-import {ExpressTypes} from "../../requestHandler.interface";
+import {ExpressTypes} from "../adapters/requestHandler.interface";
 
 export interface UserControllerInterface {
 	register(req: ExpressTypes['Request'], res: ExpressTypes['Response'], next: ExpressTypes['NextFunction']): Promise<void>;

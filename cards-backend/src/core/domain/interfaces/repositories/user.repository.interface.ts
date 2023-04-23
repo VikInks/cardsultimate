@@ -1,4 +1,4 @@
-import {UserEntitiesInterface as User} from "../../entities/user.entities.interface";
+import {UserEntitiesInterface as User} from "../../endpoints/user.entities.interface";
 import {BaseRepositoryInterface} from "./base.repository.interface";
 
 export interface UserRepositoryInterface extends BaseRepositoryInterface<User> {

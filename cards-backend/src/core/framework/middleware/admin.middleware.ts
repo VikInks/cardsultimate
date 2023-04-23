@@ -1,5 +1,6 @@
-import { IRequest, IResponse, INextFunction } from "../../core/domain/interfaces/adapters/requestHandler.interface";
+
 import { BaseMiddleware } from "./base.middleware";
+import {INextFunction, IRequest, IResponse} from "../../domain/interfaces/adapters/requestHandler.interface";
 
 export class AdminMiddleware extends BaseMiddleware {
 	public async handle(req: IRequest, res: IResponse, next: INextFunction): Promise<void> {

@@ -1,8 +1,9 @@
-import {UserServiceInterface} from "../core/domain/interfaces/services/user.service.interface";
-import {UserEntitiesInterface} from "../core/domain/entities/user.entities.interface";
-import {PassportInterface} from "../core/domain/interfaces/adapters/passport.interface";
-import {HasherInterface} from "../core/domain/interfaces/adapters/hasher.interface";
-import {LoginServiceInterface} from "../core/domain/interfaces/services/login.service.interface";
+import {LoginServiceInterface} from "../../domain/interfaces/services/login.service.interface";
+import {UserServiceInterface} from "../../domain/interfaces/services/user.service.interface";
+import {PassportInterface} from "../../domain/interfaces/adapters/passport.interface";
+import {HasherInterface} from "../../domain/interfaces/adapters/hasher.interface";
+import {UserEntitiesInterface} from "../../domain/endpoints/user.entities.interface";
+
 
 export class LoginService implements LoginServiceInterface {
 	private readonly userService: UserServiceInterface;

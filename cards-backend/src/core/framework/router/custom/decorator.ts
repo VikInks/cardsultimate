@@ -1,4 +1,4 @@
-import {RouteDefinitionInterface} from "../../../core/domain/interfaces/route/route.definition.interface";
+import {RouteDefinitionInterface} from "../../../domain/interfaces/route/route.definition.interface";
 
 export function Route(path: string) {
 	return function <T extends { new (...args: any[]): {} }>(constructor: T) {

@@ -4,7 +4,7 @@ import {InitDatabase} from "./core/framework/initializer/initDatabase";
 import {serviceFactory} from "./core/framework/initializer/services.factory";
 import {controllerFactory} from "./core/framework/initializer/controllers.factory";
 import {initRepositories} from "./core/framework/initializer/repositories.factory";
-import {UserEntitiesInterface} from "./core/domain/entities/user.entities.interface";
+import {UserEntitiesInterface} from "./core/domain/endpoints/user.entities.interface";
 import * as http from "http";
 import {createSuperUserIfNotExists} from "./dev/createsuperuser";
 import { Router } from './core/framework/router/generator/router';
@@ -21,9 +21,9 @@ InitDatabase().then(async (db) => {
 	const bcryptAdapter = adapterFactory.bcrypt();
 	const emailAdapter = adapterFactory.email(process.env.NODE_ENV === 'production' ? 'production' : 'development');
 	const expressAdapter = adapterFactory.express();
-	const passportAdapter = adapterFactory.passport();
-	const uuidAdapter = adapterFactory.uuid();
 	const tokenAdapter = adapterFactory.token();
+	const passportAdapter = adapterFactory.passport(tokenAdapter);
+	const uuidAdapter = adapterFactory.uuid();
 
 	// Initialize the database user adapter for user repository
 	const mongUserAdapter = createTypedMongoAdapter<UserEntitiesInterface>({
@@ -57,11 +57,9 @@ InitDatabase().then(async (db) => {
 	// Initialize the controllers
 	const loginController = controllerFactory.LoginController(loginService);
 	const userController = controllerFactory.UserController(bcryptAdapter, userService, loginService, idService, emailService);
-	const swaggerAuthController = controllerFactory.SwaggerAuthController(bcryptAdapter, userService, loginService);
 	const controllerInstances: ControllersInterfaces = {
 		loginController: createRouteController(loginController),
 		userController: createRouteController(userController),
-		swaggerAuthController: createRouteController(swaggerAuthController),
 	};
 
 	createSuperUserIfNotExists(userRepositories, bcryptAdapter, uuidAdapter).then(() => console.log('user initialized'));

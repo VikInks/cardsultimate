@@ -1,14 +1,17 @@
-import { CustomError } from "../../../core/framework/error/customError";
-import { MiddlewareInterface } from "../../../core/domain/interfaces/adapters/middleware.interface";
-import express, { Response, Request, NextFunction } from "express";
+import {RouteControllerInterface} from "../../../domain/interfaces/route/route.controller.interface";
+import {ServerInterface} from "../../../domain/interfaces/adapters/server.interface";
+import {ServiceInterfaces} from "../../../domain/interfaces/types/services.interfaces";
+import {ControllersInterfaces} from "../../../domain/interfaces/types/controllers.interfaces";
+import {MiddlewareFactoryInterface} from "../../../domain/interfaces/factories/middleware.factory.interface";
+import {middlewareFactory} from "../../initializer/middleware.factory";
+import {MiddlewareInterface} from "../../../domain/interfaces/adapters/middleware.interface";
 import cookieParser from "cookie-parser";
-import { ServerInterface } from "../../../core/domain/interfaces/adapters/server.interface";
-import { ServiceInterfaces } from "../../../core/domain/interfaces/types/services.interfaces";
-import { ControllersInterfaces } from "../../../core/domain/interfaces/types/controllers.interfaces";
-import { RouteControllerInterface } from "../../../core/domain/interfaces/route/route.controller.interface";
 import cors from "cors";
-import { middlewareFactory } from "../../../core/framework/initializer/middleware.factory";
-import { MiddlewareFactoryInterface } from "../../../core/domain/interfaces/factories/middleware.factory.interface";
+import express, {NextFunction, Request, Response} from "express";
+import swaggerUi from 'swagger-ui-express';
+import {CustomError} from "../../error/customError";
+import {generateSwagger} from "../../../doc/swagger.doc";
+
 
 function isRouteController(obj: any): obj is RouteControllerInterface {
 	return "routePath" in obj && "routes" in obj;
@@ -51,7 +54,9 @@ export class Router {
 			}
 		}
 
-		// app.get("/swagger-admin/docs", this.superuserMiddleware.handle.bind(this.superuserMiddleware), this.controllerInstances.swaggerAuthController.docs);
+		const swaggerSpec = await generateSwagger();
+		app.use("/swagger-admin/docs", swaggerUi.serve);
+		app.get("/swagger-admin/docs", swaggerUi.setup(swaggerSpec));
 
 		// next is required for express to recognize this as an error handler
 		app.use((err: Error, req: Request, res: Response, next: NextFunction) => {

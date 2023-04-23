@@ -1,4 +1,4 @@
-import { UserEntitiesInterface as user} from "../../entities/user.entities.interface";
+import { UserEntitiesInterface as user} from "../../endpoints/user.entities.interface";
 import {INextFunction, IRequest, IResponse} from "./requestHandler.interface";
 
 export interface PassportInterface {

@@ -6,7 +6,7 @@ import {LoginServiceInterface} from "../../domain/interfaces/services/login.serv
 import {IdInterface} from "../../domain/interfaces/adapters/id.interface";
 import {EmailServiceInterface} from "../../domain/interfaces/services/emailServiceInterface";
 import {ExpressTypes} from "../../domain/interfaces/adapters/requestHandler.interface";
-import {UserEntitiesInterface} from "../../domain/entities/user.entities.interface";
+import {UserEntitiesInterface} from "../../domain/endpoints/user.entities.interface";
 
 
 @Route('/user')
@@ -89,10 +89,10 @@ export class UserController implements UserControllerInterface {
 
 	/**
 	 * @swagger
-	 * /users/confirm/{token}:
+	 * /user/confirm/{token}:
 	 *   get:
 	 *     summary: Confirm a user account
-	 *     tags: [Users]
+	 *     tags: [User]
 	 *     parameters:
 	 *       - in: path
 	 *         name: token

@@ -1,6 +1,6 @@
 import {AuthorizationServiceInterface} from "../../domain/interfaces/services/authorization.service.interface";
 import {UserServiceInterface} from "../../domain/interfaces/services/user.service.interface";
-import {UserEntitiesInterface} from "../../domain/entities/user.entities.interface";
+import {UserEntitiesInterface} from "../../domain/endpoints/user.entities.interface";
 import {TokenInterface} from "../../domain/interfaces/adapters/token.interface";
 
 

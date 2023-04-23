@@ -117,7 +117,7 @@ function findFilesInDir(directory: string, extension: string): string[] {
 }
 
 export async function generateSchemasJson() {
-	const folderPath = './src/domain/interfaces/endpoints';
+	const folderPath = './src/core/domain/endpoints';
 	const fileExtension = '.ts';
 
 	const filePaths = findFilesInDir(folderPath, fileExtension);
@@ -128,5 +128,5 @@ export async function generateSchemasJson() {
 		Object.assign(allSchemas, schemas);
 	});
 
-	fs.writeFileSync('./src/domain/doc/swagger/swagger.json', JSON.stringify(allSchemas, null, 2));
+	fs.writeFileSync('./src/core/doc/swagger/swagger.json', JSON.stringify(allSchemas, null, 2));
 }

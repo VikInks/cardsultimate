@@ -1,5 +1,6 @@
 import cron from "node-cron";
-import {UserServiceInterface} from "../core/domain/interfaces/services/user.service.interface";
+import {UserServiceInterface} from "../../domain/interfaces/services/user.service.interface";
+
 
 export class CleanupService {
 	private readonly userService: UserServiceInterface;

@@ -1,6 +1,7 @@
-import { IRequest, IResponse, INextFunction } from "../../core/domain/interfaces/adapters/requestHandler.interface";
-import { UserEntitiesInterface } from "../../core/domain/entities/user.entities.interface";
-import {AuthorizationServiceInterface} from "../../core/domain/interfaces/services/authorization.service.interface";
+import {AuthorizationServiceInterface} from "../../domain/interfaces/services/authorization.service.interface";
+import {UserEntitiesInterface} from "../../domain/endpoints/user.entities.interface";
+import {INextFunction, IRequest, IResponse} from "../../domain/interfaces/adapters/requestHandler.interface";
+
 
 export abstract class BaseMiddleware {
 	constructor(protected authorizationService: AuthorizationServiceInterface) {}
