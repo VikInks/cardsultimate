@@ -13,7 +13,7 @@ export class LoginController implements LoginControllerInterface {
 
 	/**
 	 * @swagger
-	 * /login:
+	 * /login/signin:
 	 *   post:
 	 *     summary: Log in a user
 	 *     tags: [Login]
@@ -49,7 +49,9 @@ export class LoginController implements LoginControllerInterface {
 	async login(req: ExpressTypes["Request"], res: ExpressTypes["Response"]) {
 		try {
 			const { email, password } = req.body;
+			console.log(email, password);
 			const result = await this.loginService.login(email, password);
+			console.log(result);
 			if (result) {
 				res.status(200).json(result);
 				return result as { access_token: string };

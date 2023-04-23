@@ -59,7 +59,7 @@ InitDatabase().then(async (db) => {
 	const userController = controllerFactory.UserController(bcryptAdapter, userService, loginService, idService, emailService);
 	const controllerInstances: ControllersInterfaces = {
 		loginController: createRouteController(loginController),
-		userController: createRouteController(userController),
+		userController:createRouteController(userController),
 	};
 
 	createSuperUserIfNotExists(userRepositories, bcryptAdapter, uuidAdapter).then(() => console.log('user initialized'));
@@ -68,7 +68,7 @@ InitDatabase().then(async (db) => {
 
 	// Initialize the router
 	const router = new Router(expressAdapter, services, controllerInstances);
-	await router.configureRoutes();
+	await router.configureRoutes().then(() => console.log("Routes configured"));
 
 	http.createServer(expressAdapter.getApp()).listen(8000, () => {
 		console.log('Server started on port 8000');

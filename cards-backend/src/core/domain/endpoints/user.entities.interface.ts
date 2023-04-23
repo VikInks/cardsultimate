@@ -1,4 +1,4 @@
-import {LocalityInformationsInterface} from "../informations/locality.informations.interface";
+import {LocalityInformationsInterface} from "./locality.informations.interface";
 
 
 export interface UserEntitiesInterface {

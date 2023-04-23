@@ -1,53 +1,51 @@
-import {RouteControllerInterface} from "../../../domain/interfaces/route/route.controller.interface";
-import {ServerInterface} from "../../../domain/interfaces/adapters/server.interface";
-import {ServiceInterfaces} from "../../../domain/interfaces/types/services.interfaces";
-import {ControllersInterfaces} from "../../../domain/interfaces/types/controllers.interfaces";
-import {MiddlewareFactoryInterface} from "../../../domain/interfaces/factories/middleware.factory.interface";
-import {middlewareFactory} from "../../initializer/middleware.factory";
-import {MiddlewareInterface} from "../../../domain/interfaces/adapters/middleware.interface";
-import cookieParser from "cookie-parser";
-import cors from "cors";
-import express, {NextFunction, Request, Response} from "express";
-import swaggerUi from 'swagger-ui-express';
-import {CustomError} from "../../error/customError";
-import {generateSwagger} from "../../../doc/swagger.doc";
-
+import { RouteControllerInterface } from "../../../domain/interfaces/route/route.controller.interface";
+import { ServerInterface } from "../../../domain/interfaces/adapters/server.interface";
+import { ServiceInterfaces } from "../../../domain/interfaces/types/services.interfaces";
+import { ControllersInterfaces } from "../../../domain/interfaces/types/controllers.interfaces";
+import { MiddlewareFactoryInterface } from "../../../domain/interfaces/factories/middleware.factory.interface";
+import { middlewareFactory } from "../../initializer/middleware.factory";
+import { MiddlewareInterface } from "../../../domain/interfaces/adapters/middleware.interface";
+import express, { NextFunction, Request, Response } from "express";
+import swaggerUi from "swagger-ui-express";
+import { CustomError } from "../../error/customError";
+import { generateSwagger } from "../../../doc/swagger.doc";
 
 function isRouteController(obj: any): obj is RouteControllerInterface {
-	return "routePath" in obj && "routes" in obj;
+	const result = "routePath" in obj && "routes" in obj;
+	console.log("Checking if object is RouteController:", obj, "Result:", result);
+	return result;
 }
 
+
 export class Router {
+	private middlewareFactoryInstance: MiddlewareFactoryInterface;
+	private middlewares: { [key: string]: MiddlewareInterface };
+
 	constructor(
 		private expressAdapter: ServerInterface,
 		private services: ServiceInterfaces,
 		private controllerInstances: ControllersInterfaces
 	) {
+		this.middlewareFactoryInstance = middlewareFactory(this.services.authorizationService);
+		this.middlewares = {
+			adminMiddleware: this.middlewareFactoryInstance.isAdmin(),
+			superuserMiddleware: this.middlewareFactoryInstance.isSuperUser(),
+		};
 		this.configureRoutes();
 	}
-
-	private middlewareFactoryInstance: MiddlewareFactoryInterface = middlewareFactory(this.services.authorizationService);
-	private adminMiddleware: MiddlewareInterface = this.middlewareFactoryInstance.isAdmin();
-	private superuserMiddleware: MiddlewareInterface = this.middlewareFactoryInstance.isSuperUser();
-
-	private middlewares: { [key: string]: MiddlewareInterface } = {
-		adminMiddleware: this.adminMiddleware,
-		superuserMiddleware: this.superuserMiddleware,
-	};
 
 	async configureRoutes() {
 		const app = this.expressAdapter.getApp();
 		app.use(express.json());
-		app.use(cookieParser());
-		app.use(cors());
+		app.use(express.urlencoded({ extended: false }));
 
 		for (const controllerKey in this.controllerInstances) {
 			const controller = this.controllerInstances[controllerKey];
 			if (isRouteController(controller)) {
 				const routePath = controller.routePath;
 				const routes = controller.routes;
-
 				routes.forEach((route) => {
+					console.log(route.method, routePath + route.path, route.action);
 					const middlewares = route.middlewares.map((middlewareName) => this.middlewares[middlewareName]);
 					this.expressAdapter.addRoute(route.method, routePath + route.path, middlewares, route.action);
 				});

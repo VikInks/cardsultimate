@@ -1,15 +1,7 @@
-import {RouteDefinitionInterface} from "../../../domain/interfaces/route/route.definition.interface";
-
 export function Route(path: string) {
 	return function <T extends { new (...args: any[]): {} }>(constructor: T) {
-		return class extends constructor {
-			routePath = path;
-			routes: RouteDefinitionInterface[] = [];
-
-			constructor(...args: any[]) {
-				super(...args);
-			}
-		};
+		constructor.prototype.routePath = path;
+		constructor.prototype.routes = [];
 	};
 }
 
@@ -23,9 +15,23 @@ function routeMethod(
 		propertyKey: string,
 		descriptor: PropertyDescriptor
 	) {
-		registerRoute(target, method, path, options, descriptor);
+		if (!target.routes) {
+			target.routes = [];
+		}
+
+		const routeMiddlewareNames = options?.middlewares || [];
+
+		target.routes.push({
+			method: method,
+			path: path,
+			middlewares: routeMiddlewareNames,
+			action: descriptor.value,
+		});
+
+		return descriptor;
 	};
 }
+
 
 export const Post = (path: string, options?: { middlewares?: string[] }) =>
 	routeMethod("post", path, options);
@@ -35,26 +41,3 @@ export const Put = (path: string, options?: { middlewares?: string[] }) =>
 	routeMethod("put", path, options);
 export const Delete = (path: string, options?: { middlewares?: string[] }) =>
 	routeMethod("delete", path, options);
-
-function registerRoute(
-	target: any,
-	method: string,
-	path: string,
-	options: { middlewares?: string[] } | undefined,
-	descriptor: PropertyDescriptor
-): PropertyDescriptor {
-	if (!target.routes) {
-		target.routes = [];
-	}
-
-	const routeMiddlewareNames = options?.middlewares || [];
-
-	target.routes.push({
-		method: method,
-		path: path,
-		middlewares: routeMiddlewareNames,
-		action: descriptor.value,
-	});
-
-	return descriptor;
-}
