@@ -2,7 +2,6 @@ import {LoginServiceInterface} from "../../domain/interfaces/services/login.serv
 import {UserServiceInterface} from "../../domain/interfaces/services/user.service.interface";
 import {PassportInterface} from "../../domain/interfaces/adapters/passport.interface";
 import {HasherInterface} from "../../domain/interfaces/adapters/hasher.interface";
-import {UserEntitiesInterface} from "../../domain/endpoints/user.entities.interface";
 
 
 export class LoginService implements LoginServiceInterface {
@@ -20,15 +19,13 @@ export class LoginService implements LoginServiceInterface {
 		this.bcryptAdapter = bcrypt;
 	}
 
-	async login(email: string, password: string): Promise<{ access_token: string } | null> {
-		const user: UserEntitiesInterface | null = await this.userService.findByEmail(email);
-		if (!user) return null;
+	async login(email: string, password: string): Promise<{ access_token: string }> {
+		const user = await this.userService.findByEmail(email);
+		if (!user) throw new Error("User not found");
 		const isValidated = user.isConfirmed;
-		if (!isValidated) return null;
+		if (!isValidated) throw new Error("User not validated");
 		const isPasswordValid = await this.bcryptAdapter.compare(password, user.password);
-		if (!isPasswordValid) return null;
-		if(!user.role) return null;
-		if(user.confirmationToken) return null;
+		if (!isPasswordValid) throw new Error("Invalid credentials");
 		const payload = {email: email, username: user.username, role: user.role};
 		return {
 			access_token: this.jwtService.sign(payload),

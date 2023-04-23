@@ -1,4 +1,5 @@
 import {IRequest, IResponse, INextFunction, IExpressApplication} from './requestHandler.interface';
+import {MiddlewareInterface} from "./middleware.interface";
 
 export interface ServerInterface {
 	getApp(): IExpressApplication;
@@ -8,5 +9,13 @@ export interface ServerInterface {
 	delete(path: string, handler: (req: IRequest, res: IResponse, next: INextFunction) => void): void;
 	listen(port: number, callback: () => void): void;
 	use(path: string, ...handlers: ((req: IRequest, res: IResponse, next: INextFunction) => void)[]): void;
+	readonly json: () => void;
+	readonly urlencoded: (options?: {extended: boolean}) => void;
 	[method: string]: any;
+	addRoute(
+		method: string,
+		path: string,
+		middlewares: ((req: IRequest, res: IResponse, next: INextFunction) => void)[],
+		action: (req: IRequest, res: IResponse, next: INextFunction) => void
+	): void;
 }

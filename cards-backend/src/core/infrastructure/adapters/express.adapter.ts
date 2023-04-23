@@ -1,4 +1,3 @@
-
 import express from 'express';
 import {ServerInterface} from "../../domain/interfaces/adapters/server.interface";
 import {
@@ -8,10 +7,32 @@ import {
 	IResponse
 } from "../../domain/interfaces/adapters/requestHandler.interface";
 
+type HttpMethod = 'get' | 'post' | 'put' | 'delete';
+
+function isHttpMethod(method: string): method is HttpMethod {
+	return ['get', 'post', 'put', 'delete'].includes(method);
+}
+
 export class ExpressAdapter implements ServerInterface {
 	public readonly app: express.Application;
 	constructor() {
 		this.app = express();
+	}
+
+	addRoute(method: string, path: string, middlewares: ((req: IRequest, res: IResponse, next: INextFunction) => void)[], action: (req: IRequest, res: IResponse, next: INextFunction) => void): void {
+		if (isHttpMethod(method)) {
+			this.app[method](path, ...middlewares, action);
+		} else {
+			throw new Error(`Invalid HTTP method: ${method}`);
+		}
+    }
+
+	json() {
+		return express.json();
+	}
+
+	urlencoded(options?: { extended: boolean }) {
+		return express.urlencoded(options);
 	}
 
 	getApp(): IExpressApplication {

@@ -2,11 +2,13 @@ import {Post, Route} from "../../framework/router/custom/decorator";
 import {LoginControllerInterface} from "../../domain/interfaces/controllers/login.controller.interface";
 import {LoginServiceInterface} from "../../domain/interfaces/services/login.service.interface";
 import {ExpressTypes} from "../../domain/interfaces/adapters/requestHandler.interface";
+import {CustomError} from "../../framework/error/customError";
 
 
 @Route("/login")
 export class LoginController implements LoginControllerInterface {
 	private readonly loginService: LoginServiceInterface
+
 	constructor(private readonly loginServ: LoginServiceInterface) {
 		this.loginService = loginServ;
 	}
@@ -48,21 +50,22 @@ export class LoginController implements LoginControllerInterface {
 	@Post("/signin")
 	async login(req: ExpressTypes["Request"], res: ExpressTypes["Response"]) {
 		try {
-			const { email, password } = req.body;
+			const {email, password} = req.body;
 			const result = await this.loginService.login(email, password);
 			if (result) {
 				res.status(200).json(result);
 				return result as { access_token: string };
 			}
-			return res.status(401).json({ message: "Invalid credentials" });
+			return res.status(401).json({message: "Invalid credentials"});
 		} catch (error) {
-			return res.status(500).json({ message: "Something went wrong" });
+			throw new CustomError(500, `Something went wrong ${error}`);
 		}
 	}
 
+
 	/**
 	 * @swagger
-	 * /login/disconnect:
+	 * /login/signout:
 	 *   post:
 	 *     summary: Disconnect a user
 	 *     tags: [Login]
@@ -74,14 +77,14 @@ export class LoginController implements LoginControllerInterface {
 	 *       500:
 	 *         description: Internal server error
 	 */
-	@Post("/disconnect")
+	@Post("/signout")
 	async disconnect(req: ExpressTypes["Request"], res: ExpressTypes["Response"]) {
 		try {
 			const result = await this.loginService.disconnect();
 			res.status(200).json(result);
 			return result;
 		} catch (error) {
-			return res.status(500).json({ message: "Internal server error" });
+			return res.status(500).json({message: "Internal server error"});
 		}
 	}
 }

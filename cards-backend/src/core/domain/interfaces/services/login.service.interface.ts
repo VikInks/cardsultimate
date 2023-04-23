@@ -1,4 +1,4 @@
 export interface LoginServiceInterface {
-	login(email: string, password: string): Promise<{ access_token: string } | null>;
+	login(email: string, password: string): Promise<{ access_token: string }>;
 	disconnect(): Promise<any>;
 }

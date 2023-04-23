@@ -8,9 +8,8 @@ import {UserEntitiesInterface} from "./core/domain/endpoints/user.entities.inter
 import * as http from "http";
 import {createSuperUserIfNotExists} from "./dev/createsuperuser";
 import { Router } from './core/framework/router/generator/router';
-import {ServiceInterfaces} from "./core/domain/interfaces/types/services.interfaces";
 import {ControllersInterfaces} from "./core/domain/interfaces/types/controllers.interfaces";
-import {createRouteController} from "./core/framework/initializer/route.controller.factory";
+import {middlewareFactory} from "./core/framework/initializer/middleware.factory";
 
 dotenv.config({path: __dirname + '/.env'});
 
@@ -45,30 +44,22 @@ InitDatabase().then(async (db) => {
 	const loginService = serviceFactory.LoginService(userService, passportAdapter, bcryptAdapter);
 	const authorizationService = serviceFactory.AuthorizationService(userService, tokenAdapter);
 
-	const services: ServiceInterfaces = {
-		userService,
-		loginService,
-		emailService,
-		idService,
-		hasher: bcryptAdapter,
-		authorizationService
-	};
-
 	// Initialize the controllers
 	const loginController = controllerFactory.LoginController(loginService);
 	const userController = controllerFactory.UserController(bcryptAdapter, userService, loginService, idService, emailService);
-	const controllerInstances: ControllersInterfaces = {
-		loginController: createRouteController(loginController),
-		userController:createRouteController(userController),
-	};
 
-	createSuperUserIfNotExists(userRepositories, bcryptAdapter, uuidAdapter).then(() => console.log('user initialized'));
+	const middlewaresFactory = middlewareFactory(authorizationService);
+	const middlewares = {
+		isAdmin: middlewaresFactory.isAdmin(),
+		isSuperUser: middlewaresFactory.isSuperUser(),
+	}
+
+	await createSuperUserIfNotExists(userRepositories, bcryptAdapter, uuidAdapter).then(() => console.log('user initialized'));
 
 	cleanupService.removeUnconfirmedUsers();
 
 	// Initialize the router
-	const router = new Router(expressAdapter, services, controllerInstances);
-	await router.configureRoutes().then(() => console.log("Routes configured"));
+	Router(expressAdapter, middlewares, [loginController, userController]).then(() => console.log("Routes configured"));
 
 	http.createServer(expressAdapter.getApp()).listen(8000, () => {
 		console.log('Server started on port 8000');

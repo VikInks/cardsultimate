@@ -1,27 +1,30 @@
-import { BaseMiddleware } from "./base.middleware";
-import {INextFunction, IRequest, IResponse} from "../../domain/interfaces/adapters/requestHandler.interface";
+import { MiddlewareInterface } from "../../domain/interfaces/adapters/middleware.interface";
+import { AuthorizationServiceInterface } from "../../domain/interfaces/services/authorization.service.interface";
+import { INextFunction, IRequest, IResponse } from "../../domain/interfaces/adapters/requestHandler.interface";
 
-export class SuperuserMiddleware extends BaseMiddleware {
-	public async handle(req: IRequest, res: IResponse, next: INextFunction): Promise<void> {
-		const token = req.cookies.token;
+export function SuperuserMiddleware(authService: AuthorizationServiceInterface): MiddlewareInterface {
+	return {
+		handle: async (req: IRequest, res: IResponse, next: INextFunction): Promise<void> => {
+			const token = req.cookies.token;
 
-		if (!token) {
-			res.status(401).send("Access denied. No token provided.");
-			return;
-		}
+			if (!token) {
+				res.status(401).send("Access denied. No token provided.");
+				return;
+			}
 
-		const user = await this.getUserFromToken(token);
+			const user = await authService.verifyToken(token);
 
-		if (!user) {
-			res.status(401).send("Access denied. Invalid token.");
-			return;
-		}
+			if (!user) {
+				res.status(401).send("Access denied. Invalid token.");
+				return;
+			}
 
-		if (!(await this.authorizationService.isSuperUser(user))) {
-			res.status(403).send("Access denied. Insufficient permissions.");
-			return;
-		}
+			if (!(await authService.isSuperUser(user))) {
+				res.status(403).send("Access denied. Insufficient permissions.");
+				return;
+			}
 
-		next();
-	}
+			next();
+		},
+	};
 }
