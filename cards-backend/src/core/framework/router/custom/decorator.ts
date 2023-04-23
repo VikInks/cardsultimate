@@ -5,7 +5,7 @@ export function Route(path: string) {
 	};
 }
 
-function routeMethod(
+export function routeMethod(
 	method: string,
 	path: string,
 	options?: { middlewares?: string[] }
