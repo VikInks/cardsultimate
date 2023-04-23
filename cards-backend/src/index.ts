@@ -8,7 +8,6 @@ import {UserEntitiesInterface} from "./core/domain/endpoints/user.entities.inter
 import * as http from "http";
 import {createSuperUserIfNotExists} from "./dev/createsuperuser";
 import { Router } from './core/framework/router/generator/router';
-import {ControllersInterfaces} from "./core/domain/interfaces/types/controllers.interfaces";
 import {middlewareFactory} from "./core/framework/initializer/middleware.factory";
 
 dotenv.config({path: __dirname + '/.env'});

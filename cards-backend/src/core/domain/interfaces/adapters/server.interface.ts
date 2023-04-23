@@ -1,5 +1,4 @@
 import {IRequest, IResponse, INextFunction, IExpressApplication} from './requestHandler.interface';
-import {MiddlewareInterface} from "./middleware.interface";
 
 export interface ServerInterface {
 	getApp(): IExpressApplication;
