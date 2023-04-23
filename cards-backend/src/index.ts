@@ -1,17 +1,16 @@
 import * as dotenv from "dotenv";
-import {adapterFactory, createTypedMongoAdapter} from "./main/initializer/adapters.factory";
-import {InitDatabase} from "./main/initializer/initDatabase";
-import {serviceFactory} from "./main/initializer/services.factory";
-import {controllerFactory} from "./main/initializer/controllers.factory";
-import {initRepositories} from "./main/initializer/repositories.factory";
-import {UserEntitiesInterface} from "./domain/interfaces/endpoints/entities/user.entities.interface";
+import {adapterFactory, createTypedMongoAdapter} from "./core/framework/initializer/adapters.factory";
+import {InitDatabase} from "./core/framework/initializer/initDatabase";
+import {serviceFactory} from "./core/framework/initializer/services.factory";
+import {controllerFactory} from "./core/framework/initializer/controllers.factory";
+import {initRepositories} from "./core/framework/initializer/repositories.factory";
+import {UserEntitiesInterface} from "./core/domain/entities/user.entities.interface";
 import * as http from "http";
 import {createSuperUserIfNotExists} from "./dev/createsuperuser";
-import { Router } from './main/router/generator/router';
-import {ServiceInterfaces} from "./domain/interfaces/types/services.interfaces";
-import {ControllersInterfaces} from "./domain/interfaces/types/controllers.interfaces";
-import {createRouteController} from "./main/initializer/route.controller.factory";
-
+import { Router } from './core/framework/router/generator/router';
+import {ServiceInterfaces} from "./core/domain/interfaces/types/services.interfaces";
+import {ControllersInterfaces} from "./core/domain/interfaces/types/controllers.interfaces";
+import {createRouteController} from "./core/framework/initializer/route.controller.factory";
 
 dotenv.config({path: __dirname + '/.env'});
 
@@ -24,6 +23,7 @@ InitDatabase().then(async (db) => {
 	const expressAdapter = adapterFactory.express();
 	const passportAdapter = adapterFactory.passport();
 	const uuidAdapter = adapterFactory.uuid();
+	const tokenAdapter = adapterFactory.token();
 
 	// Initialize the database user adapter for user repository
 	const mongUserAdapter = createTypedMongoAdapter<UserEntitiesInterface>({
@@ -43,6 +43,7 @@ InitDatabase().then(async (db) => {
 	const idService = serviceFactory.IdService(uuidAdapter);
 	const cleanupService = serviceFactory.CleanupService(userService);
 	const loginService = serviceFactory.LoginService(userService, passportAdapter, bcryptAdapter);
+	const authorizationService = serviceFactory.AuthorizationService(userService, tokenAdapter);
 
 	const services: ServiceInterfaces = {
 		userService,
@@ -50,6 +51,7 @@ InitDatabase().then(async (db) => {
 		emailService,
 		idService,
 		hasher: bcryptAdapter,
+		authorizationService
 	};
 
 	// Initialize the controllers

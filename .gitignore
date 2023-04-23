@@ -20,5 +20,5 @@ node_modules/
 /cards-neurone/data/
 
 
-/cards-backend/src/domain/doc/swagger/swagger.json
-/cards-backend/src/log/email/
+/cards-backend/src/core/doc/swagger/swagger.json
+/cards-backend/email/

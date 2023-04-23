@@ -1,0 +1,12 @@
+import { UserEntitiesInterface as user} from "../../entities/user.entities.interface";
+import {INextFunction, IRequest, IResponse} from "./requestHandler.interface";
+
+export interface PassportInterface {
+	initialize(): any;
+	session(): any;
+	use(strategy: any): void;
+	authenticate(strategy: string, options?: object): (req: IRequest, res: IResponse, next: INextFunction) => void;
+	serializeUser(fn: (user: user, done: (err: any, id: any) => void) => void): void;
+	deserializeUser(fn: (id: any, done: (err: any, user: user) => void) => void): void;
+	sign(payload: { role: string; email: string; username: string }): string;
+}
