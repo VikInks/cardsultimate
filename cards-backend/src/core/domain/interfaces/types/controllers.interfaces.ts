@@ -1,6 +1,5 @@
 import {LoginControllerInterface} from "../controllers/login.controller.interface";
 import {UserControllerInterface} from "../controllers/user.controller.interface";
-import {SwaggerAuthControllerInterface} from "../controllers/swagger.auth.controller.interface";
 
 export type ControllersInterfaces = {
 	[key: string]: any;
