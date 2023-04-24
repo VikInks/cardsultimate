@@ -15,6 +15,7 @@ export interface IResponse {
 	json(param: any): void;
 	redirect(path: string): void;
 	header(location: string, s: string): any;
+	cookie(name: string, value: string, options: any): any;
 }
 
 export interface INextFunction {

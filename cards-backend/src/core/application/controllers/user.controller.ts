@@ -8,6 +8,7 @@ import {EmailServiceInterface} from "../../domain/interfaces/services/emailServi
 import {ExpressTypes} from "../../domain/interfaces/adapters/requestHandler.interface";
 import {UserEntitiesInterface} from "../../domain/endpoints/user.entities.interface";
 
+// TODO: Verify all endpoints on swagger and debug if necessary
 
 @Route('/user')
 export class UserController implements UserControllerInterface {
@@ -162,7 +163,7 @@ export class UserController implements UserControllerInterface {
 	 *       500:
 	 *         description: Something went wrong
 	 */
-	@Post('/find-by-email/:email', {middlewares: ["auth", "isSuperUser", "isAdmin"]})
+	@Post('/find-by-email/:email', {middlewares: ["isSuperUser", "isAdmin"]})
 	async findByEmail(req: ExpressTypes['Request'], res: ExpressTypes['Response'], next: ExpressTypes['NextFunction']): Promise<void> {
 		try {
 			const user = await this.userService.findByEmail(req.params.email);
@@ -248,7 +249,7 @@ export class UserController implements UserControllerInterface {
 	 *       500:
 	 *         description: Something went wrong
 	 */
-	@Post('/update/:email', {middlewares: ["auth"]})
+	@Post('/update/:email', {middlewares: ['isAuthenticated']})
 	async update(req: ExpressTypes['Request'], res: ExpressTypes['Response'], next: ExpressTypes['NextFunction']): Promise<void> {
 		try {
 			const items: UserEntitiesInterface = req.params;
@@ -297,7 +298,7 @@ export class UserController implements UserControllerInterface {
 	 *       500:
 	 *         description: Something went wrong
 	 */
-	@Delete('/archive/:email', {middlewares: ['auth']})
+	@Delete('/archive/:email', {middlewares: ['isAuthenticated']})
 	async archive(req: ExpressTypes['Request'], res: ExpressTypes['Response'], next: ExpressTypes['NextFunction']): Promise<void> {
 		try {
 			const {email} = req.params.email;
@@ -339,7 +340,7 @@ export class UserController implements UserControllerInterface {
 	 *       500:
 	 *         description: Something went wrong
 	 */
-	@Post('/unarchive/:email', {middlewares: ['auth', 'isSuperUser', "isAdmin"]})
+	@Post('/unarchive/:email', {middlewares: ['isAuthenticated', 'isSuperUser', "isAdmin"]})
 	async unarchive(req: ExpressTypes['Request'], res: ExpressTypes['Response'], next: ExpressTypes['NextFunction']): Promise<void> {
 		try {
 			const {email} = req.params;
@@ -381,7 +382,7 @@ export class UserController implements UserControllerInterface {
 	 *       500:
 	 *         description: Something went wrong
 	 */
-	@Post('/ban/:email', {middlewares: ["auth", "isSuperUser", "isAdmin"]})
+	@Post('/ban/:email', {middlewares: ['isAuthenticated', "isSuperUser", "isAdmin"]})
 	async ban(req: ExpressTypes['Request'], res: ExpressTypes['Response'], next: ExpressTypes['NextFunction']): Promise<void> {
 		try {
 			const {email} = req.params;
@@ -423,7 +424,7 @@ export class UserController implements UserControllerInterface {
 	 *       500:
 	 *         description: Something went wrong
 	 */
-	@Post('/unban/:email', {middlewares: ["auth", "isSuperUser", "isAdmin"]})
+	@Post('/unban/:email', {middlewares: ['isAuthenticated', "isSuperUser", "isAdmin"]})
 	async unban(req: ExpressTypes['Request'], res: ExpressTypes['Response'], next: ExpressTypes['NextFunction']): Promise<void> {
 		try {
 			const {email} = req.params;
@@ -469,7 +470,7 @@ export class UserController implements UserControllerInterface {
 	 *       500:
 	 *         description: Something went wrong
 	 */
-	@Post('/change-password', {middlewares: ["auth"]})
+	@Post('/change-password', {middlewares: ['isAuthenticated']})
 	async changePassword(req: ExpressTypes['Request'], res: ExpressTypes['Response'], next: ExpressTypes['NextFunction']): Promise<void> {
 		try {
 			const {email, password} = req.params;

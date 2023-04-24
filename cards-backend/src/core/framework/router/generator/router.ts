@@ -8,6 +8,8 @@ import { CustomError } from "../../error/customError";
 import { NextFunction, Request, Response } from "express";
 import { INextFunction, IRequest, IResponse } from "../../../domain/interfaces/adapters/requestHandler.interface";
 import { MiddlewareInterface } from "../../../domain/interfaces/adapters/middleware.interface";
+import cors from "cors";
+import cookieParser from "cookie-parser";
 
 function getActionFunction(controller: any, actionName: string) {
 	if (typeof controller[actionName] === "function") {
@@ -24,6 +26,8 @@ export async function Router(
 	const app = expressAdapter.getApp();
 	app.use(expressAdapter.json());
 	app.use(expressAdapter.urlencoded({ extended: false }));
+	app.use(cors());
+	app.use(cookieParser());
 
 	const swaggerSpec = await generateSwagger();
 	app.use("/swagger-admin/docs", swaggerUi.serve);

@@ -1,11 +1,11 @@
-import { MiddlewareInterface } from "../../domain/interfaces/adapters/middleware.interface";
-import { AuthorizationServiceInterface } from "../../domain/interfaces/services/authorization.service.interface";
-import { INextFunction, IRequest, IResponse } from "../../domain/interfaces/adapters/requestHandler.interface";
+import {MiddlewareInterface} from "../../domain/interfaces/adapters/middleware.interface";
+import {AuthorizationServiceInterface} from "../../domain/interfaces/services/authorization.service.interface";
+import {INextFunction, IRequest, IResponse} from "../../domain/interfaces/adapters/requestHandler.interface";
 
 export function SuperuserMiddleware(authService: AuthorizationServiceInterface): MiddlewareInterface {
 	return {
 		handle: async (req: IRequest, res: IResponse, next: INextFunction): Promise<void> => {
-			const token = req.cookies.token;
+			const token = req.cookies["cardsToken"];
 
 			if (!token) {
 				res.status(401).send("Access denied. No token provided.");
@@ -19,10 +19,7 @@ export function SuperuserMiddleware(authService: AuthorizationServiceInterface):
 				return;
 			}
 
-			if (!(await authService.isSuperUser(user))) {
-				res.status(403).send("Access denied. Insufficient permissions.");
-				return;
-			}
+			await authService.isSuperUser(user);
 
 			next();
 		},

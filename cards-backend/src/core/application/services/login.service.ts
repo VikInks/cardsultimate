@@ -2,6 +2,7 @@ import {LoginServiceInterface} from "../../domain/interfaces/services/login.serv
 import {UserServiceInterface} from "../../domain/interfaces/services/user.service.interface";
 import {PassportInterface} from "../../domain/interfaces/adapters/passport.interface";
 import {HasherInterface} from "../../domain/interfaces/adapters/hasher.interface";
+import cookieParser from "cookie-parser";
 
 
 export class LoginService implements LoginServiceInterface {
@@ -19,7 +20,7 @@ export class LoginService implements LoginServiceInterface {
 		this.bcryptAdapter = bcrypt;
 	}
 
-	async login(email: string, password: string): Promise<{ access_token: string }> {
+	async login(email: string, password: string): Promise<{payload: object, access_token: string }> {
 		const user = await this.userService.findByEmail(email);
 		if (!user) throw new Error("User not found");
 		const isValidated = user.isConfirmed;
@@ -27,8 +28,11 @@ export class LoginService implements LoginServiceInterface {
 		const isPasswordValid = await this.bcryptAdapter.compare(password, user.password);
 		if (!isPasswordValid) throw new Error("Invalid credentials");
 		const payload = {email: email, username: user.username, role: user.role};
+		const token = this.jwtService.sign(payload);
+		console.log(token);
 		return {
-			access_token: this.jwtService.sign(payload),
+			payload,
+			access_token: token
 		};
 	}
 

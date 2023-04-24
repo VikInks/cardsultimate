@@ -5,7 +5,7 @@ import { INextFunction, IRequest, IResponse } from "../../domain/interfaces/adap
 export function AdminMiddleware(authService: AuthorizationServiceInterface): MiddlewareInterface {
 	return {
 		handle: async (req: IRequest, res: IResponse, next: INextFunction): Promise<void> => {
-			const token = req.cookies.token;
+			const token = req.cookies["cardsToken"];
 
 			if (!token) {
 				res.status(401).send("Access denied. No token provided.");
@@ -19,10 +19,7 @@ export function AdminMiddleware(authService: AuthorizationServiceInterface): Mid
 				return;
 			}
 
-			if (!(await authService.isAdmin(user))) {
-				res.status(403).send("Access denied. Insufficient permissions.");
-				return;
-			}
+			await authService.isAdmin(user);
 
 			next();
 		},

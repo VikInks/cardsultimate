@@ -50,17 +50,24 @@ export class LoginController implements LoginControllerInterface {
 	@Post("/signin")
 	async login(req: ExpressTypes["Request"], res: ExpressTypes["Response"]) {
 		try {
-			const {email, password} = req.body;
-			const result = await this.loginService.login(email, password);
-			if (result) {
-				res.status(200).json(result);
-				return result as { access_token: string };
+			const { email, password } = req.body;
+			const { payload, access_token } = await this.loginService.login(email, password);
+			if (access_token) {
+				console.log("JWT TOKEN", access_token);
+				res.cookie('cardsToken', access_token, {
+					maxAge: 86400000,
+					httpOnly: true,
+					// secure: process.env.NODE_ENV === 'production', // Utilisez 'secure: true' uniquement en production
+				});
+				res.status(200).json(payload);
+			} else {
+				res.status(401).json({ message: "Invalid credentials" });
 			}
-			return res.status(401).json({message: "Invalid credentials"});
 		} catch (error) {
 			throw new CustomError(500, `Something went wrong ${error}`);
 		}
 	}
+
 
 
 	/**

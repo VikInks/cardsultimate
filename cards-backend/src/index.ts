@@ -51,6 +51,7 @@ InitDatabase().then(async (db) => {
 	const middlewares = {
 		isAdmin: middlewaresFactory.isAdmin(),
 		isSuperUser: middlewaresFactory.isSuperUser(),
+		isAuthenticated: middlewaresFactory.isAuthenticated(),
 	}
 
 	await createSuperUserIfNotExists(userRepositories, bcryptAdapter, uuidAdapter).then(() => console.log('user initialized'));
