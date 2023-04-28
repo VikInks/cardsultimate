@@ -3,11 +3,14 @@ import { AuthorizationServiceInterface } from "../../domain/interfaces/services/
 import { AdminMiddleware } from "../middleware/admin.middleware";
 import { SuperuserMiddleware } from "../middleware/superuser.middleware";
 import {AuthMiddleware} from "../middleware/auth.middleware";
+import {CheckUserStatusMiddleware} from "../middleware/user.status.middleware";
+import {UserServiceInterface} from "../../domain/interfaces/services/user.service.interface";
 
-export function middlewareFactory(authService: AuthorizationServiceInterface): {
+export function middlewareFactory(authService: AuthorizationServiceInterface, userService: UserServiceInterface): {
 	isSuperUser: () => MiddlewareInterface;
 	isAdmin: () => MiddlewareInterface;
-	isAuthenticated: () => MiddlewareInterface
+	isAuthenticated: () => MiddlewareInterface;
+	CheckUserStatus: () => MiddlewareInterface;
 } {
 	return {
 		isAdmin: (): MiddlewareInterface => {
@@ -18,6 +21,9 @@ export function middlewareFactory(authService: AuthorizationServiceInterface): {
 		},
 		isAuthenticated: (): MiddlewareInterface => {
 			return AuthMiddleware(authService);
+		},
+		CheckUserStatus: (): MiddlewareInterface => {
+			return CheckUserStatusMiddleware(userService);
 		}
 	};
 }

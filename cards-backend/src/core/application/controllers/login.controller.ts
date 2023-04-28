@@ -47,7 +47,7 @@ export class LoginController implements LoginControllerInterface {
 	 *       500:
 	 *         description: Something went wrong
 	 */
-	@Post("/signin")
+	@Post("/signin", { middlewares: ['CheckUserStatus']})
 	async login(req: ServerType["Request"], res: ServerType["Response"]) {
 		const existingCookie = req.cookies.cardsToken;
 		if (existingCookie) {
