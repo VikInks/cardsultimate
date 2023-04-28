@@ -16,4 +16,5 @@ export interface UserRepositoryInterface extends BaseRepositoryInterface<User> {
 	findUserByConfirmationCode(confirmationCode: string): Promise<User | null>;
 	findUnconfirmedUsersWithExpiredLinks(): Promise<User[]>;
 	findByRole(role: string): Promise<User| null>;
+	findUserByUsername(username: string): Promise<User | null>;
 }

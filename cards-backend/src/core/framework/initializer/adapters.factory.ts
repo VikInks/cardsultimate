@@ -1,20 +1,20 @@
 import { EmailAdapter } from "../../infrastructure/adapters/email.adapter";
-import { BcryptAdapter } from "../../infrastructure/adapters/bcrypt.adapter";
-import { ExpressAdapter } from "../../infrastructure/adapters/express.adapter";
-import { PassportAdapter } from "../../infrastructure/adapters/passport.adapter";
+import { HasherAdapter } from "../../infrastructure/adapters/hasher.adapter";
+import { ServerAdapter } from "../../infrastructure/adapters/server.adapter";
+import { AuthorizeAdapter } from "../../infrastructure/adapters/authorize.adapter";
 import { UuidAdapter } from "../../infrastructure/adapters/uuid.adapter";
-import { MongoAdapter } from "../../infrastructure/adapters/mongo.adapter";
+import { DbAdapter } from "../../infrastructure/adapters/db.adapter";
 import {Document} from "bson";
 import {Collection} from "mongodb";
 import {TokenAdapter} from "../../infrastructure/adapters/token.adapter";
 
 type AdapterClassMap<T extends Document> = {
-	bcrypt: BcryptAdapter,
+	bcrypt: HasherAdapter,
 	email: EmailAdapter,
-	express: ExpressAdapter,
-	passport: PassportAdapter,
+	express: ServerAdapter,
+	passport: AuthorizeAdapter,
 	uuid: UuidAdapter,
-	mongo: MongoAdapter<T>,
+	mongo: DbAdapter<T>,
 	token: TokenAdapter,
 };
 
@@ -23,12 +23,12 @@ type AdapterConstructorMap<T extends Document> = {
 };
 
 const adapterClasses: AdapterConstructorMap<Document> = {
-	bcrypt: BcryptAdapter,
+	bcrypt: HasherAdapter,
 	email: EmailAdapter,
-	express: ExpressAdapter,
-	passport: PassportAdapter,
+	express: ServerAdapter,
+	passport: AuthorizeAdapter,
 	uuid: UuidAdapter,
-	mongo: MongoAdapter,
+	mongo: DbAdapter,
 	token: TokenAdapter,
 };
 
@@ -56,6 +56,6 @@ type MongoAdapterInput = {
 	collection: Collection;
 };
 
-export function createTypedMongoAdapter<T extends Document>(input: MongoAdapterInput): MongoAdapter<T> {
-	return new MongoAdapter<T>(input);
+export function createTypedMongoAdapter<T extends Document>(input: MongoAdapterInput): DbAdapter<T> {
+	return new DbAdapter<T>(input);
 }

@@ -1,6 +1,6 @@
 import {AuthorizationServiceInterface} from "../../domain/interfaces/services/authorization.service.interface";
 import {UserEntitiesInterface} from "../../domain/endpoints/user.entities.interface";
-import {INextFunction, IRequest, IResponse} from "../../domain/interfaces/adapters/requestHandler.interface";
+import {httpNext, httpReq, httpRes} from "../../domain/interfaces/adapters/request.handler.interface";
 
 
 export abstract class BaseMiddleware {
@@ -10,5 +10,5 @@ export abstract class BaseMiddleware {
 		return await this.authorizationService.verifyToken(token);
 	}
 
-	public abstract handle(req: IRequest, res: IResponse, next: INextFunction): Promise<void>;
+	public abstract handle(req: httpReq, res: httpRes, next: httpNext): Promise<void>;
 }

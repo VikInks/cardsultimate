@@ -1,4 +1,4 @@
-import MongoDatabaseConnection from "../../infrastructure/adapters/mongo.database.adapter";
+import MongoDatabaseConnection from "../../infrastructure/adapters/connect.database.adapter";
 
 export async function InitDatabase() {
 	const url = process.env.MONGO_URL;

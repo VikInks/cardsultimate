@@ -1,7 +1,7 @@
 import {Post, Route} from "../../framework/router/custom/decorator";
 import {LoginControllerInterface} from "../../domain/interfaces/controllers/login.controller.interface";
 import {LoginServiceInterface} from "../../domain/interfaces/services/login.service.interface";
-import {ExpressTypes} from "../../domain/interfaces/adapters/requestHandler.interface";
+import {ServerType} from "../../domain/interfaces/adapters/request.handler.interface";
 import {CustomError} from "../../framework/error/customError";
 
 
@@ -48,26 +48,25 @@ export class LoginController implements LoginControllerInterface {
 	 *         description: Something went wrong
 	 */
 	@Post("/signin")
-	async login(req: ExpressTypes["Request"], res: ExpressTypes["Response"]) {
+	async login(req: ServerType["Request"], res: ServerType["Response"]) {
 		try {
-			const { email, password } = req.body;
-			const { payload, access_token } = await this.loginService.login(email, password);
+			const {email, password} = req.body;
+			const {payload, access_token} = await this.loginService.login(email, password);
 			if (access_token) {
-				console.log("JWT TOKEN", access_token);
 				res.cookie('cardsToken', access_token, {
 					maxAge: 86400000,
 					httpOnly: true,
-					// secure: process.env.NODE_ENV === 'production', // Utilisez 'secure: true' uniquement en production
+					path: '/',
+					secure: process.env.NODE_ENV === 'production'
 				});
-				res.status(200).json(payload);
+				res.status(200).json({message: "User successfully connected"});
 			} else {
-				res.status(401).json({ message: "Invalid credentials" });
+				res.status(401).json({message: "Invalid credentials"});
 			}
 		} catch (error) {
 			throw new CustomError(500, `Something went wrong ${error}`);
 		}
 	}
-
 
 
 	/**
@@ -85,11 +84,15 @@ export class LoginController implements LoginControllerInterface {
 	 *         description: Internal server error
 	 */
 	@Post("/signout")
-	async disconnect(req: ExpressTypes["Request"], res: ExpressTypes["Response"]) {
+	async disconnect(req: ServerType["Request"], res: ServerType["Response"]) {
 		try {
-			const result = await this.loginService.disconnect();
-			res.status(200).json(result);
-			return result;
+			await this.loginService.disconnect();
+			res.clearCookie('cardsToken');
+			res.cookie('cardsToken', '', {
+				expires: new Date(Date.now() - 86400000),
+				path: '/',
+			});
+			res.status(200).json({message: "User successfully disconnected"});
 		} catch (error) {
 			return res.status(500).json({message: "Internal server error"});
 		}

@@ -37,8 +37,8 @@ InitDatabase().then(async (db) => {
 
 	// Initialize the services
 	const emailService = serviceFactory.EmailService(emailAdapter);
-	const userService = serviceFactory.UserService(userRepositories, emailService)
 	const idService = serviceFactory.IdService(uuidAdapter);
+	const userService = serviceFactory.UserService(userRepositories, emailService, bcryptAdapter, idService)
 	const cleanupService = serviceFactory.CleanupService(userService);
 	const loginService = serviceFactory.LoginService(userService, passportAdapter, bcryptAdapter);
 	const authorizationService = serviceFactory.AuthorizationService(userService, tokenAdapter);

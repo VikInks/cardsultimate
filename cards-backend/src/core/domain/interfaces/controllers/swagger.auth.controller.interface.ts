@@ -1,6 +1,6 @@
-import {IRequest, IResponse} from "../adapters/requestHandler.interface";
+import {httpReq, httpRes} from "../adapters/request.handler.interface";
 
 export interface SwaggerAuthControllerInterface {
-	showLoginForm(_: IRequest, res: IResponse): Promise<void>;
-	docs(_: IRequest, res: IResponse): Promise<void>;
+	showLoginForm(_: httpReq, res: httpRes): Promise<void>;
+	docs(_: httpReq, res: httpRes): Promise<void>;
 }

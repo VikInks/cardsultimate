@@ -6,7 +6,7 @@ import { generateSwagger } from "../../../doc/swagger.doc";
 import swaggerUi from "swagger-ui-express";
 import { CustomError } from "../../error/customError";
 import { NextFunction, Request, Response } from "express";
-import { INextFunction, IRequest, IResponse } from "../../../domain/interfaces/adapters/requestHandler.interface";
+import { httpNext, httpReq, httpRes } from "../../../domain/interfaces/adapters/request.handler.interface";
 import { MiddlewareInterface } from "../../../domain/interfaces/adapters/middleware.interface";
 import cors from "cors";
 import cookieParser from "cookie-parser";
@@ -45,7 +45,7 @@ export async function Router(
 				);
 				const wrappedMiddlewares = middlewaresInstances.map(
 					(middleware: MiddlewareInterface) => {
-						return (req: IRequest, res: IResponse, next: INextFunction) => {
+						return (req: httpReq, res: httpRes, next: httpNext) => {
 							middleware.handle(req, res, next);
 						};
 					}

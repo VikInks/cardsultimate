@@ -1,9 +1,9 @@
-import {BcryptAdapter} from "../core/infrastructure/adapters/bcrypt.adapter";
+import {HasherAdapter} from "../core/infrastructure/adapters/hasher.adapter";
 import {UuidAdapter} from "../core/infrastructure/adapters/uuid.adapter";
 import {UserEntitiesInterface} from "../core/domain/endpoints/user.entities.interface";
 import {UserRepositoryInterface} from "../core/domain/interfaces/repositories/user.repository.interface";
 
-export async function createSuperUserIfNotExists(userRepository: UserRepositoryInterface, bcryptAdapter: BcryptAdapter, uuidAdapter: UuidAdapter) {
+export async function createSuperUserIfNotExists(userRepository: UserRepositoryInterface, bcryptAdapter: HasherAdapter, uuidAdapter: UuidAdapter) {
 	const existingSuperUser = await userRepository.findByRole('SuperUser');
 	if (existingSuperUser) {
 		console.log('SuperUser already exists.');

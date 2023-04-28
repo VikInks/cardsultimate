@@ -21,4 +21,5 @@ node_modules/
 
 
 /cards-backend/src/core/doc/swagger/swagger.json
-/cards-backend/email/
+/cards-backend/src/email/
+/decklist/

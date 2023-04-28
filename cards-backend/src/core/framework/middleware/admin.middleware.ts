@@ -1,10 +1,10 @@
 import { MiddlewareInterface } from "../../domain/interfaces/adapters/middleware.interface";
 import { AuthorizationServiceInterface } from "../../domain/interfaces/services/authorization.service.interface";
-import { INextFunction, IRequest, IResponse } from "../../domain/interfaces/adapters/requestHandler.interface";
+import { httpNext, httpReq, httpRes } from "../../domain/interfaces/adapters/request.handler.interface";
 
 export function AdminMiddleware(authService: AuthorizationServiceInterface): MiddlewareInterface {
 	return {
-		handle: async (req: IRequest, res: IResponse, next: INextFunction): Promise<void> => {
+		handle: async (req: httpReq, res: httpRes, next: httpNext): Promise<void> => {
 			const token = req.cookies["cardsToken"];
 
 			if (!token) {

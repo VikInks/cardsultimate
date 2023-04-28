@@ -1,18 +1,17 @@
 import {LoginServiceInterface} from "../../domain/interfaces/services/login.service.interface";
 import {UserServiceInterface} from "../../domain/interfaces/services/user.service.interface";
-import {PassportInterface} from "../../domain/interfaces/adapters/passport.interface";
+import {AuthorizeInterface} from "../../domain/interfaces/adapters/authorize.interface";
 import {HasherInterface} from "../../domain/interfaces/adapters/hasher.interface";
-import cookieParser from "cookie-parser";
 
 
 export class LoginService implements LoginServiceInterface {
 	private readonly userService: UserServiceInterface;
-	private readonly jwtService: PassportInterface;
+	private readonly jwtService: AuthorizeInterface;
 	private readonly bcryptAdapter: HasherInterface;
 
 	constructor(
 		private readonly user: UserServiceInterface,
-		private readonly jwt: PassportInterface,
+		private readonly jwt: AuthorizeInterface,
 		private readonly bcrypt: HasherInterface,
 	) {
 		this.userService = user;

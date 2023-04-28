@@ -1,6 +1,6 @@
-import {INextFunction, IRequest, IResponse} from "../adapters/requestHandler.interface";
+import {httpNext, httpReq, httpRes} from "../adapters/request.handler.interface";
 
 export interface LoginControllerInterface {
-	login(req: IRequest, res: IResponse, next: INextFunction): Promise<any>;
-	disconnect(req: IRequest, res: IResponse, next: INextFunction): Promise<any>;
+	login(req: httpReq, res: httpRes, next: httpNext): Promise<any>;
+	disconnect(req: httpReq, res: httpRes, next: httpNext): Promise<any>;
 }

@@ -3,7 +3,7 @@ import { Document, ObjectId } from "bson";
 import {Collection, InsertOneResult, OptionalId, WithId} from "mongodb";
 import {DatabaseInterface} from "../../domain/interfaces/adapters/database.interface";
 
-export class MongoAdapter<T extends Document> implements DatabaseInterface<T> {
+export class DbAdapter<T extends Document> implements DatabaseInterface<T> {
 	private readonly collectionName: string;
 	private readonly collection: Collection;
 

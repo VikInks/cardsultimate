@@ -1,13 +1,39 @@
-import {ExpressTypes} from "../adapters/requestHandler.interface";
+import { ServerType } from '../adapters/request.handler.interface';
 
 export interface UserControllerInterface {
-	register(req: ExpressTypes['Request'], res: ExpressTypes['Response'], next: ExpressTypes['NextFunction']): Promise<void>;
-	confirmAccount(req: ExpressTypes['Request'], res: ExpressTypes['Response'], next: ExpressTypes['NextFunction']): Promise<void>;
-	findByEmail(req: ExpressTypes['Request'], res: ExpressTypes['Response'], next: ExpressTypes['NextFunction']): Promise<void>;
-	verifyPassword(req: ExpressTypes['Request'], res: ExpressTypes['Response'], next: ExpressTypes['NextFunction']): Promise<void>;
-	update(req: ExpressTypes['Request'], res: ExpressTypes['Response'], next: ExpressTypes['NextFunction']): Promise<void>;
-	archive(req: ExpressTypes['Request'], res: ExpressTypes['Response'], next: ExpressTypes['NextFunction']): Promise<void>;
-	unarchive(req: ExpressTypes['Request'], res: ExpressTypes['Response'], next: ExpressTypes['NextFunction']): Promise<void>;
-	ban(req: ExpressTypes['Request'], res: ExpressTypes['Response'], next: ExpressTypes['NextFunction']): Promise<void>;
-	unban(req: ExpressTypes['Request'], res: ExpressTypes['Response'], next: ExpressTypes['NextFunction']): Promise<void>;
+    register(
+        req: ServerType['Request'],
+        res: ServerType['Response'],
+        next: ServerType['NextFunction']
+    ): Promise<void>;
+    confirmAccount(
+        req: ServerType['Request'],
+        res: ServerType['Response'],
+        next: ServerType['NextFunction']
+    ): Promise<void>;
+    findByEmail(
+        req: ServerType['Request'],
+        res: ServerType['Response'],
+        next: ServerType['NextFunction']
+    ): Promise<void>;
+    update(
+        req: ServerType['Request'],
+        res: ServerType['Response'],
+        next: ServerType['NextFunction']
+    ): Promise<void>;
+    handleUserArchive(
+        req: ServerType['Request'],
+        res: ServerType['Response'],
+        next: ServerType['NextFunction']
+    ): Promise<void>;
+    handleUserBan(
+        req: ServerType['Request'],
+        res: ServerType['Response'],
+        next: ServerType['NextFunction']
+    ): Promise<void>;
+    findByUsername(
+        req: ServerType['Request'],
+        res: ServerType['Response'],
+        next: ServerType['NextFunction']
+    ): Promise<void>;
 }

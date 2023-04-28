@@ -50,7 +50,7 @@ export class EmailAdapter implements EmailInterface {
 
 			const fileContent = `To: ${to} Subject: ${subject} HTML Content: ${html}`;
 
-			const filePath = path.join('../../../../email', filename);
+			const filePath = path.join('./src/email', filename);
 			fs.writeFileSync(filePath, fileContent, { encoding: 'utf-8' });
 		}
 	}
