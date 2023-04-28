@@ -49,22 +49,26 @@ export class LoginController implements LoginControllerInterface {
 	 */
 	@Post("/signin")
 	async login(req: ServerType["Request"], res: ServerType["Response"]) {
+		const existingCookie = req.cookies.cardsToken;
+		if (existingCookie) {
+			return res.status(200).json({message: "User already connected"});
+		}
+
+		const {email, password} = req.body;
 		try {
-			const {email, password} = req.body;
-			const {payload, access_token} = await this.loginService.login(email, password);
-			if (access_token) {
-				res.cookie('cardsToken', access_token, {
-					maxAge: 86400000,
-					httpOnly: true,
-					path: '/',
-					secure: process.env.NODE_ENV === 'production'
-				});
-				res.status(200).json({message: "User successfully connected"});
-			} else {
-				res.status(401).json({message: "Invalid credentials"});
-			}
+			await this.loginService.login(email, password).then((token) => {
+				if (token.access_token) {
+					res.cookie('cardsToken', token.access_token, {
+						maxAge: 86400000,
+						httpOnly: true,
+						path: '/',
+						secure: process.env.NODE_ENV === 'production'
+					});
+					res.status(200).json({message: "User successfully connected"});
+				}
+			});
 		} catch (error) {
-			throw new CustomError(500, `Something went wrong ${error}`);
+			throw new CustomError(401, "Invalid credentials")
 		}
 	}
 

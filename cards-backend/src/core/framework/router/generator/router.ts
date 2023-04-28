@@ -27,6 +27,7 @@ export async function Router(
 	app.use(expressAdapter.json());
 	app.use(expressAdapter.urlencoded({ extended: false }));
 	app.use(cors());
+
 	app.use(cookieParser());
 
 	const swaggerSpec = await generateSwagger();

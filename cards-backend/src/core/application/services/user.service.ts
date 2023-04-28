@@ -129,20 +129,22 @@ export class UserService implements UserServiceInterface {
         const user = await this.userRepository.findUserByEmail(userToHandle.email);
         const requestedUserFromRepo = await this.userRepository.findUserByEmail(requestedUser.email);
 
+        if(!user?.isConfirmed) {
+            throw new Error('User is not confirmed yet and cannot be updated');
+        }
+
         if (!user || !requestedUserFromRepo) {
-            throw new Error(`User not found for email: ${userToHandle.email}`);
+            throw new Error(`User not found for email: ${JSON.stringify(userToHandle.email)}`);
         }
 
         const requestedUserIsAdminOrSuperUser = requestedUserFromRepo.role === 'admin' || requestedUserFromRepo.role === 'superuser';
-
-        if (!requestedUserIsAdminOrSuperUser && requestedUser.email !== user.email) {
-            throw new Error('You are not authorized to update this user');
-        }
-
         const manageUserNotAllowed = (!userToHandle.banned || userToHandle.banned || !userToHandle.archive || userToHandle.archive) && !requestedUserIsAdminOrSuperUser;
-
         if (manageUserNotAllowed) {
-            throw new Error('You are not authorized to manage this user');
+            if (!requestedUserIsAdminOrSuperUser && requestedUser.email !== user.email) {
+                throw new Error('You are not authorized to update this user');
+            } else {
+                throw new Error('You are not authorized to manage this user');
+            }
         }
 
         if (ban) {
@@ -153,8 +155,9 @@ export class UserService implements UserServiceInterface {
             userToHandle.archive = !user.archive;
         }
 
+        userToHandle.updatedAt = new Date();
         const userUpdate = { ...user, ...userToHandle };
-        return this.userRepository.update(userToHandle.id, userUpdate);
+        return this.userRepository.update(user.id, userUpdate);
     }
 
     findByUsername(username: string): Promise<UserEntitiesInterface | null> {
