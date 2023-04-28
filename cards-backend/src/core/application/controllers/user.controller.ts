@@ -268,8 +268,8 @@ export class UserController implements UserControllerInterface {
 		const userToArchive = await this.userService.findByEmail(userEmail);
 		if (!userToArchive) throw new CustomError(404, 'User not found');
 		try {
-			await this.userService.update(userToArchive, req.user, false, true).then(() => {
-				res.status(200).json({message: 'User archived'});
+			await this.userService.update(userToArchive, req.user, false, true).then((user) => {
+				res.status(200).json({message: user.archive ? 'User archived' : 'User unarchived'});
 			}).catch((error) => {
 				throw new CustomError(500, `User not found ${error}`);
 			});
@@ -309,8 +309,8 @@ export class UserController implements UserControllerInterface {
 		const userToBan = await this.userService.findByEmail(userEmail);
 		if (!userToBan) throw new CustomError(404, 'User not found');
 		try {
-			await this.userService.update(userToBan, req.user, true, false).then(() => {
-				res.status(200).json({message: 'User banned'});
+			await this.userService.update(userToBan, req.user, true, false).then((user) => {
+				res.status(200).json({message: user.banned ? 'User banned' : 'User unbanned'});
 			}).catch((error) => {
 				throw new CustomError(500, `Something went wrong ${error}`);
 			});
