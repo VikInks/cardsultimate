@@ -9,6 +9,7 @@ import * as http from "http";
 import {createSuperUserIfNotExists} from "./dev/createsuperuser";
 import { Router } from './core/framework/router/generator/router';
 import {middlewareFactory} from "./core/framework/initializer/middleware.factory";
+import {DeckEntityInterface} from "./core/domain/endpoints/decks/deck.entity.interface";
 
 dotenv.config({path: __dirname + '/.env'});
 
@@ -29,11 +30,19 @@ InitDatabase().then(async (db) => {
 		collection: await db.getCollection('user')
 	});
 
+	const mongoDeckAdapter = createTypedMongoAdapter<DeckEntityInterface>({
+		entityName: 'deck',
+		collection: await db.getCollection('deck')
+	});
+
 	// Initialize the repositories
 	const repositoryFactory = initRepositories({
 		user: mongUserAdapter,
+		deck: mongoDeckAdapter
 	});
+
 	const userRepositories = repositoryFactory.user;
+	const deckRepositories = repositoryFactory.deck;
 
 	// Initialize the services
 	const emailService = serviceFactory.EmailService(emailAdapter);
@@ -42,10 +51,12 @@ InitDatabase().then(async (db) => {
 	const cleanupService = serviceFactory.CleanupService(userService);
 	const loginService = serviceFactory.LoginService(userService, passportAdapter, bcryptAdapter);
 	const authorizationService = serviceFactory.AuthorizationService(userService, tokenAdapter);
+	const deckService = serviceFactory.DeckService(deckRepositories, userService);
 
 	// Initialize the controllers
 	const loginController = controllerFactory.LoginController(loginService);
 	const userController = controllerFactory.UserController(bcryptAdapter, userService, loginService, idService, emailService);
+	const deckController = controllerFactory.DeckController(deckService);
 
 	const middlewaresFactory = middlewareFactory(authorizationService, userService);
 	const middlewares = {
@@ -60,7 +71,7 @@ InitDatabase().then(async (db) => {
 	cleanupService.removeUnconfirmedUsers();
 
 	// Initialize the router
-	Router(expressAdapter, middlewares, [loginController, userController]).then(() => console.log("Routes configured"));
+	Router(expressAdapter, middlewares, [loginController, userController, deckController]).then(() => console.log("Routes configured"));
 
 	http.createServer(expressAdapter.getApp()).listen(8000, () => {
 		console.log('Server started on port 8000');

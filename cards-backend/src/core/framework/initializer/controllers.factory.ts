@@ -1,10 +1,12 @@
 import { UserController } from "../../application/controllers/user.controller";
 import { LoginController } from "../../application/controllers/login.controller";
+import {DeckController} from "../../application/controllers/deck.controller";
 
 
 type ControllerClassMap = {
 	UserController: UserController;
 	LoginController: LoginController;
+	DeckController: DeckController;
 };
 
 type ControllerConstructorMap = {
@@ -14,6 +16,7 @@ type ControllerConstructorMap = {
 const controllerClasses: ControllerConstructorMap = {
 	UserController,
 	LoginController,
+	DeckController
 };
 
 type ControllerInstanceMap<T> = {
