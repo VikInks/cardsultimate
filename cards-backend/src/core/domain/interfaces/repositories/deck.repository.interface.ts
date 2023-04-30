@@ -11,6 +11,6 @@ export interface DeckRepositoryInterface extends BaseRepositoryInterface<DeckEnt
 
 	// custom methods
 	findDeckByUserUsername(userId: string): Promise<DeckEntityInterface[]>;
-	copyDeck(deckId: string, userId: string): Promise<DeckEntityInterface>;
+	copyDeck(deckId: string, userId: string, reqUserId: string): Promise<DeckEntityInterface>;
 	importDeck(deck: DeckEntityInterface, userId: string): Promise<DeckEntityInterface>;
 }

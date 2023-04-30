@@ -2,6 +2,7 @@ import {UserRepositoryInterface} from "../../domain/interfaces/repositories/user
 import {UserRepository} from "../../infrastructure/repositories/user.repository";
 import {DatabaseInterface} from "../../domain/interfaces/adapters/database.interface";
 import {DeckRepositoryInterface} from "../../domain/interfaces/repositories/deck.repository.interface";
+import {DeckRepository} from "../../infrastructure/repositories/deck.repository";
 
 type RepositoriesInterface = {
 	user: UserRepositoryInterface;

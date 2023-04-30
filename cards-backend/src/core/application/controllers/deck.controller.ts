@@ -1,8 +1,7 @@
 import {DeckControllerInterface} from "../../domain/interfaces/controllers/deck.controller.interface";
 import {ServerType} from "../../domain/interfaces/adapters/request.handler.interface";
 import {DeckServiceInterface} from "../../domain/interfaces/services/deck.service.interface";
-import {Route} from "../../framework/router/custom/decorator";
-import {Post} from "@nestjs/common";
+import {Route, Post, Delete} from "../../framework/router/custom/decorator";
 import {CustomError} from "../../framework/error/customError";
 
 @Route("/deck")
@@ -60,7 +59,7 @@ export class DeckController implements DeckControllerInterface {
 	/**
 	 * @swagger
 	 * /delete/{id}:
-	 *   post:
+	 *   delete:
 	 *     summary: Delete a deck by ID
 	 *     tags: [Decks]
 	 *     parameters:
@@ -80,7 +79,7 @@ export class DeckController implements DeckControllerInterface {
 	 *       500:
 	 *         description: Internal server error
 	 */
-	@Post("/delete/:id")
+	@Delete("/delete/:id")
 	async deleteDeck(req: ServerType["Request"], res: ServerType["Response"]): Promise<void> {
 		await this.deckService.deleteDeck(req.params.id, req.user.id).then((deck) => {
 			res.status(200).json(deck);
