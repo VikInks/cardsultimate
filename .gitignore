@@ -18,3 +18,9 @@ node_modules/
 /mapper/
 /venv/
 /cards-neurone/data/
+
+
+/cards-backend/src/core/doc/swagger/swagger.json
+/cards-backend/src/email/
+/decklist/
+/cards-builder/data/train/data-apr23/

@@ -11,7 +11,7 @@
 
 - [ ] 2
 2. Appliquer le principe de l'inversion de dépendances (D de SOLID) pour les librairies externes.  
-2.1. Créer des interfaces pour les librairies externes utilisées (Express, JWT, PassportInterface, etc.).  
+2.1. Créer des interfaces pour les librairies externes utilisées (Express, JWT, AuthorizeInterface, etc.).  
 2.2. Mettre à jour les classes existantes pour utiliser ces interfaces plutôt que les dépendances directes.  
 2.3. Implémenter les classes concrètes pour ces interfaces, encapsulant les librairies externes.  
 

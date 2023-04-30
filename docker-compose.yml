@@ -15,6 +15,7 @@ services:
       - MONGO_URL=mongodb://mongodb:27017/cards
       - MONGO_DB_NAME=cards
       - JWT_SECRET=YYWz1EBc78%mqUX2xSUh%pv56#F6M3K3$7&6uk3v
+      - NODE_ENV=development
 
   client:
     build:

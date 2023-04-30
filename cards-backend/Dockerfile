@@ -17,8 +17,8 @@ RUN apt-get update && apt-get install -y build-essential python
 # Reconstruire bcrypt pour l'environnement actuel
 RUN npm rebuild bcrypt --build-from-source
 
-# Compiler le code TypeScript en JavaScript
-RUN npm run build
+# Installer nodemon globalement
+RUN npm install -g nodemon
 
 # Exposer le port utilisé par l'application
 EXPOSE 8000
