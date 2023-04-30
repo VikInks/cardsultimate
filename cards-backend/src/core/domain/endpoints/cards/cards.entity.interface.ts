@@ -5,8 +5,9 @@ import {RelatedUrisInterface} from "./related.uris.inteface";
 import {AllpartInterface} from "./allpart.interface";
 import {PreviewInterface} from "./preview.interface";
 import {CardFaceInterface} from "./card.face.interface";
+import {DeckEntityInterface} from "../decks/deck.entity.interface";
 
-export interface CardsInterface {
+export interface CardsEntityInterface {
 	object: string
 	id: string
 	oracle_id: string
@@ -91,4 +92,6 @@ export interface CardsInterface {
 	life_modifier: string
 	hand_modifier: string
 	flavor_name: string
+	number: number
+	deck_in: DeckEntityInterface[]
 }
