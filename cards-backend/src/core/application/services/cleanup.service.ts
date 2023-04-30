@@ -3,10 +3,7 @@ import {UserServiceInterface} from "../../domain/interfaces/services/user.servic
 
 
 export class CleanupService {
-	private readonly userService: UserServiceInterface;
-	constructor(private readonly user :UserServiceInterface) {
-		this.userService = user;
-	}
+	constructor(private readonly userService :UserServiceInterface) {}
 
 	removeUnconfirmedUsers(): void {
 		// Tâche s'exécutant toutes les 12 heures : "0 */12 * * *"

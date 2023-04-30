@@ -10,25 +10,14 @@ import {CustomError} from '../../framework/error/customError';
 
 @Route('/user')
 export class UserController implements UserControllerInterface {
-	private readonly hasher: HasherInterface;
-	private readonly userService: UserServiceInterface;
-	private readonly loginService: LoginServiceInterface;
-	private readonly idService: IdInterface;
-	private readonly emailService: EmailServiceInterface;
 
 	constructor(
-		private readonly crypt: HasherInterface,
-		private readonly userServ: UserServiceInterface,
-		private readonly loginServ: LoginServiceInterface,
-		private readonly idServ: IdInterface,
-		private readonly emailServ: EmailServiceInterface
-	) {
-		this.hasher = crypt;
-		this.userService = userServ;
-		this.loginService = loginServ;
-		this.idService = idServ;
-		this.emailService = emailServ;
-	}
+		private readonly hasher: HasherInterface,
+		private readonly userService: UserServiceInterface,
+		private readonly loginService: LoginServiceInterface,
+		private readonly idService: IdInterface,
+		private readonly emailService: EmailServiceInterface
+	) {}
 
 	/**
 	 * @swagger

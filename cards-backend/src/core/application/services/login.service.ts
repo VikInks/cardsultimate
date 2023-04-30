@@ -5,21 +5,14 @@ import {HasherInterface} from "../../domain/interfaces/adapters/hasher.interface
 
 
 export class LoginService implements LoginServiceInterface {
-	private readonly userService: UserServiceInterface;
-	private readonly jwtService: AuthorizeInterface;
-	private readonly bcryptAdapter: HasherInterface;
 
 	constructor(
-		private readonly user: UserServiceInterface,
-		private readonly jwt: AuthorizeInterface,
-		private readonly bcrypt: HasherInterface,
-	) {
-		this.userService = user;
-		this.jwtService = jwt;
-		this.bcryptAdapter = bcrypt;
-	}
+		private readonly userService: UserServiceInterface,
+		private readonly jwtService: AuthorizeInterface,
+		private readonly bcryptAdapter: HasherInterface,
+	) {}
 
-	async login(email: string, password: string): Promise<{payload: object, access_token: string }> {
+	async login(email: string, password: string): Promise<{ payload: object, access_token: string }> {
 		const user = await this.userService.findByEmail(email);
 		if (!user) throw new Error("User not found");
 		const isValidated = user.isConfirmed;

@@ -7,11 +7,8 @@ import {CustomError} from "../../framework/error/customError";
 
 @Route("/login")
 export class LoginController implements LoginControllerInterface {
-	private readonly loginService: LoginServiceInterface
 
-	constructor(private readonly loginServ: LoginServiceInterface) {
-		this.loginService = loginServ;
-	}
+	constructor(private readonly loginService: LoginServiceInterface) {}
 
 	/**
 	 * @swagger

@@ -3,10 +3,8 @@ import {EmailInterface} from "../../infrastructure/adapters/email.adapter";
 
 
 export class EmailService implements EmailServiceInterface {
-	private readonly emailAdapter: EmailInterface;
-	constructor(private readonly email: EmailInterface) {
-		this.emailAdapter = email;
-	}
+
+	constructor(private readonly emailAdapter: EmailInterface) {}
 
 	async sendConfirmationEmail(to: string, token: string | null): Promise<void> {
 		const subject = 'Please confirm your account by clicking the link below:';
