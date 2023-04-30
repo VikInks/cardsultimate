@@ -19,11 +19,11 @@ export function CheckUserStatusMiddleware(userService: UserServiceInterface): Mi
 			}
 
 			if (user.banned) {
-				throw new CustomError(403, 'User is banned');
+				throw new CustomError(403, 'User is banned. Please contact an administrator for more information or see the FAQ.');
 			}
 
 			if (user.archive) {
-				throw new CustomError(403, 'User is archived');
+				throw new CustomError(403, 'User is archived. Please contact an administrator for more information or see the FAQ.');
 			}
 
 			next();

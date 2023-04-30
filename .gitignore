@@ -23,3 +23,4 @@ node_modules/
 /cards-backend/src/core/doc/swagger/swagger.json
 /cards-backend/src/email/
 /decklist/
+/cards-builder/data/train/data-apr23/
