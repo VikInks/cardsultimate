@@ -1,4 +1,4 @@
-import {httpNext, httpReq, httpRes, ServerType} from "../../domain/interfaces/adapters/request.handler.interface";
+import {httpNext, httpReq, httpRes} from "../../domain/interfaces/adapters/request.handler.interface";
 import {UserServiceInterface} from "../../domain/interfaces/services/user.service.interface";
 import {CustomError} from "../error/customError";
 import {MiddlewareInterface} from "../../domain/interfaces/adapters/middleware.interface";
@@ -7,11 +7,7 @@ export function CheckUserStatusMiddleware(userService: UserServiceInterface): Mi
 
 	return {
 		handle: async (req: httpReq, res: httpRes, next: httpNext): Promise<void> => {
-			if (!req.user) {
-				throw new CustomError(401, 'Unauthorized');
-			}
-
-			const userEmail = req.user.email;
+			const userEmail = req.body.email;
 			const user = await userService.findByEmail(userEmail);
 
 			if (!user) {
