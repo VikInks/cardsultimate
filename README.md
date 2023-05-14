@@ -10,11 +10,11 @@
   - client web : react typescript 
   - client mobile Android and IoS : react native
 
-**Repository**
- - https://github.com/VikInks/cards
-
 **Todo**
 - [Todo list](./todo.md)
 
 **Global information & ideas**
 - [Ideas](./idea.md)
+
+**Backend**
+- [Backend ideas](./cards-backend/ideas.md)
