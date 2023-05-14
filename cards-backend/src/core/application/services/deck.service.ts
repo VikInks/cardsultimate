@@ -7,10 +7,9 @@ export class DeckService implements DeckServiceInterface {
 	constructor(private readonly deckRepository: DeckRepositoryInterface, private readonly userService: UserServiceInterface) {
 	}
 
-	// TODO: ajouter la possibilité d'initialiser le deck avec un commandant si le format est commander
-	async createDeck(item: DeckEntityInterface, userId: string): Promise<{ message: string }> {
-		return this.deckRepository.create(item, userId).then(() => {
-			return {message: "Deck created successfully"};
+	async createDeck(item: DeckEntityInterface, userId: string): Promise<DeckEntityInterface | { message: string }> {
+		return this.deckRepository.create(item, userId).then((deck) => {
+			return deck;
 		}).catch(err => {
 			return {message: `Error creating deck ${err}`};
 		});
@@ -48,12 +47,11 @@ export class DeckService implements DeckServiceInterface {
 		});
 	}
 
-	// TODO: ajouter les cartes à l'update
-	updateDeck(item: DeckEntityInterface, userId: string): Promise<any> {
+	async updateDeck(item: DeckEntityInterface, userId: string): Promise<DeckEntityInterface | { message: string }> {
 		return this.userService.findById(userId).then((user) => {
 			if (item.ownerId === user?.id) {
-				this.deckRepository.update(item.id, item).then(() => {
-					return {message: "Deck updated successfully"};
+				this.deckRepository.update(item.id, item).then((deck) => {
+					return deck;
 				}).catch(err => {
 					return {message: `Error updating deck ${err}`};
 				});
