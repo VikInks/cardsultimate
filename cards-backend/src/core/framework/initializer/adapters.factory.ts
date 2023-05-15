@@ -8,6 +8,8 @@ import {Document} from "bson";
 import {Collection} from "mongodb";
 import {TokenAdapter} from "../../infrastructure/adapters/token.adapter";
 
+// Todo: add dependency inversion for Document and Collection
+
 type AdapterClassMap<T extends Document> = {
 	bcrypt: HasherAdapter,
 	email: EmailAdapter,

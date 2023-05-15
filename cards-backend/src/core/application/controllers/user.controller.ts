@@ -5,8 +5,8 @@ import {UserServiceInterface} from '../../domain/interfaces/services/user.servic
 import {LoginServiceInterface} from '../../domain/interfaces/services/login.service.interface';
 import {IdInterface} from '../../domain/interfaces/adapters/id.interface';
 import {EmailServiceInterface} from '../../domain/interfaces/services/email.service.interface';
-import {ServerType} from '../../domain/interfaces/adapters/request.handler.interface';
 import {CustomError} from '../../framework/error/customError';
+import {Request, Response, NextFunction} from "../../domain/interfaces/adapters/server.interface";
 
 @Route('/user')
 export class UserController implements UserControllerInterface {
@@ -44,7 +44,7 @@ export class UserController implements UserControllerInterface {
 	 *         description: Something went wrong
 	 */
 	@Post('/register')
-	async register(req: ServerType['Request'], res: ServerType['Response'], next: ServerType['NextFunction']): Promise<void> {
+	async register(req: Request, res: Response, next: NextFunction): Promise<void> {
 		try {
 			await this.userService.create(req.body).then(async (user) => {
 				await this.emailService.sendConfirmationEmail(user.email, user.confirmationToken as string).then(() => {
@@ -95,7 +95,7 @@ export class UserController implements UserControllerInterface {
 	 *         description: Something went wrong
 	 */
 	@Get('/confirm/:token')
-	async confirmAccount(req: ServerType['Request'], res: ServerType['Response'], next: ServerType['NextFunction']): Promise<void> {
+	async confirmAccount(req: Request, res: Response, next: NextFunction): Promise<void> {
 		try {
 			await this.userService.confirmUser(req.params.token).then(() => {
 				return res.status(200).json("User confirmed");
@@ -133,7 +133,7 @@ export class UserController implements UserControllerInterface {
 	 *         description: Something went wrong
 	 */
 	@Post('/find-by-email/:email', {middlewares: ['isAuthenticated', 'isSuperUser', 'isAdmin']})
-	async findByEmail(req: ServerType['Request'], res: ServerType['Response'], next: ServerType['NextFunction']): Promise<void> {
+	async findByEmail(req: Request, res: Response, next: NextFunction): Promise<void> {
 		try {
 			await this.userService.findByEmail(req.params.email).then((user) => {
 				return res.status(200).json(user);
@@ -173,7 +173,7 @@ export class UserController implements UserControllerInterface {
 	 *         description: Something went wrong
 	 */
 	@Post('/find-by-username/:username', {middlewares: ['isAuthenticated']})
-	async findByUsername(req: ServerType['Request'], res: ServerType['Response'], next: ServerType['NextFunction']): Promise<void> {
+	async findByUsername(req: Request, res: Response, next: NextFunction): Promise<void> {
 		try {
 			await this.userService.findByUsername(req.params.username).then((user) => {
 				return res.status(200).json(user?.username);
@@ -214,7 +214,7 @@ export class UserController implements UserControllerInterface {
 	 *         description: Something went wrong
 	 */
 	@Post('/update', {middlewares: ['isAuthenticated']})
-	async update(req: ServerType['Request'], res: ServerType['Response'], next: ServerType['NextFunction']): Promise<void> {
+	async update(req: Request, res: Response, next: NextFunction): Promise<void> {
 		try {
 			await this.userService.update(req.body, req.user).then(() => {
 				res.status(200).json('User updated');
@@ -252,7 +252,7 @@ export class UserController implements UserControllerInterface {
 	 *         description: Something went wrong
 	 */
 	@Delete('/archive', {middlewares: ['isAuthenticated']})
-	async handleUserArchive(req: ServerType['Request'], res: ServerType['Response'], next: ServerType['NextFunction']): Promise<void> {
+	async handleUserArchive(req: Request, res: Response, next: NextFunction): Promise<void> {
 		const userEmail = req.body.email;
 		const userToArchive = await this.userService.findByEmail(userEmail);
 		if (!userToArchive) throw new CustomError(404, 'User not found');
@@ -293,7 +293,7 @@ export class UserController implements UserControllerInterface {
 	 *         description: Something went wrong
 	 */
 	@Post('/ban', {middlewares: ['isAuthenticated', 'isSuperUser', 'isAdmin'],})
-	async handleUserBan(req: ServerType['Request'], res: ServerType['Response'], next: ServerType['NextFunction']): Promise<void> {
+	async handleUserBan(req: Request, res: Response, next: NextFunction): Promise<void> {
 		const userEmail = req.body.email;
 		const userToBan = await this.userService.findByEmail(userEmail);
 		if (!userToBan) throw new CustomError(404, 'User not found');

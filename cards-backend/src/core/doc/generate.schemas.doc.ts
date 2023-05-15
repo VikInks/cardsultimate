@@ -2,6 +2,8 @@ import {Project, Type, InterfaceDeclaration, Node, JSDocTag} from 'ts-morph';
 import * as fs from 'fs';
 import * as path from 'path';
 
+// Todo: add dependencies inversion for ts-morph
+
 function getTypeName(type: Type): string {
 	if (type.isString()) return 'string';
 	if (type.isBoolean()) return 'boolean';

@@ -1,77 +1,58 @@
 import express from 'express';
-import {ServerInterface} from "../../domain/interfaces/adapters/server.interface";
-import {httpApp, httpNext, httpReq, httpRes} from "../../domain/interfaces/adapters/request.handler.interface";
+import {Handler, ServerInterface, Request, Response, NextFunction} from "../../domain/interfaces/adapters/server.interface";
 
 type HttpMethod = 'get' | 'post' | 'put' | 'delete';
 
-function isHttpMethod(method: string): method is HttpMethod {
-	return ['get', 'post', 'put', 'delete'].includes(method);
-}
-
 export class ServerAdapter implements ServerInterface {
-	public readonly app: express.Application;
+	private readonly app: express.Application;
 
 	constructor() {
 		this.app = express();
+		this.app.use(this.json());
+		this.app.use(this.urlencoded({extended: true}));
 	}
 
-	addRoute(method: string, path: string, middlewares: ((req: httpReq, res: httpRes, next: httpNext) => void)[], action: (req: httpReq, res: httpRes, next: httpNext) => void): void {
-		if (isHttpMethod(method)) {
-			this.app[method](path, ...middlewares, action);
+	get(path: string, handler: Handler): void {
+		this.app.get(path, (req, res, next) => handler(req as Request, res as Response, next));
+	}
+
+	post(path: string, handler: Handler): void {
+		this.app.post(path, (req, res, next) => handler(req as Request, res as Response, next));
+	}
+
+	put(path: string, handler: Handler): void {
+		this.app.put(path, (req, res, next) => handler(req as Request, res as Response, next));
+	}
+
+	delete(path: string, handler: Handler): void {
+		this.app.delete(path, (req, res, next) => handler(req as Request, res as Response, next));
+	}
+
+	listen(port: number, callback: () => void): void {
+		this.app.listen(port, callback);
+	}
+
+	use(path: string, ...handlers: Handler[]): void {
+		this.app.use(path, ...(handlers.map(handler => (req: Request, res: Response, next: NextFunction) => handler(req as Request, res as Response, next))));
+	}
+
+	addRoute(method: HttpMethod, path: string, middlewares: Handler[], action: Handler): void {
+		if (method in this.app) {
+			(this.app[method] as any)(path, ...middlewares, action);
 		} else {
 			throw new Error(`Invalid HTTP method: ${method}`);
 		}
 	}
 
-	json() {
+	json(): any {
 		return express.json();
 	}
 
-	urlencoded(options?: { extended: boolean }) {
+	urlencoded(options: { extended: boolean }): any {
 		return express.urlencoded(options);
 	}
 
-	getApp(): httpApp {
-		return this.app as httpApp;
-	}
-
-	use(path: string, ...handlers: ((req: httpReq, res: httpRes, next: httpNext) => void)[]): void {
-		this.app.use(path, ...handlers);
-	}
-
-	get(path: string, handler: (req: httpReq, res: httpRes, next: httpNext) => void): void {
-		this.app.get(path, (req: express.Request, res: express.Response, next: express.NextFunction) => {
-			(res as httpRes).clearCookie = res.clearCookie.bind(res);
-			(res as httpRes).end = res.end.bind(res);
-			handler(req as httpReq, res as httpRes, next as httpNext);
-		});
-	}
-
-	delete(path: string, handler: (req: httpReq, res: httpRes, next: httpNext) => void): void {
-		this.app.delete(path, (req: express.Request, res: express.Response, next: express.NextFunction) => {
-			(res as httpRes).clearCookie = res.clearCookie.bind(res);
-			(res as httpRes).end = res.end.bind(res);
-			handler(req as httpReq, res as httpRes, next as httpNext);
-		});
-	}
-
-	post(path: string, handler: (req: httpReq, res: httpRes, next: httpNext) => void): void {
-		this.app.post(path, (req: express.Request, res: express.Response, next: express.NextFunction) => {
-			(res as httpRes).clearCookie = res.clearCookie.bind(res);
-			(res as httpRes).end = res.end.bind(res);
-			handler(req as httpReq, res as httpRes, next as httpNext);
-		});
-	}
-
-	put(path: string, handler: (req: httpReq, res: httpRes, next: httpNext) => void): void {
-		this.app.put(path, (req: express.Request, res: express.Response, next: express.NextFunction) => {
-			(res as httpRes).clearCookie = res.clearCookie.bind(res);
-			(res as httpRes).end = res.end.bind(res);
-			handler(req as httpReq, res as httpRes, next as httpNext);
-		});
-	}
-
-	listen(port: number, callback: () => void): void {
-		this.app.listen(port, callback);
+	getApp(): express.Application {
+		return this.app;
 	}
 }

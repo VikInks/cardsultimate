@@ -1,7 +1,7 @@
 import {Post, Route} from "../../framework/router/custom/decorator";
 import {LoginControllerInterface} from "../../domain/interfaces/controllers/login.controller.interface";
 import {LoginServiceInterface} from "../../domain/interfaces/services/login.service.interface";
-import {ServerType} from "../../domain/interfaces/adapters/request.handler.interface";
+import {Request, Response} from "../../domain/interfaces/adapters/server.interface";
 import {CustomError} from "../../framework/error/customError";
 
 
@@ -45,7 +45,7 @@ export class LoginController implements LoginControllerInterface {
 	 *         description: Something went wrong
 	 */
 	@Post("/signin", { middlewares: ['CheckUserStatus']})
-	async login(req: ServerType["Request"], res: ServerType["Response"]) {
+	async login(req: Request, res: Response) {
 		const existingCookie = req.cookies.cardsToken;
 		if (existingCookie) {
 			return res.status(200).json({message: "User already connected"});
@@ -85,7 +85,7 @@ export class LoginController implements LoginControllerInterface {
 	 *         description: Internal server error
 	 */
 	@Post("/signout")
-	async disconnect(req: ServerType["Request"], res: ServerType["Response"]) {
+	async disconnect(req: Request, res: Response) {
 		try {
 			await this.loginService.disconnect();
 			res.clearCookie('cardsToken');

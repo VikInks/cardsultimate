@@ -1,15 +1,15 @@
-import { ServerInterface } from "../../../domain/interfaces/adapters/server.interface";
+import {NextFunction, Request, Response, ServerInterface} from "../../../domain/interfaces/adapters/server.interface";
 import { ControllersInterfaces } from "../../../domain/interfaces/types/controllers.interfaces";
 import { RouteDefinitionInterface } from "../../../domain/interfaces/route/route.definition.interface";
 import { MiddlewaresInterfaces } from "../../../domain/interfaces/types/middlewares.type";
 import { generateSwagger } from "../../../doc/swagger.doc";
 import swaggerUi from "swagger-ui-express";
 import { CustomError } from "../../error/customError";
-import { NextFunction, Request, Response } from "express";
-import { httpNext, httpReq, httpRes } from "../../../domain/interfaces/adapters/request.handler.interface";
 import { MiddlewareInterface } from "../../../domain/interfaces/adapters/middleware.interface";
 import cors from "cors";
 import cookieParser from "cookie-parser";
+
+// Todo : add dependency inversion for cookieParser and cors and swaggerUi
 
 function getActionFunction(controller: any, actionName: string) {
 	if (typeof controller[actionName] === "function") {
@@ -46,7 +46,7 @@ export async function Router(
 				);
 				const wrappedMiddlewares = middlewaresInstances.map(
 					(middleware: MiddlewareInterface) => {
-						return (req: httpReq, res: httpRes, next: httpNext) => {
+						return (req: Request, res: Response, next: NextFunction) => {
 							middleware.handle(req, res, next);
 						};
 					}
