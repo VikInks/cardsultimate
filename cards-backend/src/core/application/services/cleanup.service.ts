@@ -1,8 +1,6 @@
 import cron from "node-cron";
 import {UserServiceInterface} from "../../domain/interfaces/services/user.service.interface";
 
-// Todo: add dependency inversion for node-cron
-
 export class CleanupService {
 	constructor(private readonly userService :UserServiceInterface) {}
 

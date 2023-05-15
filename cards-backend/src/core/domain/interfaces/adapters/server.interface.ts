@@ -1,6 +1,7 @@
-export interface Handler {
-	(req: Request, res: Response, next: NextFunction): void;
-}
+export type Handler = (...args: any[]) => any;
+export type NextFunction = any;
+export type Request = any;
+export type Response = any;
 
 export interface ServerInterface {
 	get(path: string, handler: Handler): void;
@@ -14,26 +15,3 @@ export interface ServerInterface {
 	urlencoded(options: { extended: boolean }): Handler;
 	getApp(): any;
 }
-
-export type Request = {
-	headers?: any;
-	body: any;
-	params: any;
-	query: any;
-	cookies: any;
-	path: string;
-	user?: any;
-};
-
-export type Response = {
-	status(code: number): Response;
-	send(body: any): void;
-	json(param: any): void;
-	redirect(path: string): void;
-	header(location: string, s: string): any;
-	cookie(name: string, value: string, options: any): any;
-	clearCookie(name: string, options?: any): any;
-	end(): void;
-};
-
-export type NextFunction = (err?: any) => void;

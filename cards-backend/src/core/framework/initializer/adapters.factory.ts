@@ -7,8 +7,8 @@ import { DbAdapter } from "../../infrastructure/adapters/db.adapter";
 import {Document} from "bson";
 import {Collection} from "mongodb";
 import {TokenAdapter} from "../../infrastructure/adapters/token.adapter";
-
-// Todo: add dependency inversion for Document and Collection
+import {BiscuitAdapter} from "../../infrastructure/adapters/biscuit.adapter";
+import {DocUiAdapter} from "../../infrastructure/adapters/docui.adapter";
 
 type AdapterClassMap<T extends Document> = {
 	bcrypt: HasherAdapter,
@@ -18,6 +18,8 @@ type AdapterClassMap<T extends Document> = {
 	uuid: UuidAdapter,
 	mongo: DbAdapter<T>,
 	token: TokenAdapter,
+	biscuit: BiscuitAdapter,
+	docUi: DocUiAdapter,
 };
 
 type AdapterConstructorMap<T extends Document> = {
@@ -32,6 +34,8 @@ const adapterClasses: AdapterConstructorMap<Document> = {
 	uuid: UuidAdapter,
 	mongo: DbAdapter,
 	token: TokenAdapter,
+	biscuit: BiscuitAdapter,
+	docUi: DocUiAdapter,
 };
 
 type AdapterInstanceMap<T> = {

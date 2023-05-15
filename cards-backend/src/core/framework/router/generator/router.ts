@@ -1,15 +1,13 @@
-import {NextFunction, Request, Response, ServerInterface} from "../../../domain/interfaces/adapters/server.interface";
+import { NextFunction, Request, Response, ServerInterface } from "../../../domain/interfaces/adapters/server.interface";
 import { ControllersInterfaces } from "../../../domain/interfaces/types/controllers.interfaces";
 import { RouteDefinitionInterface } from "../../../domain/interfaces/route/route.definition.interface";
 import { MiddlewaresInterfaces } from "../../../domain/interfaces/types/middlewares.type";
-import { generateSwagger } from "../../../doc/swagger.doc";
-import swaggerUi from "swagger-ui-express";
+import { generateDoc } from "../../../doc/swagger.doc";
 import { CustomError } from "../../error/customError";
 import { MiddlewareInterface } from "../../../domain/interfaces/adapters/middleware.interface";
 import cors from "cors";
-import cookieParser from "cookie-parser";
-
-// Todo : add dependency inversion for cookieParser and cors and swaggerUi
+import { BiscuitInterface } from "../../../domain/interfaces/adapters/biscuit.interface";
+import { DocUiInterface } from "../../../domain/interfaces/adapters/docUi.Interface";
 
 function getActionFunction(controller: any, actionName: string) {
 	if (typeof controller[actionName] === "function") {
@@ -19,20 +17,22 @@ function getActionFunction(controller: any, actionName: string) {
 }
 
 export async function Router(
-	expressAdapter: ServerInterface,
+	serverAdapter: ServerInterface,
+	biscuitAdapter: BiscuitInterface,
+	docUiAdapter: DocUiInterface,
 	middlewares: MiddlewaresInterfaces,
 	controllerInstances: ControllersInterfaces
 ) {
-	const app = expressAdapter.getApp();
-	app.use(expressAdapter.json());
-	app.use(expressAdapter.urlencoded({ extended: false }));
+	const app = serverAdapter.getApp();
+	app.use(serverAdapter.json());
+	app.use(serverAdapter.urlencoded({ extended: false }));
 	app.use(cors());
 
-	app.use(cookieParser());
+	app.use(biscuitAdapter.biscuitParser());
 
-	const swaggerSpec = await generateSwagger();
-	app.use("/swagger-admin/docs", swaggerUi.serve);
-	app.get("/swagger-admin/docs", swaggerUi.setup(swaggerSpec));
+	const swaggerSpec = await generateDoc();
+	app.use("/swagger-admin/docs", docUiAdapter.docUiServe);
+	app.get("/swagger-admin/docs", docUiAdapter.docUiSetup(swaggerSpec));
 
 	for (const controllerKey in controllerInstances) {
 		const controller = controllerInstances[controllerKey];
@@ -53,7 +53,7 @@ export async function Router(
 				);
 				const actionFunction = getActionFunction(controller, route.action);
 				if (actionFunction) {
-					expressAdapter.addRoute(
+					serverAdapter.addRoute(
 						route.method,
 						routePath + route.path,
 						wrappedMiddlewares,

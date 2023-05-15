@@ -13,19 +13,19 @@ export class ServerAdapter implements ServerInterface {
 	}
 
 	get(path: string, handler: Handler): void {
-		this.app.get(path, (req, res, next) => handler(req as Request, res as Response, next));
+		this.app.get(path, (req, res, next) => handler(req as Request, res as Response, next as NextFunction));
 	}
 
 	post(path: string, handler: Handler): void {
-		this.app.post(path, (req, res, next) => handler(req as Request, res as Response, next));
+		this.app.post(path, (req, res, next) => handler(req as Request, res as Response, next as NextFunction));
 	}
 
 	put(path: string, handler: Handler): void {
-		this.app.put(path, (req, res, next) => handler(req as Request, res as Response, next));
+		this.app.put(path, (req, res, next) => handler(req as Request, res as Response, next as NextFunction));
 	}
 
 	delete(path: string, handler: Handler): void {
-		this.app.delete(path, (req, res, next) => handler(req as Request, res as Response, next));
+		this.app.delete(path, (req, res, next) => handler(req as Request, res as Response, next as NextFunction));
 	}
 
 	listen(port: number, callback: () => void): void {
@@ -33,7 +33,7 @@ export class ServerAdapter implements ServerInterface {
 	}
 
 	use(path: string, ...handlers: Handler[]): void {
-		this.app.use(path, ...(handlers.map(handler => (req: Request, res: Response, next: NextFunction) => handler(req as Request, res as Response, next))));
+		this.app.use(path, ...(handlers.map(handler => (req: Request, res: Response, next: NextFunction) => handler(req, res, next))));
 	}
 
 	addRoute(method: HttpMethod, path: string, middlewares: Handler[], action: Handler): void {

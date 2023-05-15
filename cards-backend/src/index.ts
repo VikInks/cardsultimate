@@ -18,10 +18,12 @@ InitDatabase().then(async (db) => {
 	// Initialize the adapters
 	const bcryptAdapter = adapterFactory.bcrypt();
 	const emailAdapter = adapterFactory.email(process.env.NODE_ENV === 'production' ? 'production' : 'development');
-	const expressAdapter = adapterFactory.express();
+	const serverAdapter = adapterFactory.express();
 	const tokenAdapter = adapterFactory.token();
 	const passportAdapter = adapterFactory.passport(tokenAdapter);
 	const uuidAdapter = adapterFactory.uuid();
+	const biscuitAdapter = adapterFactory.biscuit();
+	const docUiAdapter = adapterFactory.docUi();
 
 	// Initialize the database user adapter for user repository
 	const mongUserAdapter = createTypedMongoAdapter<UserEntitiesInterface>({
@@ -60,9 +62,9 @@ InitDatabase().then(async (db) => {
 	cleanupService.removeUnconfirmedUsers();
 
 	// Initialize the router
-	Router(expressAdapter, middlewares, [loginController, userController]).then(() => console.log("Routes configured"));
+	Router(serverAdapter, biscuitAdapter, docUiAdapter, middlewares, [loginController, userController]).then(() => console.log("Routes configured"));
 
-	http.createServer(expressAdapter.getApp()).listen(8000, () => {
+	http.createServer(serverAdapter.getApp()).listen(8000, () => {
 		console.log('Server started on port 8000');
 	});
 });

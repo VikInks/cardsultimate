@@ -3,9 +3,7 @@ import { generateSchemasJson } from './generate.schemas.doc';
 import * as fs from 'fs';
 import * as path from 'path';
 
-// Todo: add depency inversion for swaggerJSDoc
-
-export const generateSwagger = async () => {
+export const generateDoc = async () => {
 	await generateSchemasJson();
 
 	const swaggerJsonPath = path.join(__dirname, 'swagger', 'swagger.json');
