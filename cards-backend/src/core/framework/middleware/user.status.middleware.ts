@@ -1,12 +1,12 @@
 import {UserServiceInterface} from "../../domain/interfaces/services/user.service.interface";
 import {CustomError} from "../error/customError";
 import {MiddlewareInterface} from "../../domain/interfaces/adapters/middleware.interface";
-import {NextFunction, Request, Response} from "../../domain/interfaces/adapters/server.interface";
+import {NextFunction, HttpRequest, HttpResponse} from "../../domain/interfaces/adapters/server.interface";
 
 export function CheckUserStatusMiddleware(userService: UserServiceInterface): MiddlewareInterface{
 
 	return {
-		handle: async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+		handle: async (req: HttpRequest, res: HttpResponse, next: NextFunction): Promise<void> => {
 			if (!req.user) {
 				throw new CustomError(401, 'Unauthorized');
 			}

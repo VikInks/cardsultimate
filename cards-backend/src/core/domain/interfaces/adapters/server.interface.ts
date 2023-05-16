@@ -1,17 +1,40 @@
-export type Handler = (...args: any[]) => any;
-export type NextFunction = any;
-export type Request = any;
-export type Response = any;
+export type HttpMethod = 'get' | 'post' | 'put' | 'delete';
 
-export interface ServerInterface {
-	get(path: string, handler: Handler): void;
-	post(path: string, handler: Handler): void;
-	put(path: string, handler: Handler): void;
-	delete(path: string, handler: Handler): void;
-	listen(port: number, callback: () => void): void;
-	use(path: string, ...handlers: Handler[]): void;
-	addRoute(method: string, path: string, middlewares: Handler[], action: Handler): void;
-	json(): Handler;
-	urlencoded(options: { extended: boolean }): Handler;
+export type Middleware = (req: HttpRequest, res: HttpResponse, next: NextFunction) => void;
+
+export interface HttpServer {
+	handleRequest(method: HttpMethod, path: string, middlewares: HttpHandler[], handler: HttpHandler): void;
+	start(port: number, callback: () => void): void;
 	getApp(): any;
+	json(): any;
+	urlencoded(options: { extended: boolean }): any;
 }
+
+export interface HttpRequest {
+	method: HttpMethod;
+	url: string;
+	headers: { [name: string]: string | string[] | undefined };
+	body: any;
+	params: { [name: string]: string };
+	query: Record<string, any>;
+	cookie: { [name: string]: string };
+	user?: any;
+}
+
+export interface HttpResponse {
+	statusCode: number;
+	setHeader(name: string, value: string): void;
+	getHeader(name: string): string | number | string[] | undefined;
+	removeHeader(name: string): void;
+	write(chunk: any, encoding?: BufferEncoding, callback?: (error: Error | null | undefined) => void): boolean;
+	end(callback?: () => void): void;
+	status(statusCode: number): this;
+	clearCookie(name: string, options?: any): this;
+	cookie(name: string, value: string, options?: any): this;
+	json(data: any): this;
+	send(data: any): this;
+}
+
+export type HttpHandler = (req: HttpRequest, res: HttpResponse, next: NextFunction) => void;
+
+export type NextFunction = (err?: any) => void;

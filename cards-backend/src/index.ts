@@ -18,7 +18,7 @@ InitDatabase().then(async (db) => {
 	// Initialize the adapters
 	const bcryptAdapter = adapterFactory.bcrypt();
 	const emailAdapter = adapterFactory.email(process.env.NODE_ENV === 'production' ? 'production' : 'development');
-	const serverAdapter = adapterFactory.express();
+	const serverAdapter = adapterFactory.server();
 	const tokenAdapter = adapterFactory.token();
 	const passportAdapter = adapterFactory.passport(tokenAdapter);
 	const uuidAdapter = adapterFactory.uuid();

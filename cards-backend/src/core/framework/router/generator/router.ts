@@ -1,4 +1,3 @@
-import { NextFunction, Request, Response, ServerInterface } from "../../../domain/interfaces/adapters/server.interface";
 import { ControllersInterfaces } from "../../../domain/interfaces/types/controllers.interfaces";
 import { RouteDefinitionInterface } from "../../../domain/interfaces/route/route.definition.interface";
 import { MiddlewaresInterfaces } from "../../../domain/interfaces/types/middlewares.type";
@@ -8,6 +7,13 @@ import { MiddlewareInterface } from "../../../domain/interfaces/adapters/middlew
 import cors from "cors";
 import { BiscuitInterface } from "../../../domain/interfaces/adapters/biscuit.interface";
 import { DocUiInterface } from "../../../domain/interfaces/adapters/docUi.Interface";
+import {
+	HttpMethod,
+	HttpRequest,
+	HttpResponse,
+	HttpServer,
+	NextFunction
+} from "../../../domain/interfaces/adapters/server.interface";
 
 function getActionFunction(controller: any, actionName: string) {
 	if (typeof controller[actionName] === "function") {
@@ -17,7 +23,7 @@ function getActionFunction(controller: any, actionName: string) {
 }
 
 export async function Router(
-	serverAdapter: ServerInterface,
+	serverAdapter: HttpServer,
 	biscuitAdapter: BiscuitInterface,
 	docUiAdapter: DocUiInterface,
 	middlewares: MiddlewaresInterfaces,
@@ -46,15 +52,15 @@ export async function Router(
 				);
 				const wrappedMiddlewares = middlewaresInstances.map(
 					(middleware: MiddlewareInterface) => {
-						return (req: Request, res: Response, next: NextFunction) => {
+						return (req: HttpRequest, res: HttpResponse, next: NextFunction) => {
 							middleware.handle(req, res, next);
 						};
 					}
 				);
 				const actionFunction = getActionFunction(controller, route.action);
 				if (actionFunction) {
-					serverAdapter.addRoute(
-						route.method,
+					serverAdapter.handleRequest(
+						route.method as HttpMethod,
 						routePath + route.path,
 						wrappedMiddlewares,
 						actionFunction
@@ -71,7 +77,7 @@ export async function Router(
 	}
 
 	// next is required for express to recognize this as an error handler
-	app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
+	app.use((err: Error, req: HttpRequest, res: HttpResponse, next: NextFunction) => {
 		if (err instanceof CustomError) {
 			res.status(err.statusCode).json({ message: err.message });
 		} else {

@@ -13,7 +13,7 @@ import {DocUiAdapter} from "../../infrastructure/adapters/docui.adapter";
 type AdapterClassMap<T extends Document> = {
 	bcrypt: HasherAdapter,
 	email: EmailAdapter,
-	express: ServerAdapter,
+	server: ServerAdapter,
 	passport: AuthorizeAdapter,
 	uuid: UuidAdapter,
 	mongo: DbAdapter<T>,
@@ -29,7 +29,7 @@ type AdapterConstructorMap<T extends Document> = {
 const adapterClasses: AdapterConstructorMap<Document> = {
 	bcrypt: HasherAdapter,
 	email: EmailAdapter,
-	express: ServerAdapter,
+	server: ServerAdapter,
 	passport: AuthorizeAdapter,
 	uuid: UuidAdapter,
 	mongo: DbAdapter,
