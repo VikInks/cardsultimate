@@ -5,7 +5,6 @@ import {serviceFactory} from "./core/framework/initializer/services.factory";
 import {controllerFactory} from "./core/framework/initializer/controllers.factory";
 import {initRepositories} from "./core/framework/initializer/repositories.factory";
 import {UserEntitiesInterface} from "./core/domain/endpoints/user.entities.interface";
-import * as http from "http";
 import {createSuperUserIfNotExists} from "./dev/createsuperuser";
 import { Router } from './core/framework/router/generator/router';
 import {middlewareFactory} from "./core/framework/initializer/middleware.factory";
@@ -64,7 +63,7 @@ InitDatabase().then(async (db) => {
 	// Initialize the router
 	Router(serverAdapter, biscuitAdapter, docUiAdapter, middlewares, [loginController, userController]).then(() => console.log("Routes configured"));
 
-	http.createServer(serverAdapter.getApp()).listen(8000, () => {
+	serverAdapter.start(8000, () => {
 		console.log('Server started on port 8000');
 	});
 });
