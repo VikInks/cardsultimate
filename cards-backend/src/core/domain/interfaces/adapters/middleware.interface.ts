@@ -1,7 +1,8 @@
-import {NextFunction, Request, Response} from "./server.interface";
+import {HttpRequest, HttpResponse, NextFunction} from "./server.interface";
+
 
 export interface MiddlewareInterface {
-	handle(req: Request, res: Response, next: NextFunction): void;
+	handle(req: HttpRequest, res: HttpResponse, next: NextFunction): void;
 }
 
 

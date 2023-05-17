@@ -1,6 +1,6 @@
-import {Request, Response, NextFunction} from "../adapters/server.interface";
+import {HttpRequest, HttpResponse, NextFunction} from "../adapters/server.interface";
 
 export interface LoginControllerInterface {
-	login(req: Request, res: Response, next: NextFunction): Promise<any>;
-	disconnect(req: Request, res: Response, next: NextFunction): Promise<any>;
+	login(req: HttpRequest, res: HttpResponse, next: NextFunction): Promise<any>;
+	disconnect(req: HttpRequest, res: HttpResponse, next: NextFunction): Promise<any>;
 }
