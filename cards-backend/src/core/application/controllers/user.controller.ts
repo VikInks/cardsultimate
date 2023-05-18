@@ -5,8 +5,9 @@ import {UserServiceInterface} from '../../domain/interfaces/services/user.servic
 import {LoginServiceInterface} from '../../domain/interfaces/services/login.service.interface';
 import {IdInterface} from '../../domain/interfaces/adapters/id.interface';
 import {EmailServiceInterface} from '../../domain/interfaces/services/email.service.interface';
-import {ServerType} from '../../domain/interfaces/adapters/request.handler.interface';
 import {CustomError} from '../../framework/error/customError';
+import {HttpRequest, HttpResponse, NextFunction} from "../../domain/interfaces/adapters/server.interface";
+import {UserEntitiesInterface} from "../../domain/endpoints/user.entities.interface";
 
 @Route('/user')
 export class UserController implements UserControllerInterface {
@@ -17,7 +18,8 @@ export class UserController implements UserControllerInterface {
 		private readonly loginService: LoginServiceInterface,
 		private readonly idService: IdInterface,
 		private readonly emailService: EmailServiceInterface
-	) {}
+	) {
+	}
 
 	/**
 	 * @swagger
@@ -44,9 +46,10 @@ export class UserController implements UserControllerInterface {
 	 *         description: Something went wrong
 	 */
 	@Post('/register')
-	async register(req: ServerType['Request'], res: ServerType['Response'], next: ServerType['NextFunction']): Promise<void> {
+	async register(req: HttpRequest, res: HttpResponse, next: NextFunction): Promise<void> {
+		const body: UserEntitiesInterface = req.body;
 		try {
-			await this.userService.create(req.body).then(async (user) => {
+			await this.userService.create(body).then(async (user) => {
 				await this.emailService.sendConfirmationEmail(user.email, user.confirmationToken as string).then(() => {
 					res.status(201).json("User created successfully");
 				}).catch((err) => {
@@ -95,7 +98,7 @@ export class UserController implements UserControllerInterface {
 	 *         description: Something went wrong
 	 */
 	@Get('/confirm/:token')
-	async confirmAccount(req: ServerType['Request'], res: ServerType['Response'], next: ServerType['NextFunction']): Promise<void> {
+	async confirmAccount(req: HttpRequest, res: HttpResponse, next: NextFunction): Promise<void> {
 		try {
 			await this.userService.confirmUser(req.params.token).then(() => {
 				return res.status(200).json("User confirmed");
@@ -133,7 +136,7 @@ export class UserController implements UserControllerInterface {
 	 *         description: Something went wrong
 	 */
 	@Post('/find-by-email/:email', {middlewares: ['isAuthenticated', 'isSuperUser', 'isAdmin']})
-	async findByEmail(req: ServerType['Request'], res: ServerType['Response'], next: ServerType['NextFunction']): Promise<void> {
+	async findByEmail(req: HttpRequest, res: HttpResponse, next: NextFunction): Promise<void> {
 		try {
 			await this.userService.findByEmail(req.params.email).then((user) => {
 				return res.status(200).json(user);
@@ -173,7 +176,7 @@ export class UserController implements UserControllerInterface {
 	 *         description: Something went wrong
 	 */
 	@Post('/find-by-username/:username', {middlewares: ['isAuthenticated']})
-	async findByUsername(req: ServerType['Request'], res: ServerType['Response'], next: ServerType['NextFunction']): Promise<void> {
+	async findByUsername(req: HttpRequest, res: HttpResponse, next: NextFunction): Promise<void> {
 		try {
 			await this.userService.findByUsername(req.params.username).then((user) => {
 				return res.status(200).json(user?.username);
@@ -214,15 +217,18 @@ export class UserController implements UserControllerInterface {
 	 *         description: Something went wrong
 	 */
 	@Post('/update', {middlewares: ['isAuthenticated']})
-	async update(req: ServerType['Request'], res: ServerType['Response'], next: ServerType['NextFunction']): Promise<void> {
-		try {
-			await this.userService.update(req.body, req.user).then(() => {
-				res.status(200).json('User updated');
-			}).catch((error) => {
-				throw new CustomError(500, error.message);
-			});
-		} catch (error) {
-			throw new CustomError(500, "Something went wrong")
+	async update(req: HttpRequest, res: HttpResponse, next: NextFunction): Promise<void> {
+		const user = req.user;
+		if (user?.email) {
+			try {
+				await this.userService.update(req.body, user).then(() => {
+					res.status(200).json('User updated');
+				}).catch((error) => {
+					throw new CustomError(500, error.message);
+				});
+			} catch (error) {
+				throw new CustomError(500, "Something went wrong")
+			}
 		}
 	}
 
@@ -252,18 +258,21 @@ export class UserController implements UserControllerInterface {
 	 *         description: Something went wrong
 	 */
 	@Delete('/archive', {middlewares: ['isAuthenticated']})
-	async handleUserArchive(req: ServerType['Request'], res: ServerType['Response'], next: ServerType['NextFunction']): Promise<void> {
-		const userEmail = req.body.email;
-		const userToArchive = await this.userService.findByEmail(userEmail);
-		if (!userToArchive) throw new CustomError(404, 'User not found');
-		try {
-			await this.userService.update(userToArchive, req.user, false, true).then((user) => {
-				res.status(200).json({message: user.archive ? 'User archived' : 'User unarchived'});
-			}).catch((error) => {
-				throw new CustomError(500, `User not found ${error}`);
-			});
-		} catch (error) {
-			throw new CustomError(500, "Something went wrong")
+	async handleUserArchive(req: HttpRequest, res: HttpResponse, next: NextFunction): Promise<void> {
+		const user = req.user;
+		if (user?.email) {
+			const userEmail = req.body.email;
+			const userToArchive = await this.userService.findByEmail(userEmail);
+			if (!userToArchive) throw new CustomError(404, 'User not found');
+			try {
+				await this.userService.update(userToArchive, user, false, true).then((user) => {
+					res.status(200).json({message: user.archive ? 'User archived' : 'User unarchived'});
+				}).catch((error) => {
+					throw new CustomError(500, `User not found ${error}`);
+				});
+			} catch (error) {
+				throw new CustomError(500, "Something went wrong")
+			}
 		}
 	}
 
@@ -293,18 +302,21 @@ export class UserController implements UserControllerInterface {
 	 *         description: Something went wrong
 	 */
 	@Post('/ban', {middlewares: ['isAuthenticated', 'isSuperUser', 'isAdmin'],})
-	async handleUserBan(req: ServerType['Request'], res: ServerType['Response'], next: ServerType['NextFunction']): Promise<void> {
-		const userEmail = req.body.email;
-		const userToBan = await this.userService.findByEmail(userEmail);
-		if (!userToBan) throw new CustomError(404, 'User not found');
-		try {
-			await this.userService.update(userToBan, req.user, true, false).then((user) => {
-				res.status(200).json({message: user.banned ? 'User banned' : 'User unbanned'});
-			}).catch((error) => {
-				throw new CustomError(500, `Something went wrong ${error}`);
-			});
-		} catch (error) {
-			throw new CustomError(500, "Something went wrong")
+	async handleUserBan(req: HttpRequest, res: HttpResponse, next: NextFunction): Promise<void> {
+		const user = req.user;
+		if (user?.email) {
+			const userEmail = req.body.email;
+			const userToBan = await this.userService.findByEmail(userEmail);
+			if (!userToBan) throw new CustomError(404, 'User not found');
+			try {
+				await this.userService.update(userToBan, user, true, false).then((user) => {
+					res.status(200).json({message: user.banned ? 'User banned' : 'User unbanned'});
+				}).catch((error) => {
+					throw new CustomError(500, `Something went wrong ${error}`);
+				});
+			} catch (error) {
+				throw new CustomError(500, "Something went wrong")
+			}
 		}
 	}
 }
