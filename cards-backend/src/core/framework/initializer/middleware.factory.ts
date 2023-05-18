@@ -5,12 +5,14 @@ import { SuperuserMiddleware } from "../middleware/superuser.middleware";
 import {AuthMiddleware} from "../middleware/auth.middleware";
 import {CheckUserStatusMiddleware} from "../middleware/user.status.middleware";
 import {UserServiceInterface} from "../../domain/interfaces/services/user.service.interface";
+import {RateLimitMiddleware} from "../middleware/rateLimite.middleware";
 
 export function middlewareFactory(authService: AuthorizationServiceInterface, userService: UserServiceInterface): {
 	isSuperUser: () => MiddlewareInterface;
 	isAdmin: () => MiddlewareInterface;
 	isAuthenticated: () => MiddlewareInterface;
 	CheckUserStatus: () => MiddlewareInterface;
+	rateLimit: () => MiddlewareInterface;
 } {
 	return {
 		isAdmin: (): MiddlewareInterface => {
@@ -24,6 +26,9 @@ export function middlewareFactory(authService: AuthorizationServiceInterface, us
 		},
 		CheckUserStatus: (): MiddlewareInterface => {
 			return CheckUserStatusMiddleware(userService);
+		},
+		rateLimit: (): MiddlewareInterface => {
+			return RateLimitMiddleware(userService);
 		}
 	};
 }

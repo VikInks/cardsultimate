@@ -1,20 +1,42 @@
-import {httpReq, httpRes, httpNext, httpApp} from './request.handler.interface';
+import {UserEntitiesInterface} from "../../endpoints/user.entities.interface";
 
-export interface ServerInterface {
-	getApp(): httpApp;
-	get(path: string, handler: (req: httpReq, res: httpRes, next: httpNext) => void): void;
-	post(path: string, handler: (req: httpReq, res: httpRes, next: httpNext) => void): void;
-	put(path: string, handler: (req: httpReq, res: httpRes, next: httpNext) => void): void;
-	delete(path: string, handler: (req: httpReq, res: httpRes, next: httpNext) => void): void;
-	listen(port: number, callback: () => void): void;
-	use(path: string, ...handlers: ((req: httpReq, res: httpRes, next: httpNext) => void)[]): void;
-	readonly json: () => void;
-	readonly urlencoded: (options?: {extended: boolean}) => void;
-	[method: string]: any;
-	addRoute(
-		method: string,
-		path: string,
-		middlewares: ((req: httpReq, res: httpRes, next: httpNext) => void)[],
-		action: (req: httpReq, res: httpRes, next: httpNext) => void
-	): void;
+export type HttpMethod = 'get' | 'post' | 'put' | 'delete';
+
+export type Middleware = (req: HttpRequest, res: HttpResponse, next: NextFunction) => void;
+
+export interface HttpServer {
+	handleRequest(method: HttpMethod, path: string, middlewares: HttpHandler[], handler: HttpHandler): void;
+	start(port: number, callback: () => void): void;
+	getApp(): any;
+	json(): any;
+	urlencoded(options: { extended: boolean }): any;
 }
+
+export interface HttpRequest {
+	method: HttpMethod;
+	url: string;
+	headers: { [name: string]: string | string[] | undefined };
+	body: any;
+	params: { [name: string]: string };
+	query: Record<string, any>;
+	cookie: { [name: string]: string };
+	user?: UserEntitiesInterface;
+}
+
+export interface HttpResponse {
+	statusCode: number;
+	setHeader(name: string, value: string): void;
+	getHeader(name: string): string | number | string[] | undefined;
+	removeHeader(name: string): void;
+	write(chunk: any, encoding?: BufferEncoding, callback?: (error: Error | null | undefined) => void): boolean;
+	end(callback?: () => void): void;
+	status(statusCode: number): this;
+	clearCookie(name: string, options?: any): this;
+	cookie(name: string, value: string, options?: any): this;
+	json(data: any): this;
+	send(data: any): this;
+}
+
+export type HttpHandler = (req: HttpRequest, res: HttpResponse, next: NextFunction) => void;
+
+export type NextFunction = (err?: any) => void;

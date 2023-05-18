@@ -19,6 +19,8 @@ export class LoginService implements LoginServiceInterface {
 		if (!isValidated) throw new Error("User not validated");
 		const isPasswordValid = await this.bcryptAdapter.compare(password, user.password);
 		if (!isPasswordValid) throw new Error("Invalid credentials");
+		if (user.banned) throw new Error("User is banned");
+		if (user.archive) throw new Error("User is archived");
 		const payload = {email: email, username: user.username, role: user.role};
 		const token = this.jwtService.sign(payload);
 		console.log(token);
