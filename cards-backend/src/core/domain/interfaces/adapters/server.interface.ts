@@ -1,3 +1,5 @@
+import {UserEntitiesInterface} from "../../endpoints/user.entities.interface";
+
 export type HttpMethod = 'get' | 'post' | 'put' | 'delete';
 
 export type Middleware = (req: HttpRequest, res: HttpResponse, next: NextFunction) => void;
@@ -18,7 +20,7 @@ export interface HttpRequest {
 	params: { [name: string]: string };
 	query: Record<string, any>;
 	cookie: { [name: string]: string };
-	user?: any;
+	user?: UserEntitiesInterface;
 }
 
 export interface HttpResponse {

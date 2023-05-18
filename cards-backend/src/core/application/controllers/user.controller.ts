@@ -218,10 +218,10 @@ export class UserController implements UserControllerInterface {
 	 */
 	@Post('/update', {middlewares: ['isAuthenticated']})
 	async update(req: HttpRequest, res: HttpResponse, next: NextFunction): Promise<void> {
-		const user = req.user as UserEntitiesInterface;
-		if (user.email) {
+		const user = req.user;
+		if (user?.email) {
 			try {
-				await this.userService.update(req.body, req.user).then(() => {
+				await this.userService.update(req.body, user).then(() => {
 					res.status(200).json('User updated');
 				}).catch((error) => {
 					throw new CustomError(500, error.message);
@@ -259,13 +259,13 @@ export class UserController implements UserControllerInterface {
 	 */
 	@Delete('/archive', {middlewares: ['isAuthenticated']})
 	async handleUserArchive(req: HttpRequest, res: HttpResponse, next: NextFunction): Promise<void> {
-		const user = req.user as UserEntitiesInterface;
-		if (user.email) {
+		const user = req.user;
+		if (user?.email) {
 			const userEmail = req.body.email;
 			const userToArchive = await this.userService.findByEmail(userEmail);
 			if (!userToArchive) throw new CustomError(404, 'User not found');
 			try {
-				await this.userService.update(userToArchive, req.user, false, true).then((user) => {
+				await this.userService.update(userToArchive, user, false, true).then((user) => {
 					res.status(200).json({message: user.archive ? 'User archived' : 'User unarchived'});
 				}).catch((error) => {
 					throw new CustomError(500, `User not found ${error}`);
@@ -303,13 +303,13 @@ export class UserController implements UserControllerInterface {
 	 */
 	@Post('/ban', {middlewares: ['isAuthenticated', 'isSuperUser', 'isAdmin'],})
 	async handleUserBan(req: HttpRequest, res: HttpResponse, next: NextFunction): Promise<void> {
-		const user = req.user as UserEntitiesInterface;
-		if (user.email) {
+		const user = req.user;
+		if (user?.email) {
 			const userEmail = req.body.email;
 			const userToBan = await this.userService.findByEmail(userEmail);
 			if (!userToBan) throw new CustomError(404, 'User not found');
 			try {
-				await this.userService.update(userToBan, req.user, true, false).then((user) => {
+				await this.userService.update(userToBan, user, true, false).then((user) => {
 					res.status(200).json({message: user.banned ? 'User banned' : 'User unbanned'});
 				}).catch((error) => {
 					throw new CustomError(500, `Something went wrong ${error}`);

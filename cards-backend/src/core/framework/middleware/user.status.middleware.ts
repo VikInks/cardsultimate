@@ -7,10 +7,9 @@ export function CheckUserStatusMiddleware(userService: UserServiceInterface): Mi
 
 	return {
 		handle: async (req: HttpRequest, res: HttpResponse, next: NextFunction): Promise<void> => {
-			if (!req.user) {
-				throw new CustomError(401, 'Unauthorized');
+			if(!req.user?.email) {
+				throw new CustomError(401, 'Access denied. No token provided.');
 			}
-
 			const userEmail = req.user.email;
 			const user = await userService.findByEmail(userEmail);
 

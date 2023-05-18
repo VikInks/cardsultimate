@@ -6,6 +6,7 @@ import {
 	HttpResponse,
 	HttpServer
 } from "../../domain/interfaces/adapters/server.interface";
+import {UserEntitiesInterface} from "../../domain/endpoints/user.entities.interface";
 
 type HttpMethod = 'get' | 'post' | 'put' | 'delete';
 
@@ -52,7 +53,7 @@ export class ServerAdapter implements HttpServer {
 			body: req.body,
 			params: req.params,
 			query: req.query,
-			user: req.user
+			user: req.user as UserEntitiesInterface
 		};
 	}
 
