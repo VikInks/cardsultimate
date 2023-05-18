@@ -1,0 +1,296 @@
+{
+  "card_types": {
+    "permanent": {
+      "creature": {
+        "description": "Les créatures sont des permanents qui peuvent attaquer et bloquer. Elles ont une force et une endurance indiquées dans le coin inférieur droit."
+      },
+      "artifact": {
+        "equipment": {
+          "description": "Les équipements sont des artefacts qui peuvent être attachés à des créatures pour leur donner des bonus ou des capacités supplémentaires."
+        },
+        "vehicle": {
+          "description": "Les véhicules sont des artefacts qui peuvent devenir des créatures temporaires lorsqu'ils sont activés par des créatures qui se 'conduisent'."
+        }
+      },
+      "enchantment": {
+        "aura": {
+          "description": "Les auras sont des enchantements qui sont attachés à des permanents ou des joueurs et modifient leurs caractéristiques ou leurs capacités."
+        },
+        "global": {
+          "description": "Les enchantements globaux sont des permanents qui ont des effets continus ou déclenchés qui affectent le jeu en général."
+        },
+        "saga": {
+          "description": "Les sagas sont des enchantements qui racontent une histoire en plusieurs étapes. Les capacités se déclenchent à mesure que des marqueurs lore sont ajoutés à la saga."
+        }
+      },
+      "land": {
+        "basic": {
+          "description": "Les terrains de base sont les terrains les plus simples, qui produisent une seule couleur de mana. Il existe cinq types de terrains de base : Plaine, Île, Marécage, Montagne et Forêt."
+        },
+        "non_basic": {
+          "description": "Les terrains non basiques sont des terrains qui ont des capacités ou des restrictions supplémentaires par rapport aux terrains de base, ou qui produisent plusieurs couleurs de mana."
+        }
+      },
+      "planeswalker": {
+        "description": "Les planeswalkers sont des permanents puissants qui représentent des alliés magiques avec des capacités activées. Les planeswalkers ont des points de loyauté et peuvent être attaqués."
+      }
+    },
+    "non_permanent": {
+      "instant": {
+        "description": "Les éphémères sont des sorts qui peuvent être lancés à tout moment où vous pourriez lancer un sort avec le mot-clé flash. Ils ont des effets temporaires ou uniques."
+      },
+      "sorcery": {
+        "description": "Les rituels sont des sorts qui ne peuvent être lancés que pendant votre phase principale, lorsque la pile est vide. Ils ont des effets temporaires ou uniques."
+      }
+    }
+  },
+  "supertypes": [
+    "basic",
+    "legendary",
+    "snow",
+    "world"
+  ],
+  "subtypes": {
+    "creature_types": [
+      "angel",
+      "beast",
+      "dragon",
+      "elf",
+      "goblin",
+      "human",
+      "merfolk",
+      "vampire",
+      "zombie",
+      "wizard"
+    ],
+    "land_types": [
+      "forest",
+      "island",
+      "mountain",
+      "plains",
+      "swamp"
+    ],
+    "planeswalker_types": [
+      "ajani",
+      "chandra",
+      "garruk",
+      "jace",
+      "liliana",
+      "nissa",
+      "sorin",
+      "teferi"
+    ],
+    "enchantment_types": [
+      "cartouche",
+      "curse",
+      "shrine"
+    ],
+    "artifact_types": [
+      "clue",
+      "contraption",
+      "food",
+      "gold",
+      "treasure"
+    ],
+    "spell_types": [
+      "arcane",
+      "trap"
+    ]
+  },
+  "mechanics": {
+    "cascade": "When you cast a spell with cascade, reveal cards from your library until you reveal a nonland card with lesser mana value. You may cast it without paying its mana cost.",
+    "level_up": "Allows creatures to level up and gain new abilities.",
+    "morph": "Allows a creature to be cast face down for a generic cost and later turned face up for its morph cost.",
+    "retrace": "Allows you to cast a card from your graveyard by discarding a land card in addition to paying its other costs.",
+    "undying": "When a creature with undying dies, if it had no +1/+1 counters on it, return it to the battlefield with a +1/+1 counter.",
+    "persist": "When a creature with persist dies, if it had no -1/-1 counters on it, return it to the battlefield with a -1/-1 counter.",
+    "bestow": "Allows you to cast an enchantment creature for its bestow cost, attaching it to a creature as an Aura.",
+    "extort": "Whenever you cast a spell, you may pay an additional mana to have each opponent lose 1 life and you gain life equal to the total life lost this way.",
+    "miracle": "A card with miracle can be cast for its miracle cost when it's the first card you draw in a turn if you reveal it immediately.",
+    "populate": "Create a token that's a copy of a creature token you control.",
+    "cipher": "After you cast a spell with cipher, you may exile it and encode it on a creature you control. Whenever that creature deals combat damage to a player, you may cast a copy of the encoded card without paying its mana cost.",
+    "overload": "You may cast a spell for its overload cost. If you do, change its text by replacing all instances of 'target' with 'each'.",
+    "buyback": "You may pay an additional cost as you cast a spell with buyback. If you do, put the spell into your hand as it resolves instead of your graveyard.",
+    "soulbond": "You may pair a creature with soulbond with another unpaired creature when either enters the battlefield. They remain paired for as long as you control both of them.",
+    "bloodthirst": "If an opponent was dealt damage this turn, a creature entering the battlefield with bloodthirst enters with additional +1/+1 counters.",
+    "heroic": "Whenever you cast a spell that targets a creature with heroic, the creature gets a bonus or creates an effect.",
+    "outlast": "{COST}: Put a +1/+1 counter on this creature. Activate this ability only during your turn and only once each turn.",
+    "dash": "You may cast a creature spell with dash for its dash cost. If you do, it gains haste, and it's returned from the battlefield to its owner's hand at the beginning of the next end step."
+  },
+  "colors": [
+    "white",
+    "blue",
+    "black",
+    "red",
+    "green"
+  ],
+  "abilities": {
+    "flying": {
+      "description": "Creatures with flying can't be blocked by creatures without flying or reach."
+    },
+    "haste": {
+      "description": "Creatures with haste can attack and activate abilities with the tap symbol the turn they enter the battlefield."
+    },
+    "vigilance": {
+      "description": "Creatures with vigilance don't tap when declared as attackers."
+    },
+    "lifelink": {
+      "description": "Damage dealt by a creature with lifelink also causes its controller to gain that much life."
+    },
+    "first_strike": {
+      "description": "Creatures with first strike deal combat damage before creatures without first strike."
+    },
+    "double_strike": {
+      "description": "Creatures with double strike deal both first-strike and regular combat damage."
+    },
+    "deathtouch": {
+      "description": "Any amount of damage dealt by a creature with deathtouch is enough to destroy the creature it's dealing damage to."
+    },
+    "flash": {
+      "description": "You may cast a spell with flash any time you could cast an instant."
+    },
+    "kicker": {
+      "description": "You may pay an additional cost as you cast a spell with kicker. If you do, the spell has an additional or enhanced effect."
+    },
+    "suspend": {
+      "description": "Suspend allows you to exile a card with time counters on it rather than casting it. The counters are removed over time, and when the last is removed, the card is cast without paying its mana cost."
+    },
+    "embalm": {
+      "description": "You may exile a creature card with embalm from your graveyard to create a token that's a copy of it, except it's a white Zombie in addition to its other types and has no mana cost."
+    },
+    "eternalize": {
+      "description": "You may exile a creature card with eternalize from your graveyard to create a token that's a copy of it, except it's a black Zombie in addition to its other types, has no mana cost, and is a 4/4."
+    },
+    "scry": {
+      "description": "To scry X, look at the top X cards of your library, then put any number of them on the bottom of your library and the rest on top in any order."
+    },
+    "prowess": {
+      "description": "Whenever you cast a noncreature spell, a creature with prowess gets +1/+1 until end of turn."
+    },
+    "convoke": {
+      "description": "Your creatures can help cast a spell with convoke. Each creature you tap while casting the spell pays for one mana of that creature's color or one colorless mana."
+    },
+    "delve": {
+      "description": "You may exile cards from your graveyard while casting a spell with delve. Each card you exile pays for one colorless mana."
+    },"improvise": {
+      "description": "Your artifacts can help cast a spell with improvise. Each artifact you tap while casting the spell pays for one colorless mana."
+    },
+    "adventure": {
+      "description": "A creature card with adventure has an instant or sorcery spell on it that you can cast from your hand. If you cast the adventure, the creature is exiled and can be cast later from exile."
+    },
+    "mutate": {
+      "description": "If you cast a creature spell for its mutate cost, put it over or under a target non-Human creature you own. They mutate into the creature on top plus all abilities from under it."
+    },
+    "companion": {
+      "description": "If your starting deck meets the companion requirement, you may reveal the card with companion from your sideboard and cast it from there once during the game."
+    },
+    "foretell": {
+      "description": "During your turn, you may pay two generic mana to exile a card with foretell from your hand face down. You may cast it on a later turn for its foretell cost."
+    },
+    "energy": {
+      "description": "Energy is a resource represented by energy counters. Cards with energy abilities generate and consume energy counters."
+    },
+    "devotion": {
+      "description": "Devotion is a numerical value representing the number of colored mana symbols in the mana costs of permanents you control."
+    },
+    "affinity": {
+      "description": "Affinity for a certain card type or characteristic reduces the mana cost of a spell by one colorless mana for each card of that type or with that characteristic you control."
+    },
+    "dredge": {
+      "description": "If you would draw a card and a card with dredge is in your graveyard, you may instead put a number of cards equal to the dredge value from the top of your library into your graveyard and return the dredge card to your hand."
+    },
+    "storm": {
+      "description": "When you cast a spell with storm, copy it for each spell cast before it this turn. You may choose new targets for the copies."
+    },
+    "splice": {
+      "description": "As you cast an Arcane spell, you may reveal a card with splice onto Arcane from your hand and pay its splice cost. If you do, add the spliced card's abilities to the Arcane spell."
+    },
+    "split_second": {
+      "description": "As long as a spell with split second is on the stack, players can't cast spells or activate abilities that aren't mana abilities."
+    },
+    "ninjutsu": {
+      "description": "Ninjutsu is an activated ability that allows you to return an unblocked attacker to your hand and put a creature with ninjutsu onto the battlefield tapped and attacking."
+    },
+    "landfall": {
+      "description": "Landfall is an ability word that highlights triggered abilities that happen whenever a land enters the battlefield under your control."
+    },
+    "trample": {
+      "description": "Si une créature avec piétinement inflige suffisamment de blessures de combat pour détruire toutes les créatures qui la bloquent, elle peut infliger le reste des blessures au joueur ou au planeswalker qu'elle attaque."
+    },
+    "hexproof": {
+      "description": "Les permanents avec hexproof ne peuvent pas être la cible de sorts ou de capacités que vos adversaires contrôlent."
+    },
+    "indestructible": {
+      "description": "Les permanents indestructibles ne sont pas détruits par des effets qui disent « détruire » et ne peuvent pas être détruits par des blessures."
+    },
+    "menace": {
+      "description": "Les créatures avec menace ne peuvent pas être bloquées, sauf par deux créatures ou plus."
+    },
+    "reach": {
+      "description": "Les créatures avec portée peuvent bloquer les créatures avec vol."
+    },
+    "shroud": {
+      "description": "Les permanents avec célérité ne peuvent pas être la cible de sorts ou de capacités, y compris ceux que vous contrôlez."
+    },
+    "skulk": {
+      "description": "Les créatures avec furtivité ne peuvent pas être bloquées par des créatures avec une force supérieure."
+    },
+    "defender": {
+      "description": "Les créatures avec défenseur ne peuvent pas attaquer."
+    },
+    "protection": {
+      "description": "La protection est une capacité qui empêche les permanents d'être ciblés, enchantés, équipés, fortifiés, bloqués ou endommagés par des sources avec une ou plusieurs propriétés spécifiées. Par exemple, la protection contre le rouge empêche un permanent d'être ciblé, enchanté, équipé, fortifié, bloqué ou endommagé par des sources rouges."
+    }
+  },
+  "phases": {
+    "untap_step": "Untap all permanents you control.",
+    "upkeep_step": "Triggered abilities and optional actions occur.",
+    "draw_step": "Draw a card from your library.",
+    "first_main_phase": "Play lands, cast spells, and activate abilities.",
+    "beginning_of_combat_step": "Declare attackers and trigger abilities.",
+    "declare_attackers_step": "Choose attacking creatures and target player/planeswalker.",
+    "declare_blockers_step": "Choose defending creatures to block attackers.",
+    "combat_damage_step": "Assign and deal combat damage.",
+    "end_of_combat_step": "Triggered abilities and optional actions occur.",
+    "second_main_phase": "Play lands, cast spells, and activate abilities.",
+    "end_step": "Triggered abilities and optional actions occur.",
+    "cleanup_step": "Discard down to maximum hand size, remove damage from permanents, and end 'until end of turn' effects."
+  },
+  "zones": {
+    "library": "Draw cards from here.",
+    "hand": "Keep your cards hidden from opponents.",
+    "battlefield": "Place permanents here.",
+    "graveyard": "Place discarded, destroyed, or sacrificed cards here.",
+    "exile": "Place cards removed from the game here.",
+    "command": "Place your commander card here in Commander format.",
+    "stack": "Place spells and abilities waiting to resolve here."
+  },
+  "formats": [
+    "standard",
+    "modern",
+    "legacy",
+    "vintage",
+    "commander",
+    "brawl",
+    "pauper",
+    "draft",
+    "sealed"
+  ],
+  "counters": {
+    "+1/+1": "Adds one point to both power and toughness.",
+    "-1/-1": "Subtracts one point from both power and toughness.",
+    "charge": "Used on artifacts to store energy.",
+    "loyalty": "Used on planeswalkers to track loyalty points.",
+    "age": "Used on cumulative upkeep cards to track age."
+  },
+  "interactions": {
+    "removal_combat_trick": "Using an instant-speed removal spell to destroy an attacking or blocking creature in response to a combat trick.",
+    "countering_spell": "Using a counterspell to prevent an opponent's spell from resolving.",
+    "combat_tricks": "Using instants or abilities to temporarily boost a creature's power and/or toughness during combat.",
+    "land_destruction": "Destroying an opponent's land to disrupt their mana base and limit their ability to cast spells.",
+    "card_advantage": "Using spells and abilities to draw more cards or force an opponent to discard cards, creating a resource advantage.",
+    "board_wipes": "Using spells or abilities to destroy or remove multiple creatures from the battlefield at once.",
+    "bounce": "Using spells or abilities to return permanents to their owner's hand.",
+    "graveyard_recursion": "Returning cards from the graveyard to the battlefield, hand, or library."
+  }
+}
