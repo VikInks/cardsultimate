@@ -6,7 +6,6 @@ import { AuthMiddleware} from "../middleware/auth.middleware";
 import { CheckUserStatusMiddleware } from "../middleware/user.status.middleware";
 import { UserServiceInterface } from "../../domain/interfaces/services/user.service.interface";
 import { rateLimitLoginMiddleware } from "../middleware/rate.limit.login.middleware";
-import { rateLimitRequestMiddleware } from "../middleware/rate.limit.request.middleware";
 
 export function middlewareFactory(authService: AuthorizationServiceInterface, userService: UserServiceInterface): {
 	isSuperUser: () => MiddlewareInterface;
