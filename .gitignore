@@ -24,3 +24,9 @@ node_modules/
 /cards-backend/src/email/
 /decklist/
 /cards-builder/data/train/data-apr23/
+/crlf_to_lf.py
+/cards-builder/script/custom/csv_columns_name.py
+/cards-builder/script/custom/csvToJson.py
+/cards-builder/script/custom/game_data.json
+/cards-builder/script/custom/rules_text.txt
+/cards-builder/script/custom/txtTojson.py

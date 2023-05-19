@@ -1,13 +1,16 @@
-import {httpNext, httpReq, httpRes} from "../../domain/interfaces/adapters/request.handler.interface";
 import {UserServiceInterface} from "../../domain/interfaces/services/user.service.interface";
 import {CustomError} from "../error/customError";
 import {MiddlewareInterface} from "../../domain/interfaces/adapters/middleware.interface";
+import {NextFunction, HttpRequest, HttpResponse} from "../../domain/interfaces/adapters/server.interface";
 
 export function CheckUserStatusMiddleware(userService: UserServiceInterface): MiddlewareInterface{
 
 	return {
-		handle: async (req: httpReq, res: httpRes, next: httpNext): Promise<void> => {
-			const userEmail = req.body.email;
+		handle: async (req: HttpRequest, res: HttpResponse, next: NextFunction): Promise<void> => {
+			if(!req.user?.email) {
+				throw new CustomError(401, 'Access denied. No token provided.');
+			}
+			const userEmail = req.user.email;
 			const user = await userService.findByEmail(userEmail);
 
 			if (!user) {

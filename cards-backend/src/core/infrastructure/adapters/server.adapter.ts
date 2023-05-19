@@ -1,77 +1,75 @@
-import express from 'express';
-import {ServerInterface} from "../../domain/interfaces/adapters/server.interface";
-import {httpApp, httpNext, httpReq, httpRes} from "../../domain/interfaces/adapters/request.handler.interface";
+import express, {Application} from 'express';
+import { Request as ExpressRequest, Response as ExpressResponse, NextFunction as ExpressNextFunction, json, urlencoded } from 'express';
+import {
+	HttpHandler,
+	HttpRequest,
+	HttpResponse,
+	HttpServer
+} from "../../domain/interfaces/adapters/server.interface";
+import {UserEntitiesInterface} from "../../domain/endpoints/user.entities.interface";
 
 type HttpMethod = 'get' | 'post' | 'put' | 'delete';
 
-function isHttpMethod(method: string): method is HttpMethod {
-	return ['get', 'post', 'put', 'delete'].includes(method);
-}
-
-export class ServerAdapter implements ServerInterface {
-	public readonly app: express.Application;
+export class ServerAdapter implements HttpServer {
+	private readonly app: Application;
 
 	constructor() {
 		this.app = express();
+		this.app.use(json());
+		this.app.use(urlencoded({ extended: true }));
 	}
 
-	addRoute(method: string, path: string, middlewares: ((req: httpReq, res: httpRes, next: httpNext) => void)[], action: (req: httpReq, res: httpRes, next: httpNext) => void): void {
-		if (isHttpMethod(method)) {
-			this.app[method](path, ...middlewares, action);
-		} else {
-			throw new Error(`Invalid HTTP method: ${method}`);
-		}
+	handleRequest(method: HttpMethod, path: string, middlewares: HttpHandler[], handler: HttpHandler): void {
+		(this.app[method.toLowerCase() as keyof Application])(path, ...middlewares.map(middleware => (req: ExpressRequest, res: ExpressResponse, next: ExpressNextFunction) =>
+				middleware(this.adaptRequest(req), this.adaptResponse(res), next)
+			), (req: ExpressRequest, res: ExpressResponse, next: ExpressNextFunction) =>
+				handler(this.adaptRequest(req), this.adaptResponse(res), next)
+		);
 	}
 
-	json() {
-		return express.json();
-	}
 
-	urlencoded(options?: { extended: boolean }) {
-		return express.urlencoded(options);
-	}
-
-	getApp(): httpApp {
-		return this.app as httpApp;
-	}
-
-	use(path: string, ...handlers: ((req: httpReq, res: httpRes, next: httpNext) => void)[]): void {
-		this.app.use(path, ...handlers);
-	}
-
-	get(path: string, handler: (req: httpReq, res: httpRes, next: httpNext) => void): void {
-		this.app.get(path, (req: express.Request, res: express.Response, next: express.NextFunction) => {
-			(res as httpRes).clearCookie = res.clearCookie.bind(res);
-			(res as httpRes).end = res.end.bind(res);
-			handler(req as httpReq, res as httpRes, next as httpNext);
-		});
-	}
-
-	delete(path: string, handler: (req: httpReq, res: httpRes, next: httpNext) => void): void {
-		this.app.delete(path, (req: express.Request, res: express.Response, next: express.NextFunction) => {
-			(res as httpRes).clearCookie = res.clearCookie.bind(res);
-			(res as httpRes).end = res.end.bind(res);
-			handler(req as httpReq, res as httpRes, next as httpNext);
-		});
-	}
-
-	post(path: string, handler: (req: httpReq, res: httpRes, next: httpNext) => void): void {
-		this.app.post(path, (req: express.Request, res: express.Response, next: express.NextFunction) => {
-			(res as httpRes).clearCookie = res.clearCookie.bind(res);
-			(res as httpRes).end = res.end.bind(res);
-			handler(req as httpReq, res as httpRes, next as httpNext);
-		});
-	}
-
-	put(path: string, handler: (req: httpReq, res: httpRes, next: httpNext) => void): void {
-		this.app.put(path, (req: express.Request, res: express.Response, next: express.NextFunction) => {
-			(res as httpRes).clearCookie = res.clearCookie.bind(res);
-			(res as httpRes).end = res.end.bind(res);
-			handler(req as httpReq, res as httpRes, next as httpNext);
-		});
-	}
-
-	listen(port: number, callback: () => void): void {
+	start(port: number, callback: () => void): void {
 		this.app.listen(port, callback);
+	}
+
+	getApp(): Application {
+		return this.app;
+	}
+
+	json(): any {
+		return json();
+	}
+
+	urlencoded(options: { extended: boolean }): any {
+		return urlencoded(options);
+	}
+
+	private adaptRequest(req: ExpressRequest): HttpRequest {
+		return {
+			cookie: req.cookies,
+			method: req.method.toLowerCase() as HttpMethod,
+			url: req.url,
+			headers: req.headers,
+			body: req.body,
+			params: req.params,
+			query: req.query,
+			user: req.user as UserEntitiesInterface
+		};
+	}
+
+	private adaptResponse(res: ExpressResponse): HttpResponse {
+		return {
+			statusCode: res.statusCode,
+			setHeader: (name: string, value: string) => res.setHeader(name, value),
+			getHeader: (name: string) => res.getHeader(name),
+			removeHeader: (name: string) => res.removeHeader(name),
+			write: (data: any, encoding: BufferEncoding = 'utf8', callback?: (error: Error | null | undefined) => void): boolean => res.write(data, encoding, callback),
+			end: (callback?: () => void) => res.end(callback),
+			status: (statusCode: number) => res.status(statusCode),
+			clearCookie: (name: string, options?: any) => res.clearCookie(name, options),
+			cookie: (name: string, value: string, options?: any) => res.cookie(name, value, options),
+			json: (data: any) => res.json(data),
+			send: (data: any) => res.send(data)
+		};
 	}
 }
