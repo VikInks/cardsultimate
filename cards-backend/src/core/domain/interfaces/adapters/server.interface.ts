@@ -4,6 +4,10 @@ export type HttpMethod = 'get' | 'post' | 'put' | 'delete';
 
 export type Middleware = (req: HttpRequest, res: HttpResponse, next: NextFunction) => void;
 
+export interface Connection {
+	remoteAddress?: string;
+}
+
 export interface HttpServer {
 	handleRequest(method: HttpMethod, path: string, middlewares: HttpHandler[], handler: HttpHandler): void;
 	start(port: number, callback: () => void): void;
@@ -13,6 +17,7 @@ export interface HttpServer {
 }
 
 export interface HttpRequest {
+	connection: Connection;
 	method: HttpMethod;
 	url: string;
 	headers: { [name: string]: string | string[] | undefined };
