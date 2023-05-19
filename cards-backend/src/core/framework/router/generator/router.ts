@@ -14,6 +14,7 @@ import {
 	HttpServer,
 	NextFunction
 } from "../../../domain/interfaces/adapters/server.interface";
+import {rateLimitRequestMiddleware} from "../../middleware/rate.limit.request.middleware";
 
 function getActionFunction(controller: any, actionName: string) {
 	if (typeof controller[actionName] === "function") {
@@ -33,6 +34,7 @@ export async function Router(
 	app.use(serverAdapter.json());
 	app.use(serverAdapter.urlencoded({ extended: false }));
 	app.use(cors());
+	app.use(rateLimitRequestMiddleware());
 
 	app.use(biscuitAdapter.biscuitParser());
 
