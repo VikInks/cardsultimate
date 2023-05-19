@@ -4,20 +4,31 @@ import {UserServiceInterface} from "../../domain/interfaces/services/user.servic
 import {CustomError} from "../error/customError";
 
 export function rateLimitLoginMiddleware(userService: UserServiceInterface): MiddlewareInterface{
-	const loginAttempts = new Map<string, { count: number, lastAttempt: Date }>();
+	const loginAttempts = new Map<string, { count: number, lastAttempt: Date, lockedUntil: Date }>();
 
 	return {
 		handle: async (req: HttpRequest, res: HttpResponse, next: NextFunction): Promise<void> => {
-			const attempts = loginAttempts.get(req.body.email) || { count: 0, lastAttempt: new Date() };
-			if (attempts.count >= 5 && (new Date().getTime() - attempts.lastAttempt.getTime()) < 5 * 60 * 1000) {
+			const now = new Date();
+			const attempts = loginAttempts.get(req.body.email) || { count: 0, lastAttempt: now, lockedUntil: new Date(0) };
+
+			if (attempts.lockedUntil > now) {
 				throw new CustomError(429, 'Too many login attempts, please try again later.');
 			}
 
 			try {
 				await next();
-				loginAttempts.delete(req.body.email);
+
+				loginAttempts.set(req.body.email, { count: 0, lastAttempt: now, lockedUntil: new Date(0) });
 			} catch (err) {
-				loginAttempts.set(req.body.email, { count: attempts.count + 1, lastAttempt: new Date() });
+				const newAttemptsCount = attempts.count + 1;
+
+				if (newAttemptsCount >= 5) {
+					const lockedUntil = new Date(now.getTime() + 5 * 60 * 1000);
+					loginAttempts.set(req.body.email, { count: newAttemptsCount, lastAttempt: now, lockedUntil });
+				} else {
+					loginAttempts.set(req.body.email, { count: newAttemptsCount, lastAttempt: now, lockedUntil: attempts.lockedUntil });
+				}
+
 				throw err;
 			}
 		}
