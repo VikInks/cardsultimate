@@ -1,8 +1,8 @@
-import {httpNext, httpReq, httpRes} from "./request.handler.interface";
+import {HttpRequest, HttpResponse, NextFunction} from "./server.interface";
 
-// MiddlewareInterface.ts
+
 export interface MiddlewareInterface {
-	handle(req: httpReq, res: httpRes, next: httpNext): void;
+	handle(req: HttpRequest, res: HttpResponse, next: NextFunction): void;
 }
 
 

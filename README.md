@@ -1,5 +1,5 @@
 # Cards
-
+### This readme must be updated 17.05.2023
 **What is Cards**
 - Cards is an application to help you find people to play Magic the gathering games and buying cards between players on your local area or further away. 
 - Currently in developpement, the application is not yet available on any store.

@@ -1,9 +1,9 @@
 import passport from 'passport';
 import {AuthorizeInterface} from "../../domain/interfaces/adapters/authorize.interface";
-import {httpNext, httpReq, httpRes} from "../../domain/interfaces/adapters/request.handler.interface";
 import { UserEntitiesInterface as user} from "../../domain/endpoints/user.entities.interface";
 import {LocalityInformationsInterface} from "../../domain/endpoints/locality.informations.interface";
 import {TokenInterface} from "../../domain/interfaces/adapters/token.interface";
+import {HttpRequest, HttpResponse, NextFunction} from "../../domain/interfaces/adapters/server.interface";
 
 export class AuthorizeAdapter implements AuthorizeInterface {
 	constructor(private readonly token: TokenInterface) {
@@ -21,7 +21,7 @@ export class AuthorizeAdapter implements AuthorizeInterface {
 	}
 
 	public authenticate(strategy: string, options: passport.AuthenticateOptions) {
-		return (req: httpReq, res: httpRes, next: httpNext) => {
+		return (req: HttpRequest, res: HttpResponse, next: NextFunction) => {
 			passport.authenticate(strategy, options)(req as any, res as any, next as any);
 		};
 	}
