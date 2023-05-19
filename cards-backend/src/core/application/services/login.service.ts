@@ -23,7 +23,6 @@ export class LoginService implements LoginServiceInterface {
 		if (user.archive) throw new Error("User is archived");
 		const payload = {email: email, username: user.username, role: user.role};
 		const token = this.jwtService.sign(payload);
-		console.log(token);
 		return {
 			payload,
 			access_token: token

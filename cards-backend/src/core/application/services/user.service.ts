@@ -13,7 +13,8 @@ export class UserService implements UserServiceInterface {
 		private mailService: EmailServiceInterface,
 		private readonly hasher: HasherInterface,
 		private readonly id: IdService
-	) {}
+	) {
+	}
 
 	async findByEmail(email: string): Promise<UserEntitiesInterface | null> {
 		console.log(`user find by email: ${email}`);
@@ -52,10 +53,7 @@ export class UserService implements UserServiceInterface {
 			throw new CustomError(400, 'User is already confirmed');
 		}
 
-		if (
-			user.confirmationExpiresAt &&
-			user.confirmationExpiresAt < new Date()
-		) {
+		if (user.confirmationExpiresAt && user.confirmationExpiresAt < new Date()) {
 			throw new CustomError(400, 'Confirmation link has expired');
 		}
 
@@ -151,8 +149,11 @@ export class UserService implements UserServiceInterface {
 		return this.userRepository.update(user.id, userUpdate);
 	}
 
-	findByUsername(username: string): Promise<UserEntitiesInterface | null> {
-		return this.userRepository.findUserByUsername(username);
+	async findByUsername(username: string): Promise<UserEntitiesInterface | null> {
+		const user = await this.userRepository.findUserByUsername(username);
+		if (!user) {
+			throw new Error('User not found');
+		}
+		return user;
 	}
-
 }
