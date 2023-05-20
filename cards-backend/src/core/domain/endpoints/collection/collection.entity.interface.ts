@@ -2,11 +2,11 @@ import {CardsEntityInterface} from "../cards/cards.entity.interface";
 
 export interface CollectionEntityInterface {
 	/**
-	 * @nodisplay
+	 * @example
 	 */
 	id: string;
 	/**
-	 * @nodisplay
+	 * @example
 	 */
 	idOwner: string;
 	/**

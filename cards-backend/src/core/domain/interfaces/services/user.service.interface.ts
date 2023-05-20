@@ -14,4 +14,5 @@ export interface UserServiceInterface {
     confirmUser(confirmationCode: string): Promise<{ message: string }>;
     deleteUnconfirmedUsers(): Promise<UserEntitiesInterface[]>;
     findByUsername(username: string): Promise<UserEntitiesInterface | null>;
+    findById(id: string): Promise<UserEntitiesInterface | null>;
 }

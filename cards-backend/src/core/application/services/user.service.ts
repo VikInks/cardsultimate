@@ -16,9 +16,7 @@ export class UserService implements UserServiceInterface {
 	) {}
 
 	async findByEmail(email: string): Promise<UserEntitiesInterface | null> {
-		console.log(`user find by email: ${email}`);
 		let user = await this.userRepository.findUserByEmail(email);
-		console.log(`user find: ${user?.email}`);
 		if (!user) {
 			user = null;
 		}
@@ -26,9 +24,7 @@ export class UserService implements UserServiceInterface {
 	}
 
 	async deleteUnconfirmedUsers(): Promise<UserEntitiesInterface[]> {
-		const expiredUsers =
-			await this.userRepository.findUnconfirmedUsersWithExpiredLinks();
-
+		const expiredUsers = await this.userRepository.findUnconfirmedUsersWithExpiredLinks();
 		for (const user of expiredUsers) {
 			if (user.id) await this.userRepository.deleteById(user.id);
 		}
@@ -40,10 +36,7 @@ export class UserService implements UserServiceInterface {
 	}
 
 	async confirmUser(confirmationCode: string): Promise<{ message: string }> {
-		const user = await this.userRepository.findUserByConfirmationCode(
-			confirmationCode
-		);
-		console.log(`user confirmation token find: ${user?.confirmationToken}`);
+		const user = await this.userRepository.findUserByConfirmationCode(confirmationCode);
 		if (!user) {
 			throw new CustomError(404, 'Invalid confirmation code');
 		}
@@ -52,10 +45,7 @@ export class UserService implements UserServiceInterface {
 			throw new CustomError(400, 'User is already confirmed');
 		}
 
-		if (
-			user.confirmationExpiresAt &&
-			user.confirmationExpiresAt < new Date()
-		) {
+		if (user.confirmationExpiresAt && user.confirmationExpiresAt < new Date()) {
 			throw new CustomError(400, 'Confirmation link has expired');
 		}
 
@@ -75,9 +65,7 @@ export class UserService implements UserServiceInterface {
 			throw new CustomError(400, 'User already exists');
 		}
 		const confirmationExpiresIn = 24 * 60 * 60 * 1000; // 24 hours
-		const confirmationExpiresAt = new Date(
-			Date.now() + confirmationExpiresIn
-		);
+		const confirmationExpiresAt = new Date(Date.now() + confirmationExpiresIn);
 		const user = {...item};
 		user.role = 'user';
 		user.password = await this.hasher.hash(user.password, 10);
@@ -93,11 +81,11 @@ export class UserService implements UserServiceInterface {
 			if (!user) {
 				throw new Error('User not created');
 			}
-			return user;
 		});
 		return user;
 	}
 
+	// TODO: modify to take into account the date for archivedAt
 	async delete(id: string): Promise<boolean> {
 		return this.userRepository.deleteById(id);
 	}
@@ -151,8 +139,12 @@ export class UserService implements UserServiceInterface {
 		return this.userRepository.update(user.id, userUpdate);
 	}
 
-	findByUsername(username: string): Promise<UserEntitiesInterface | null> {
-		return this.userRepository.findUserByUsername(username);
+	async findByUsername(username: string): Promise<UserEntitiesInterface | null> {
+		return await this.userRepository.findUserByUsername(username);
+	}
+
+	async findById(id: string): Promise<UserEntitiesInterface | null> {
+		return await this.userRepository.findById(id);
 	}
 
 }
