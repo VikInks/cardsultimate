@@ -5,6 +5,7 @@ import {CollectionServiceInterface} from "../../domain/interfaces/services/colle
 import {UserServiceInterface} from "../../domain/interfaces/services/user.service.interface";
 import {CollectionEntityInterface} from "../../domain/endpoints/collection/collection.entity.interface";
 import {Route, Post, Delete, Put, Get} from "../../framework/router/custom/decorator";
+import {CardsEntityInterface} from "../../domain/endpoints/cards/cards.entity.interface";
 
 @Route('collection')
 export class CollectionController implements CollectionControllerInterface {
@@ -18,21 +19,21 @@ export class CollectionController implements CollectionControllerInterface {
 	 * /collection/create:
 	 *   post:
 	 *     security:
-	 *       - BearerAuth: []
+	 *     - BearerAuth: []
 	 *     tags:
-	 *       - collection
-	 *     description: Creates a new collection
+	 *     - collection
+	 *     description: Crée une nouvelle collection
 	 *     produces:
-	 *       - application/json
+	 *     - application/json
 	 *     parameters:
-	 *       - in: body
-	 *         name: collection
-	 *         description: The collection to create
-	 *         schema:
-	 *           $ref: '#/definitions/Collection'
+	 *     - in: body
+	 *       name: collection
+	 *       description: La collection à créer
+	 *       schema:
+	 *         $ref: '#/components/schemas/collection'
 	 *     responses:
 	 *       200:
-	 *         description: Collection created successfully
+	 *         description: Collection créée avec succès
 	 */
 	@Post('/create', { middlewares: ['auth'] })
 	async createCollection(req: HttpRequest, res: HttpResponse): Promise<void> {
@@ -54,21 +55,21 @@ export class CollectionController implements CollectionControllerInterface {
 	 * /collection/delete/{id}:
 	 *   delete:
 	 *     security:
-	 *       - BearerAuth: []
+	 *     - BearerAuth: []
 	 *     tags:
-	 *       - collection
-	 *     description: Deletes a collection
+	 *     - collection
+	 *     description: Supprime une collection
 	 *     produces:
-	 *       - application/json
+	 *     - application/json
 	 *     parameters:
-	 *       - in: path
-	 *         name: id
-	 *         required: true
-	 *         description: The ID of the collection
-	 *         type: string
+	 *     - in: path
+	 *       name: id
+	 *       required: true
+	 *       description: L'ID de la collection
+	 *       type: string
 	 *     responses:
 	 *       200:
-	 *         description: Collection deleted successfully
+	 *         description: Collection supprimée avec succès
 	 */
 	@Delete('/delete/', { middlewares: ['auth'] })
 	async deleteCollection(req: HttpRequest, res: HttpResponse): Promise<void> {
@@ -96,21 +97,21 @@ export class CollectionController implements CollectionControllerInterface {
 	 * /collection/get/{id}:
 	 *   get:
 	 *     security:
-	 *       - BearerAuth: []
+	 *     - BearerAuth: []
 	 *     tags:
-	 *       - collection
-	 *     description: Retrieves a collection
+	 *     - collection
+	 *     description: Récupère une collection
 	 *     produces:
-	 *       - application/json
+	 *     - application/json
 	 *     parameters:
-	 *       - in: path
-	 *         name: id
-	 *         required: true
-	 *         description: The ID of the collection
-	 *         type: string
+	 *     - in: path
+	 *       name: id
+	 *       required: true
+	 *       description: L'ID de la collection
+	 *       type: string
 	 *     responses:
 	 *       200:
-	 *         description: Collection retrieved successfully
+	 *         description: Collection récupérée avec succès
 	 */
 	@Get('/get/', { middlewares: ['auth'] })
 	async getCollection(req: HttpRequest, res: HttpResponse): Promise<void> {
@@ -132,37 +133,38 @@ export class CollectionController implements CollectionControllerInterface {
 	 * /collection/update/{id}:
 	 *   put:
 	 *     security:
-	 *       - BearerAuth: []
+	 *     - BearerAuth: []
 	 *     tags:
-	 *       - collection
-	 *     description: Updates a collection
+	 *     - collection
+	 *     description: Met à jour une collection
 	 *     produces:
-	 *       - application/json
+	 *     - application/json
 	 *     parameters:
-	 *       - in: body
-	 *         name: collection
-	 *         description: The collection to update
-	 *         schema:
-	 *           $ref: '#/definitions/Collection'
-	 *       - in: path
-	 *         name: id
-	 *         required: true
-	 *         description: The ID of the collection
-	 *         type: string
+	 *     - in: body
+	 *       name: collection
+	 *       description: La collection à mettre à jour
+	 *       schema:
+	 *         $ref: '#/components/schemas/collection'
+	 *     - in: path
+	 *       name: id
+	 *       required: true
+	 *       description: L'ID de la collection
+	 *       type: string
 	 *     responses:
 	 *       200:
-	 *         description: Collection updated successfully
+	 *         description: Collection mise à jour avec succès
 	 */
-	@Put('/update/', { middlewares: ['auth'] })
+	@Put('/update/:id', { middlewares: ['auth'] })
 	async updateCollection(req: HttpRequest, res: HttpResponse): Promise<CollectionEntityInterface | null> {
 		const user = req.user?.id;
 		const owner = user == await this.collectionService.getCollectionByOwner(req.params.id).then((collection) => {return collection?.idOwner});
 		if (!owner || !user) {
 			throw new CustomError(500, 'this is not your collection, you cannot access it');
 		}
-		const item = req.body;
+		const item = req.body as CardsEntityInterface;
+		const collectionId = req.params.id;
 		try {
-			const collection = await this.collectionService.update(item, user);
+			const collection = await this.collectionService.update(item, collectionId, user);
 			res.status(200).json(collection);
 			return collection;
 		} catch (e) {

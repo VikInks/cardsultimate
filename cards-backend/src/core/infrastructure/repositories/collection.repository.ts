@@ -1,6 +1,10 @@
-import { CollectionEntityInterface as Collection } from "../../domain/endpoints/collection/collection.entity.interface";
+import {
+	CollectionEntityInterface,
+	CollectionEntityInterface as Collection
+} from "../../domain/endpoints/collection/collection.entity.interface";
 import { CollectionRepositoryInterface } from "../../domain/interfaces/repositories/collection.repository.interface";
 import { DatabaseInterface } from "../../domain/interfaces/adapters/database.interface";
+import {CardsEntityInterface} from "../../domain/endpoints/cards/cards.entity.interface";
 
 export class CollectionRepository implements CollectionRepositoryInterface {
 	constructor(private readonly mongoAdapter: DatabaseInterface<Collection>) {}
@@ -21,12 +25,11 @@ export class CollectionRepository implements CollectionRepositoryInterface {
 		}
 		return collection;
 	}
-	async update(id: string, collection: Collection): Promise<Collection> {
-		const objectId = this.mongoAdapter.stringToObjectId(id);
-		const { _id, ...collectionFields } = collection as any;
+	async update(item: CardsEntityInterface, collectionId: string, ownerId: string): Promise<Collection> {
+		const objectId = this.mongoAdapter.stringToObjectId(collectionId);
 		const result = await this.mongoAdapter.findOneAndUpdate(
-			{ _id: objectId },
-			{ $set: collectionFields },
+			{ _id: objectId, owner: ownerId },
+			{ $push: { cards: item } },
 			{ returnOriginal: false }
 		);
 		if (!result) {
@@ -35,6 +38,7 @@ export class CollectionRepository implements CollectionRepositoryInterface {
 		return result;
 	}
 
+
 	async deleteById(id: string): Promise<boolean> {
 		const objectId = this.mongoAdapter.stringToObjectId(id);
 		return await this.mongoAdapter.deleteOne({ id: objectId });
@@ -42,5 +46,10 @@ export class CollectionRepository implements CollectionRepositoryInterface {
 
 	findAll(): Promise<Collection[]> {
 		return Promise.resolve([]);
+	}
+
+	getById(ownerId: string): Promise<CollectionEntityInterface | null> {
+		const objectId = this.mongoAdapter.stringToObjectId(ownerId);
+		return this.mongoAdapter.findOne({ owner: objectId });
 	}
 }
