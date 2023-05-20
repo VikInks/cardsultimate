@@ -6,4 +6,5 @@ export type MiddlewaresInterfaces = {
 	isAuthenticated: MiddlewareInterface;
 	CheckUserStatus: MiddlewareInterface;
 	rateLimitLogin: MiddlewareInterface;
+	rateLimitRequest: MiddlewareInterface;
 };
