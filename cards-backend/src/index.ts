@@ -55,7 +55,7 @@ InitDatabase().then(async (db) => {
 
 	// Initialize the controllers
 	const loginController = controllerFactory.LoginController(loginService);
-	const userController = controllerFactory.UserController(bcryptAdapter, userService, loginService, idService, emailService);
+	const userController = controllerFactory.UserController(bcryptAdapter, userService, loginService, idService, emailService, collectionService);
 	const collectionController = controllerFactory.CollectionController(collectionService, userService, idService);
 
 	const middlewaresFactory = middlewareFactory(authorizationService, userService);

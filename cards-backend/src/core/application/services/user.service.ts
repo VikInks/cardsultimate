@@ -35,7 +35,7 @@ export class UserService implements UserServiceInterface {
 		return await this.userRepository.findUnconfirmedUsersWithExpiredLinks();
 	}
 
-	async confirmUser(confirmationCode: string): Promise<{ message: string }> {
+	async confirmUser(confirmationCode: string): Promise<UserEntitiesInterface & { message: string }> {
 		const user = await this.userRepository.findUserByConfirmationCode(confirmationCode);
 		if (!user) {
 			throw new CustomError(404, 'Invalid confirmation code');
@@ -56,7 +56,7 @@ export class UserService implements UserServiceInterface {
 		const userSave = await this.userRepository.update(user.id, user);
 		console.log(`userSave: ${userSave}`);
 
-		return {message: 'User confirmed successfully'};
+		return { ...user ,message: 'User confirmed successfully'};
 	}
 
 	async create(item: UserEntitiesInterface): Promise<UserEntitiesInterface> {

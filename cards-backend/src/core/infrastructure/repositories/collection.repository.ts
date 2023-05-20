@@ -1,7 +1,4 @@
-import {
-	CollectionEntityInterface,
-	CollectionEntityInterface as Collection
-} from "../../domain/endpoints/collection/collection.entity.interface";
+import {CollectionEntityInterface as Collection} from "../../domain/endpoints/collection/collection.entity.interface";
 import { CollectionRepositoryInterface } from "../../domain/interfaces/repositories/collection.repository.interface";
 import { DatabaseInterface } from "../../domain/interfaces/adapters/database.interface";
 import {CardsEntityInterface} from "../../domain/endpoints/cards/cards.entity.interface";
@@ -48,8 +45,8 @@ export class CollectionRepository implements CollectionRepositoryInterface {
 		return Promise.resolve([]);
 	}
 
-	getById(ownerId: string): Promise<CollectionEntityInterface | null> {
+	async getById(ownerId: string): Promise<Collection | null> {
 		const objectId = this.mongoAdapter.stringToObjectId(ownerId);
-		return this.mongoAdapter.findOne({ owner: objectId });
+		return await this.mongoAdapter.findOne({ owner: objectId });
 	}
 }

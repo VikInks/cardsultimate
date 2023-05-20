@@ -41,9 +41,8 @@ export class CollectionController implements CollectionControllerInterface {
 		if (!user) {
 			throw new CustomError(500, 'you must create an account to set a new collection');
 		}
-		const item = req.body;
 		try {
-			await this.collectionService.create(item, user.id);
+			await this.collectionService.create(user.id);
 			res.status(200).json({message: "Collection created successfully"});
 		} catch (e) {
 			res.status(500).json('Error creating collection of user, please contact support');

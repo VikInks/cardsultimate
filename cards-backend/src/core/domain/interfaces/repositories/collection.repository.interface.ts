@@ -2,7 +2,7 @@ import {CollectionEntityInterface as Collection} from "../../endpoints/collectio
 import {CardsEntityInterface} from "../../endpoints/cards/cards.entity.interface";
 
 export interface CollectionRepositoryInterface {
-	create(collection: Collection, ownerId: string): Promise<Collection>;
+	create(collection: Collection): Promise<Collection>;
 	update(card: CardsEntityInterface, collectionId:string, ownerId: string): Promise<Collection>;
 	deleteById(id: string, ownerId: string): Promise<boolean>;
 	getById(ownerId: string): Promise<Collection | null>;

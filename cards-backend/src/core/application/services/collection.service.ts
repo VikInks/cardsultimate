@@ -3,17 +3,22 @@ import {CollectionRepositoryInterface} from "../../domain/interfaces/repositorie
 import {CollectionEntityInterface} from "../../domain/endpoints/collection/collection.entity.interface";
 import {CustomError} from "../../framework/error/customError";
 import {CardsEntityInterface} from "../../domain/endpoints/cards/cards.entity.interface";
+import {IdInterface} from "../../domain/interfaces/adapters/id.interface";
 
 export class CollectionService implements CollectionServiceInterface {
-	constructor(private readonly collectionRepository: CollectionRepositoryInterface) {
+	constructor(private readonly collectionRepository: CollectionRepositoryInterface, private readonly idService: IdInterface) {
 		this.collectionRepository = collectionRepository;
 	}
 
-	async create(item: CollectionEntityInterface, ownerId: string): Promise<CollectionEntityInterface> {
+	async create(ownerId: string): Promise<CollectionEntityInterface> {
 		try {
-			return await this.collectionRepository.create(item, ownerId);
+			const id = this.idService.uuid();
+			const cards:CardsEntityInterface[] = [];
+			const updateDate = new Date();
+			const collection: CollectionEntityInterface = {id: id, idOwner: ownerId, cards: cards, updateDate: updateDate};
+			return await this.collectionRepository.create(collection);
 		} catch (e) {
-			throw new CustomError(500, 'Error creating collection of user ${ownerId}, please contact support');
+			throw new CustomError(500, 'Error creating collection of user, please contact support');
 		}
 	}
 
@@ -21,7 +26,7 @@ export class CollectionService implements CollectionServiceInterface {
 		try {
 			return await this.collectionRepository.deleteById(id, ownerId);
 		} catch (e) {
-			throw new CustomError(500, 'Error deleting collection of user ${ownerId}, please contact support');
+			throw new CustomError(500, 'Error deleting collection of user, please contact support');
 		}
 	}
 
@@ -37,7 +42,7 @@ export class CollectionService implements CollectionServiceInterface {
 		try {
 			return await this.collectionRepository.update(item, collectionId, ownerId);
 		} catch (e) {
-			throw new CustomError(500, 'Error updating collection of user ${ownerId}, please contact support');
+			throw new CustomError(500, 'Error updating collection of user, please contact support');
 		}
 	}
 
