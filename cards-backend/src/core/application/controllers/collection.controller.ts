@@ -30,7 +30,7 @@ export class CollectionController implements CollectionControllerInterface {
 	 *       name: collection
 	 *       description: La collection à créer
 	 *       schema:
-	 *         $ref: '#/components/schemas/collection'
+	 *         $ref: '#/components/schemas/CollectionEntityInterface'
 	 *     responses:
 	 *       200:
 	 *         description: Collection créée avec succès
@@ -66,6 +66,8 @@ export class CollectionController implements CollectionControllerInterface {
 	 *       name: id
 	 *       required: true
 	 *       description: L'ID de la collection
+	 *       schema:
+	 *         $ref: '#/components/schemas/CollectionEntityInterface'
 	 *       type: string
 	 *     responses:
 	 *       200:
@@ -108,6 +110,8 @@ export class CollectionController implements CollectionControllerInterface {
 	 *       name: id
 	 *       required: true
 	 *       description: L'ID de la collection
+	 *       schema:
+	 *         $ref: '#/components/schemas/CollectionEntityInterface'
 	 *       type: string
 	 *     responses:
 	 *       200:
@@ -144,7 +148,7 @@ export class CollectionController implements CollectionControllerInterface {
 	 *       name: collection
 	 *       description: La collection à mettre à jour
 	 *       schema:
-	 *         $ref: '#/components/schemas/collection'
+	 *         $ref: '#/components/schemas/CollectionEntityInterface'
 	 *     - in: path
 	 *       name: id
 	 *       required: true
