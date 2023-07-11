@@ -24,3 +24,12 @@ node_modules/
 /cards-backend/src/email/
 /decklist/
 /cards-builder/data/train/data-apr23/
+/cards-builder/script/csvToJson.py
+/cards-builder/script/trained_model/config.json
+/cards-builder/script/trained_model/generation_config.json
+/cards-builder/script/trained_model/merges.txt
+/cards-builder/script/trained_model/special_tokens_map.json
+/cards-builder/script/trained_model/tf_model.h5
+/cards-builder/script/trained_model/tokenizer_config.json
+/cards-builder/script/trained_model/vocab.json
+/import_wsl_ubuntu.py
