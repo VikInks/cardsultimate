@@ -15,6 +15,7 @@ import {
 	NextFunction
 } from "../../../domain/interfaces/adapters/server.interface";
 
+
 function getActionFunction(controller: any, actionName: string) {
 	if (typeof controller[actionName] === "function") {
 		return controller[actionName].bind(controller);
@@ -33,6 +34,7 @@ export async function Router(
 	app.use(serverAdapter.json());
 	app.use(serverAdapter.urlencoded({ extended: false }));
 	app.use(cors());
+	app.use(middlewares.rateLimitRequest.handle);
 
 	app.use(biscuitAdapter.biscuitParser());
 

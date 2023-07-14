@@ -53,7 +53,8 @@ export class ServerAdapter implements HttpServer {
 			body: req.body,
 			params: req.params,
 			query: req.query,
-			user: req.user as UserEntitiesInterface
+			user: req.user as UserEntitiesInterface,
+			connection: req.connection,
 		};
 	}
 

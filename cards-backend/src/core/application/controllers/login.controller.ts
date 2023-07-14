@@ -44,7 +44,7 @@ export class LoginController implements LoginControllerInterface {
 	 *       500:
 	 *         description: Something went wrong
 	 */
-	@Post("/signin", { middlewares: ['rateLimit']})
+	@Post("/signin", { middlewares: ['rateLimitLogin']})
 	async login(req: HttpRequest, res: HttpResponse) {
 		const existingCookie = req.cookie.cardsToken;
 		if (existingCookie) {
