@@ -59,6 +59,10 @@ export interface UserEntitiesInterface {
 	/**
 	 * @nodisplay
 	 */
+	archivedAt?: Date;
+	/**
+	 * @nodisplay
+	 */
 	confirmationToken?: string | null;
 	/**
 	 * @nodisplay
