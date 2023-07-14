@@ -1,15 +1,20 @@
-import { ServerInterface } from "../../../domain/interfaces/adapters/server.interface";
 import { ControllersInterfaces } from "../../../domain/interfaces/types/controllers.interfaces";
 import { RouteDefinitionInterface } from "../../../domain/interfaces/route/route.definition.interface";
 import { MiddlewaresInterfaces } from "../../../domain/interfaces/types/middlewares.type";
-import { generateSwagger } from "../../../doc/swagger.doc";
-import swaggerUi from "swagger-ui-express";
+import { generateDoc } from "../../../doc/swagger.doc";
 import { CustomError } from "../../error/customError";
-import { NextFunction, Request, Response } from "express";
-import { httpNext, httpReq, httpRes } from "../../../domain/interfaces/adapters/request.handler.interface";
 import { MiddlewareInterface } from "../../../domain/interfaces/adapters/middleware.interface";
 import cors from "cors";
-import cookieParser from "cookie-parser";
+import { BiscuitInterface } from "../../../domain/interfaces/adapters/biscuit.interface";
+import { DocUiInterface } from "../../../domain/interfaces/adapters/docUi.Interface";
+import {
+	HttpMethod,
+	HttpRequest,
+	HttpResponse,
+	HttpServer,
+	NextFunction
+} from "../../../domain/interfaces/adapters/server.interface";
+
 
 function getActionFunction(controller: any, actionName: string) {
 	if (typeof controller[actionName] === "function") {
@@ -19,20 +24,23 @@ function getActionFunction(controller: any, actionName: string) {
 }
 
 export async function Router(
-	expressAdapter: ServerInterface,
+	serverAdapter: HttpServer,
+	biscuitAdapter: BiscuitInterface,
+	docUiAdapter: DocUiInterface,
 	middlewares: MiddlewaresInterfaces,
 	controllerInstances: ControllersInterfaces
 ) {
-	const app = expressAdapter.getApp();
-	app.use(expressAdapter.json());
-	app.use(expressAdapter.urlencoded({ extended: false }));
+	const app = serverAdapter.getApp();
+	app.use(serverAdapter.json());
+	app.use(serverAdapter.urlencoded({ extended: false }));
 	app.use(cors());
+	app.use(middlewares.rateLimitRequest.handle);
 
-	app.use(cookieParser());
+	app.use(biscuitAdapter.biscuitParser());
 
-	const swaggerSpec = await generateSwagger();
-	app.use("/swagger-admin/docs", swaggerUi.serve);
-	app.get("/swagger-admin/docs", swaggerUi.setup(swaggerSpec));
+	const swaggerSpec = await generateDoc();
+	app.use("/swagger-admin/docs", docUiAdapter.docUiServe);
+	app.get("/swagger-admin/docs", docUiAdapter.docUiSetup(swaggerSpec));
 
 	for (const controllerKey in controllerInstances) {
 		const controller = controllerInstances[controllerKey];
@@ -46,15 +54,15 @@ export async function Router(
 				);
 				const wrappedMiddlewares = middlewaresInstances.map(
 					(middleware: MiddlewareInterface) => {
-						return (req: httpReq, res: httpRes, next: httpNext) => {
+						return (req: HttpRequest, res: HttpResponse, next: NextFunction) => {
 							middleware.handle(req, res, next);
 						};
 					}
 				);
 				const actionFunction = getActionFunction(controller, route.action);
 				if (actionFunction) {
-					expressAdapter.addRoute(
-						route.method,
+					serverAdapter.handleRequest(
+						route.method as HttpMethod,
 						routePath + route.path,
 						wrappedMiddlewares,
 						actionFunction
@@ -71,7 +79,7 @@ export async function Router(
 	}
 
 	// next is required for express to recognize this as an error handler
-	app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
+	app.use((err: Error, req: HttpRequest, res: HttpResponse, next: NextFunction) => {
 		if (err instanceof CustomError) {
 			res.status(err.statusCode).json({ message: err.message });
 		} else {

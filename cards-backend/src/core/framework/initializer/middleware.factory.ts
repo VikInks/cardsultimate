@@ -2,16 +2,22 @@ import { MiddlewareInterface } from "../../domain/interfaces/adapters/middleware
 import { AuthorizationServiceInterface } from "../../domain/interfaces/services/authorization.service.interface";
 import { AdminMiddleware } from "../middleware/admin.middleware";
 import { SuperuserMiddleware } from "../middleware/superuser.middleware";
-import {AuthMiddleware} from "../middleware/auth.middleware";
-import {CheckUserStatusMiddleware} from "../middleware/user.status.middleware";
-import {UserServiceInterface} from "../../domain/interfaces/services/user.service.interface";
+import { AuthMiddleware} from "../middleware/auth.middleware";
+import { CheckUserStatusMiddleware } from "../middleware/user.status.middleware";
+import { UserServiceInterface } from "../../domain/interfaces/services/user.service.interface";
+import { rateLimitLoginMiddleware } from "../middleware/rate.limit.login.middleware";
+import {rateLimitRequestMiddleware} from "../middleware/rate.limit.request.middleware";
 
-export function middlewareFactory(authService: AuthorizationServiceInterface, userService: UserServiceInterface): {
+type middlewares = {
 	isSuperUser: () => MiddlewareInterface;
 	isAdmin: () => MiddlewareInterface;
 	isAuthenticated: () => MiddlewareInterface;
 	CheckUserStatus: () => MiddlewareInterface;
-} {
+	rateLimitLogin: () => MiddlewareInterface;
+	rateLimitRequest: () => MiddlewareInterface;
+};
+
+export function middlewareFactory(authService: AuthorizationServiceInterface, userService: UserServiceInterface): middlewares {
 	return {
 		isAdmin: (): MiddlewareInterface => {
 			return AdminMiddleware(authService);
@@ -24,6 +30,12 @@ export function middlewareFactory(authService: AuthorizationServiceInterface, us
 		},
 		CheckUserStatus: (): MiddlewareInterface => {
 			return CheckUserStatusMiddleware(userService);
+		},
+		rateLimitLogin: (): MiddlewareInterface => {
+			return rateLimitLoginMiddleware(userService);
+		},
+		rateLimitRequest: (): MiddlewareInterface => {
+			return rateLimitRequestMiddleware();
 		}
 	};
 }

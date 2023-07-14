@@ -7,15 +7,19 @@ import { DbAdapter } from "../../infrastructure/adapters/db.adapter";
 import {Document} from "bson";
 import {Collection} from "mongodb";
 import {TokenAdapter} from "../../infrastructure/adapters/token.adapter";
+import {BiscuitAdapter} from "../../infrastructure/adapters/biscuit.adapter";
+import {DocUiAdapter} from "../../infrastructure/adapters/docui.adapter";
 
 type AdapterClassMap<T extends Document> = {
 	bcrypt: HasherAdapter,
 	email: EmailAdapter,
-	express: ServerAdapter,
+	server: ServerAdapter,
 	passport: AuthorizeAdapter,
 	uuid: UuidAdapter,
 	mongo: DbAdapter<T>,
 	token: TokenAdapter,
+	biscuit: BiscuitAdapter,
+	docUi: DocUiAdapter,
 };
 
 type AdapterConstructorMap<T extends Document> = {
@@ -25,11 +29,13 @@ type AdapterConstructorMap<T extends Document> = {
 const adapterClasses: AdapterConstructorMap<Document> = {
 	bcrypt: HasherAdapter,
 	email: EmailAdapter,
-	express: ServerAdapter,
+	server: ServerAdapter,
 	passport: AuthorizeAdapter,
 	uuid: UuidAdapter,
 	mongo: DbAdapter,
 	token: TokenAdapter,
+	biscuit: BiscuitAdapter,
+	docUi: DocUiAdapter,
 };
 
 type AdapterInstanceMap<T> = {

@@ -33,3 +33,9 @@ node_modules/
 /cards-builder/script/trained_model/tokenizer_config.json
 /cards-builder/script/trained_model/vocab.json
 /import_wsl_ubuntu.py
+/crlf_to_lf.py
+/cards-builder/script/custom/csv_columns_name.py
+/cards-builder/script/custom/csvToJson.py
+/cards-builder/script/custom/game_data.json
+/cards-builder/script/custom/rules_text.txt
+/cards-builder/script/custom/txtTojson.py
