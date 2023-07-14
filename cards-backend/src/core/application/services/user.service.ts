@@ -13,7 +13,8 @@ export class UserService implements UserServiceInterface {
 		private mailService: EmailServiceInterface,
 		private readonly hasher: HasherInterface,
 		private readonly id: IdService
-	) {}
+	) {
+	}
 
 	async findById(userId: string): Promise<UserEntitiesInterface | null> {
 		return await this.userRepository.findById(userId);
@@ -144,11 +145,14 @@ export class UserService implements UserServiceInterface {
 	}
 
 	async findByUsername(username: string): Promise<UserEntitiesInterface | null> {
-		return await this.userRepository.findUserByUsername(username);
+		const user = await this.userRepository.findUserByUsername(username);
+		if (!user) {
+			throw new Error('User not found');
+		}
+		return user;
 	}
 
 	async findById(id: string): Promise<UserEntitiesInterface | null> {
 		return await this.userRepository.findById(id);
 	}
-
 }

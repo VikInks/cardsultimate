@@ -1,0 +1,44 @@
+{
+  "user": {
+    "id": "1",
+    "username": "test",
+    "email": "test@example.com",
+    "firstName": "test",
+    "lastName": "test",
+    "locality": {
+      "city": "test",
+      "region": "test",
+      "country": "test",
+      "npa": "test",
+      "street": "test",
+      "streetNumber": "test"
+    },
+    "password": "password",
+    "role": "test",
+    "archive": false,
+    "banned": false,
+    "createdAt": "2023-05-18T22:20:45.201Z",
+    "updatedAt": "2023-05-18T22:20:45.201Z",
+    "confirmationToken": null,
+    "confirmationExpiresAt": null,
+    "isConfirmed": true
+  },
+  "userUpdate": {
+    "email": "test2@email.com"
+  },
+  "userUpdateBan": {
+    "banned": true
+  },
+  "userUpdateArchive": {
+    "archive": true
+  },
+  "tokenConfirmation": {
+    "message": "User confirmed successfully"
+  },
+  "tokenConfirmationError": {
+    "message": "User not found"
+  },
+  "tokenConfirmed": {
+    "message": "User already confirmed"
+  }
+}
