@@ -15,6 +15,10 @@ export class UserService implements UserServiceInterface {
 		private readonly id: IdService
 	) {}
 
+	async findById(userId: string): Promise<UserEntitiesInterface | null> {
+		return await this.userRepository.findById(userId);
+    }
+
 	async findByEmail(email: string): Promise<UserEntitiesInterface | null> {
 		let user = await this.userRepository.findUserByEmail(email);
 		if (!user) {

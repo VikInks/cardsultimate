@@ -1,11 +1,13 @@
 import { UserController } from "../../application/controllers/user.controller";
 import { LoginController } from "../../application/controllers/login.controller";
 import {CollectionController} from "../../application/controllers/collection.controller";
+import {DeckController} from "../../application/controllers/deck.controller";
 
 
 type ControllerClassMap = {
 	UserController: UserController;
 	LoginController: LoginController;
+	DeckController: DeckController;
 	CollectionController: CollectionController;
 };
 
@@ -16,6 +18,7 @@ type ControllerConstructorMap = {
 const controllerClasses: ControllerConstructorMap = {
 	UserController,
 	LoginController,
+	DeckController,
 	CollectionController,
 };
 

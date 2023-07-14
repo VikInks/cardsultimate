@@ -4,6 +4,8 @@ import { LoginService } from "../../application/services/login.service";
 import { IdService } from "../../application/services/id.service";
 import { CleanupService } from "../../application/services/cleanup.service";
 import {AuthorizationService} from "../../application/services/authorization.service";
+import {CardService} from "../../application/services/card.service";
+import {DeckService} from "../../application/services/deck.service";
 import {CollectionService} from "../../application/services/collection.service";
 
 type ServiceClassMap = {
@@ -14,6 +16,8 @@ type ServiceClassMap = {
 	CleanupService: CleanupService;
 	AuthorizationService: AuthorizationService;
 	CollectionService: CollectionService;
+	CardService: CardService;
+	DeckService: DeckService;
 };
 
 type ServiceConstructorMap = {
@@ -27,6 +31,8 @@ const serviceClasses: ServiceConstructorMap = {
 	IdService,
 	CleanupService,
 	AuthorizationService,
+	CardService,
+	DeckService,
 	CollectionService,
 };
 
