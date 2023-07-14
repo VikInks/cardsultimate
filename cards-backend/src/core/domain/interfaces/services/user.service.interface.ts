@@ -11,7 +11,7 @@ export interface UserServiceInterface {
     ): Promise<UserEntitiesInterface>;
     findByEmail(email: string): Promise<UserEntitiesInterface | null>;
     getUnconfirmedUsers(): Promise<UserEntitiesInterface[]>;
-    confirmUser(confirmationCode: string): Promise<{ message: string }>;
+    confirmUser(confirmationCode: string): Promise<UserEntitiesInterface & { message: string }>;
     deleteUnconfirmedUsers(): Promise<UserEntitiesInterface[]>;
     findByUsername(username: string): Promise<UserEntitiesInterface | null>;
 	findById(userId: string): Promise<UserEntitiesInterface | null>;

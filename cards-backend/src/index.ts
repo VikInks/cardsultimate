@@ -9,6 +9,7 @@ import {createSuperUserIfNotExists} from "./dev/createsuperuser";
 import { Router } from './core/framework/router/generator/router';
 import {middlewareFactory} from "./core/framework/initializer/middleware.factory";
 import {DeckEntityInterface} from "./core/domain/endpoints/decks/deck.entity.interface";
+import {CollectionEntityInterface} from "./core/domain/endpoints/collection/collection.entity.interface";
 
 dotenv.config({path: __dirname + '/.env'});
 
@@ -36,13 +37,20 @@ InitDatabase().then(async (db) => {
 		collection: await db.getCollection('deck')
 	});
 
+	const mongCollectionAdapter = createTypedMongoAdapter<CollectionEntityInterface>({
+		entityName: 'collection',
+		collection: await db.getCollection('collection')
+	});
+
 	// Initialize the repositories
 	const repositoryFactory = initRepositories({
 		user: mongUserAdapter,
-		deck: mongoDeckAdapter
+		deck: mongoDeckAdapter,
+		collection: mongCollectionAdapter
 	});
 
 	const userRepositories = repositoryFactory.user;
+	const collectionRepositories = repositoryFactory.collection;
 	const deckRepositories = repositoryFactory.deck;
 
 	// Initialize the services
@@ -53,11 +61,13 @@ InitDatabase().then(async (db) => {
 	const loginService = serviceFactory.LoginService(userService, passportAdapter, bcryptAdapter);
 	const authorizationService = serviceFactory.AuthorizationService(userService, tokenAdapter);
 	const deckService = serviceFactory.DeckService(deckRepositories, userService);
+	const collectionService = serviceFactory.CollectionService(collectionRepositories, userService, idService);
 
 	// Initialize the controllers
 	const loginController = controllerFactory.LoginController(loginService);
-	const userController = controllerFactory.UserController(bcryptAdapter, userService, loginService, idService, emailService);
 	const deckController = controllerFactory.DeckController(deckService);
+	const userController = controllerFactory.UserController(bcryptAdapter, userService, loginService, idService, emailService, collectionService);
+	const collectionController = controllerFactory.CollectionController(collectionService, userService, idService);
 
 	const middlewaresFactory = middlewareFactory(authorizationService, userService);
 	const middlewares = {
@@ -74,7 +84,7 @@ InitDatabase().then(async (db) => {
 	cleanupService.removeUnconfirmedUsers();
 
 	// Initialize the router
-	Router(serverAdapter, biscuitAdapter, docUiAdapter, middlewares, [loginController, userController, deckController]).then(() => console.log("Routes configured"));
+	Router(serverAdapter, biscuitAdapter, docUiAdapter, middlewares, [loginController, userController, deckController, collectionController]).then(() => console.log("Routes configured"));
 
 	serverAdapter.start(8000, () => {
 		console.log('Server started on port 8000');

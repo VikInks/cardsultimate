@@ -8,6 +8,7 @@ import {EmailServiceInterface} from '../../domain/interfaces/services/email.serv
 import {CustomError} from '../../framework/error/customError';
 import {HttpRequest, HttpResponse, NextFunction} from "../../domain/interfaces/adapters/server.interface";
 import {UserEntitiesInterface} from "../../domain/endpoints/user.entities.interface";
+import {CollectionServiceInterface} from "../../domain/interfaces/services/collection.service.interface";
 
 @Route('/user')
 export class UserController implements UserControllerInterface {
@@ -17,7 +18,8 @@ export class UserController implements UserControllerInterface {
 		private readonly userService: UserServiceInterface,
 		private readonly loginService: LoginServiceInterface,
 		private readonly idService: IdInterface,
-		private readonly emailService: EmailServiceInterface
+		private readonly emailService: EmailServiceInterface,
+		private readonly collectionService: CollectionServiceInterface,
 	) {
 	}
 
@@ -100,8 +102,12 @@ export class UserController implements UserControllerInterface {
 	@Get('/confirm/:token')
 	async confirmAccount(req: HttpRequest, res: HttpResponse, next: NextFunction): Promise<void> {
 		try {
-			await this.userService.confirmUser(req.params.token).then(() => {
-				return res.status(200).json("User confirmed");
+			await this.userService.confirmUser(req.params.token).then((user) => {
+				this.collectionService.create(user.id).then(() => {
+					return res.status(200).json("User confirmed");
+				}).catch((error) => {
+					throw new CustomError(500, error.message);
+				});
 			}).catch((error) => {
 				throw new CustomError(500, error.message);
 			});

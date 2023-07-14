@@ -3,10 +3,13 @@ import {UserRepository} from "../../infrastructure/repositories/user.repository"
 import {DatabaseInterface} from "../../domain/interfaces/adapters/database.interface";
 import {DeckRepositoryInterface} from "../../domain/interfaces/repositories/deck.repository.interface";
 import {DeckRepository} from "../../infrastructure/repositories/deck.repository";
+import {CollectionRepositoryInterface} from "../../domain/interfaces/repositories/collection.repository.interface";
+import {CollectionRepository} from "../../infrastructure/repositories/collection.repository";
 
 type RepositoriesInterface = {
 	user: UserRepositoryInterface;
 	deck: DeckRepositoryInterface;
+	collection: CollectionRepositoryInterface;
 };
 
 type DatabaseAdapters = {
@@ -17,6 +20,7 @@ type DatabaseAdapters = {
 export function initRepositories(databaseAdapters: DatabaseAdapters): RepositoriesInterface {
 	return {
 		user: new UserRepository(databaseAdapters.user),
-		deck: new DeckRepository(databaseAdapters.deck)
+		deck: new DeckRepository(databaseAdapters.deck),
+		collection: new CollectionRepository(databaseAdapters.collection)
 	};
 }
