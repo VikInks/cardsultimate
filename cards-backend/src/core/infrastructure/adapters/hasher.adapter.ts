@@ -2,7 +2,7 @@
 import { hash, compare } from 'bcrypt'
 import {HasherInterface} from "../../domain/interfaces/adapters/hasher.interface";
 
-export class HasherAdapter implements HasherInterface {
+export default class HasherAdapter implements HasherInterface {
 	async hash(password: string, salt: number): Promise<string> {
 		return hash(password, salt);
 	}

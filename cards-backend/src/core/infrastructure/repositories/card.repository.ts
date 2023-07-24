@@ -2,7 +2,7 @@ import {DatabaseInterface} from "../../domain/interfaces/adapters/database.inter
 import {CardsEntityInterface as Card} from "../../domain/endpoints/cards/cards.entity.interface";
 import {CardRepositoryInterface} from "../../domain/interfaces/repositories/card.repository.interface";
 
-export class CardRepository implements CardRepositoryInterface {
+export default class CardRepository implements CardRepositoryInterface {
 	constructor(readonly mongoAdapter: DatabaseInterface<Card>) {}
 
 	async findById(id: string): Promise<Card | null> {

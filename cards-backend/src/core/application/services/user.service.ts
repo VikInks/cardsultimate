@@ -4,7 +4,7 @@ import {EmailServiceInterface} from '../../domain/interfaces/services/email.serv
 import {UserEntitiesInterface} from '../../domain/endpoints/user.entities.interface';
 import {CustomError} from '../../framework/error/customError';
 import {HasherInterface} from "../../domain/interfaces/adapters/hasher.interface";
-import {IdService} from "./id.service";
+import IdService from "./id.service";
 
 export class UserService implements UserServiceInterface {
 
@@ -150,9 +150,5 @@ export class UserService implements UserServiceInterface {
 			throw new Error('User not found');
 		}
 		return user;
-	}
-
-	async findById(id: string): Promise<UserEntitiesInterface | null> {
-		return await this.userRepository.findById(id);
 	}
 }

@@ -1,7 +1,7 @@
 import {BiscuitInterface} from "../../domain/interfaces/adapters/biscuit.interface";
 import cookieParser from "cookie-parser";
 
-export class BiscuitAdapter implements BiscuitInterface {
+export default class BiscuitAdapter implements BiscuitInterface {
 	private readonly biscuit: any = cookieParser;
 	constructor() {
 		this.biscuitParser = this.biscuitParser.bind(this);

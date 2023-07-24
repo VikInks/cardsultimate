@@ -6,9 +6,11 @@ import {UserServiceInterface} from "../../domain/interfaces/services/user.servic
 import {CollectionEntityInterface} from "../../domain/endpoints/collection/collection.entity.interface";
 import {Route, Post, Delete, Put, Get} from "../../framework/router/custom/decorator";
 import {CardsEntityInterface} from "../../domain/endpoints/cards/cards.entity.interface";
+import {Controller} from "../../../libraries/custom/injects/frameworks/decorators/types.decorators";
 
+@Controller()
 @Route('collection')
-export class CollectionController implements CollectionControllerInterface {
+export default class CollectionController implements CollectionControllerInterface {
 	constructor(private readonly collectionService: CollectionServiceInterface, private readonly userService: UserServiceInterface) {
 		this.collectionService = collectionService;
 		this.userService = userService;

@@ -12,7 +12,8 @@ COPY src ./src
 RUN npm install
 
 # Installer les dépendances de compilation pour bcrypt
-RUN apt-get update && apt-get install -y build-essential python
+RUN apt-get update && apt-get install -y build-essential
+RUN #apt-get update && apt-get install -y build-essential python
 
 # Reconstruire bcrypt pour l'environnement actuel
 RUN npm rebuild bcrypt --build-from-source
@@ -24,4 +25,4 @@ RUN npm install -g nodemon
 EXPOSE 8000
 
 # Lancer l'application
-CMD ["npm", "run", "start"]
+CMD ["npm", "run", "watch"]

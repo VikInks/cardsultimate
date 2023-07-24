@@ -1,7 +1,7 @@
 import cron from "node-cron";
 import {UserServiceInterface} from "../../domain/interfaces/services/user.service.interface";
 
-export class CleanupService {
+export default class CleanupService {
 	constructor(private readonly userService :UserServiceInterface) {}
 
 	removeUnconfirmedUsers(): void {

@@ -9,9 +9,11 @@ import {CustomError} from '../../framework/error/customError';
 import {HttpRequest, HttpResponse, NextFunction} from "../../domain/interfaces/adapters/server.interface";
 import {UserEntitiesInterface} from "../../domain/endpoints/user.entities.interface";
 import {CollectionServiceInterface} from "../../domain/interfaces/services/collection.service.interface";
+import {Controller} from "../../../libraries/custom/injects/frameworks/decorators/types.decorators";
 
+@Controller()
 @Route('/user')
-export class UserController implements UserControllerInterface {
+export default class UserController implements UserControllerInterface {
 
 	constructor(
 		private readonly hasher: HasherInterface,

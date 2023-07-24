@@ -1,8 +1,8 @@
 import {EmailServiceInterface} from "../../domain/interfaces/services/email.service.interface";
-import {EmailInterface} from "../../infrastructure/adapters/email.adapter";
+import EmailInterface from "../../infrastructure/adapters/email.adapter";
 
 
-export class EmailService implements EmailServiceInterface {
+export default class EmailService implements EmailServiceInterface {
 
 	constructor(private readonly emailAdapter: EmailInterface) {}
 

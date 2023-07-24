@@ -2,8 +2,10 @@ import { AuthorizationServiceInterface } from '../../domain/interfaces/services/
 import { UserServiceInterface } from '../../domain/interfaces/services/user.service.interface';
 import { UserEntitiesInterface } from '../../domain/endpoints/user.entities.interface';
 import { TokenInterface } from '../../domain/interfaces/adapters/token.interface';
+import {Service} from "../../../libraries/custom/injects/frameworks/decorators/types.decorators";
 
-export class AuthorizationService implements AuthorizationServiceInterface {
+@Service()
+export default class AuthorizationService implements AuthorizationServiceInterface {
     constructor(
         private readonly userService: UserServiceInterface,
         private readonly token: TokenInterface

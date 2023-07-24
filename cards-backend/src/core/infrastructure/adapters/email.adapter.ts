@@ -6,17 +6,15 @@ export interface EmailInterface {
 	sendMail(to: string, subject: string, html: string): Promise<void>;
 }
 
-export class EmailAdapter implements EmailInterface {
+export default class EmailAdapter implements EmailInterface {
 	private readonly transporter: nodemailer.Transporter | null;
 	private readonly logFolder: string;
-	private readonly mode: 'development' | 'production';
 
-	constructor(mode: 'development' | 'production') {
-		this.mode = mode;
+	constructor() {
 		this.transporter = null;
 		this.logFolder = '';
 
-		if (mode === 'production') {
+		if (process.env.NODE_ENV === 'production') {
 			this.transporter = nodemailer.createTransport({
 				host: "smtp.example.com",
 				port: 587,
@@ -35,7 +33,7 @@ export class EmailAdapter implements EmailInterface {
 	}
 
 	async sendMail(to: string, subject: string, html: string): Promise<void> {
-		if (this.mode === 'production' && this.transporter) {
+		if (process.env.NODE_ENV === 'production' && this.transporter) {
 			const mailOptions = {
 				from: process.env.EMAIL_FROM,
 				to,

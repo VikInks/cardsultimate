@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken';
 import {TokenInterface} from "../../domain/interfaces/adapters/token.interface";
 
-export class TokenAdapter implements TokenInterface {
+export default class TokenAdapter implements TokenInterface {
 	sign(payload: object, secretOrPrivateKey: string, options?: object): string {
 		return jwt.sign(payload, secretOrPrivateKey, options);
 	}

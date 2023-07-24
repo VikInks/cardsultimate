@@ -10,7 +10,7 @@ import {UserEntitiesInterface} from "../../domain/endpoints/user.entities.interf
 
 type HttpMethod = 'get' | 'post' | 'put' | 'delete';
 
-export class ServerAdapter implements HttpServer {
+export default class ServerAdapter implements HttpServer {
 	private readonly app: Application;
 
 	constructor() {
@@ -26,7 +26,6 @@ export class ServerAdapter implements HttpServer {
 				handler(this.adaptRequest(req), this.adaptResponse(res), next)
 		);
 	}
-
 
 	start(port: number, callback: () => void): void {
 		this.app.listen(port, callback);

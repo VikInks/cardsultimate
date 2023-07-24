@@ -3,7 +3,7 @@ import { OptionalId } from 'mongodb';
 import { UserRepositoryInterface } from '../../domain/interfaces/repositories/user.repository.interface';
 import { DatabaseInterface } from '../../domain/interfaces/adapters/database.interface';
 
-export class UserRepository implements UserRepositoryInterface {
+export default class UserRepository implements UserRepositoryInterface {
     constructor(private readonly mongoAdapter: DatabaseInterface<User>) {}
 
     // generic methods

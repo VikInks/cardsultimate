@@ -3,10 +3,12 @@ import {LoginControllerInterface} from "../../domain/interfaces/controllers/logi
 import {LoginServiceInterface} from "../../domain/interfaces/services/login.service.interface";
 import {CustomError} from "../../framework/error/customError";
 import {HttpRequest, HttpResponse} from "../../domain/interfaces/adapters/server.interface";
+import {Controller} from "../../../libraries/custom/injects/frameworks/decorators/types.decorators";
 
 
+@Controller()
 @Route("/login")
-export class LoginController implements LoginControllerInterface {
+export default class LoginController implements LoginControllerInterface {
 
 	constructor(private readonly loginService: LoginServiceInterface) {}
 

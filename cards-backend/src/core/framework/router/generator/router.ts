@@ -1,7 +1,7 @@
 import { ControllersInterfaces } from "../../../domain/interfaces/types/controllers.interfaces";
 import { RouteDefinitionInterface } from "../../../domain/interfaces/route/route.definition.interface";
 import { MiddlewaresInterfaces } from "../../../domain/interfaces/types/middlewares.type";
-import { generateDoc } from "../../../doc/swagger.doc";
+// import { generateDoc } from "../../../doc/swagger.doc";
 import { CustomError } from "../../error/customError";
 import { MiddlewareInterface } from "../../../domain/interfaces/adapters/middleware.interface";
 import cors from "cors";
@@ -38,9 +38,9 @@ export async function Router(
 
 	app.use(biscuitAdapter.biscuitParser());
 
-	const swaggerSpec = await generateDoc();
-	app.use("/swagger-admin/docs", docUiAdapter.docUiServe);
-	app.get("/swagger-admin/docs", docUiAdapter.docUiSetup(swaggerSpec));
+	// const swaggerSpec = await generateDoc();
+	// app.use("/swagger-admin/docs", docUiAdapter.docUiServe);
+	// app.get("/swagger-admin/docs", docUiAdapter.docUiSetup(swaggerSpec));
 
 	for (const controllerKey in controllerInstances) {
 		const controller = controllerInstances[controllerKey];

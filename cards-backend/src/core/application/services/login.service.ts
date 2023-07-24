@@ -4,7 +4,7 @@ import {AuthorizeInterface} from "../../domain/interfaces/adapters/authorize.int
 import {HasherInterface} from "../../domain/interfaces/adapters/hasher.interface";
 
 
-export class LoginService implements LoginServiceInterface {
+export default class LoginService implements LoginServiceInterface {
 
 	constructor(
 		private readonly userService: UserServiceInterface,

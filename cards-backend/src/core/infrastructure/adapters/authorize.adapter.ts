@@ -5,7 +5,7 @@ import {LocalityInformationsInterface} from "../../domain/endpoints/locality.inf
 import {TokenInterface} from "../../domain/interfaces/adapters/token.interface";
 import {HttpRequest, HttpResponse, NextFunction} from "../../domain/interfaces/adapters/server.interface";
 
-export class AuthorizeAdapter implements AuthorizeInterface {
+export default class AuthorizeAdapter implements AuthorizeInterface {
 	constructor(private readonly token: TokenInterface) {
 	}
 	public initialize() {

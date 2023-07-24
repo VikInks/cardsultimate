@@ -3,7 +3,7 @@ import { CollectionRepositoryInterface } from "../../domain/interfaces/repositor
 import { DatabaseInterface } from "../../domain/interfaces/adapters/database.interface";
 import {CardsEntityInterface} from "../../domain/endpoints/cards/cards.entity.interface";
 
-export class CollectionRepository implements CollectionRepositoryInterface {
+export default class CollectionRepository implements CollectionRepositoryInterface {
 	constructor(private readonly mongoAdapter: DatabaseInterface<Collection>) {}
 
 	// generic methods

@@ -2,7 +2,7 @@ import 'reflect-metadata';
 import {ReflectorInterface} from "../../domain/interfaces/adapters/reflector.interface";
 
 
-export class MetadataReflectorAdapter implements ReflectorInterface {
+export default class ReflectorAdapter implements ReflectorInterface {
 	getMetadata<T>(metadataKey: any, target: any): T {
 		return Reflect.getMetadata(metadataKey, target);
 	}

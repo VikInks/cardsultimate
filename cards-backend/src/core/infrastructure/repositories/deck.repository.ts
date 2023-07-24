@@ -3,7 +3,7 @@ import {DeckEntityInterface} from "../../domain/endpoints/decks/deck.entity.inte
 import {DatabaseInterface} from "../../domain/interfaces/adapters/database.interface";
 import {OptionalId} from "mongodb";
 
-export class DeckRepository implements DeckRepositoryInterface {
+export default class DeckRepository implements DeckRepositoryInterface {
 	constructor(private readonly mongoAdapter: DatabaseInterface<DeckEntityInterface>) {
 	}
 	async copyDeck(deckId: string, userId: string, reqUserId: string): Promise<DeckEntityInterface> {
