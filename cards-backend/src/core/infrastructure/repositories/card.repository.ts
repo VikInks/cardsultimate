@@ -1,7 +1,9 @@
 import {DatabaseInterface} from "../../domain/interfaces/adapters/database.interface";
 import {CardsEntityInterface as Card} from "../../domain/endpoints/cards/cards.entity.interface";
 import {CardRepositoryInterface} from "../../domain/interfaces/repositories/card.repository.interface";
+import {Repository} from "../../../libraries/custom/injects/frameworks/decorators/types.decorators";
 
+@Repository()
 export default class CardRepository implements CardRepositoryInterface {
 	constructor(readonly mongoAdapter: DatabaseInterface<Card>) {}
 

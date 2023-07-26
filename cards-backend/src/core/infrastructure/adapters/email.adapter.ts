@@ -1,11 +1,15 @@
 import nodemailer from "nodemailer";
 import * as fs from 'fs';
 import * as path from 'path';
+import {Adapter} from "../../../libraries/custom/injects/frameworks/decorators/types.decorators";
+
+
 
 export interface EmailInterface {
 	sendMail(to: string, subject: string, html: string): Promise<void>;
 }
 
+@Adapter()
 export default class EmailAdapter implements EmailInterface {
 	private readonly transporter: nodemailer.Transporter | null;
 	private readonly logFolder: string;

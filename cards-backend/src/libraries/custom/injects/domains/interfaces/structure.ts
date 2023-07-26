@@ -5,7 +5,7 @@ export interface Structure {
     Adapter: Component[]
 }
 
-interface Component {
+export interface Component {
     className: string,
     order?: number,
     dependencies: string[]

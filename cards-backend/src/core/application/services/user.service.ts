@@ -5,7 +5,9 @@ import {UserEntitiesInterface} from '../../domain/endpoints/user.entities.interf
 import {CustomError} from '../../framework/error/customError';
 import {HasherInterface} from "../../domain/interfaces/adapters/hasher.interface";
 import IdService from "./id.service";
+import {Service} from "../../../libraries/custom/injects/frameworks/decorators/types.decorators";
 
+@Service(2)
 export class UserService implements UserServiceInterface {
 
 	constructor(

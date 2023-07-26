@@ -7,9 +7,11 @@ import {
 	HttpServer
 } from "../../domain/interfaces/adapters/server.interface";
 import {UserEntitiesInterface} from "../../domain/endpoints/user.entities.interface";
+import {Adapter} from "../../../libraries/custom/injects/frameworks/decorators/types.decorators";
 
 type HttpMethod = 'get' | 'post' | 'put' | 'delete';
 
+@Adapter()
 export default class ServerAdapter implements HttpServer {
 	private readonly app: Application;
 

@@ -2,8 +2,10 @@ import {LoginServiceInterface} from "../../domain/interfaces/services/login.serv
 import {UserServiceInterface} from "../../domain/interfaces/services/user.service.interface";
 import {AuthorizeInterface} from "../../domain/interfaces/adapters/authorize.interface";
 import {HasherInterface} from "../../domain/interfaces/adapters/hasher.interface";
+import {Service} from "../../../libraries/custom/injects/frameworks/decorators/types.decorators";
 
 
+@Service(4)
 export default class LoginService implements LoginServiceInterface {
 
 	constructor(

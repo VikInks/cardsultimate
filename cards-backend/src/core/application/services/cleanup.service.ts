@@ -1,6 +1,8 @@
 import cron from "node-cron";
 import {UserServiceInterface} from "../../domain/interfaces/services/user.service.interface";
+import {Service} from "../../../libraries/custom/injects/frameworks/decorators/types.decorators";
 
+@Service(3)
 export default class CleanupService {
 	constructor(private readonly userService :UserServiceInterface) {}
 

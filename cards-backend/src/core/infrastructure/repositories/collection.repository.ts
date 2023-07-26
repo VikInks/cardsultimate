@@ -2,7 +2,9 @@ import {CollectionEntityInterface as Collection} from "../../domain/endpoints/co
 import { CollectionRepositoryInterface } from "../../domain/interfaces/repositories/collection.repository.interface";
 import { DatabaseInterface } from "../../domain/interfaces/adapters/database.interface";
 import {CardsEntityInterface} from "../../domain/endpoints/cards/cards.entity.interface";
+import {Repository} from "../../../libraries/custom/injects/frameworks/decorators/types.decorators";
 
+@Repository()
 export default class CollectionRepository implements CollectionRepositoryInterface {
 	constructor(private readonly mongoAdapter: DatabaseInterface<Collection>) {}
 

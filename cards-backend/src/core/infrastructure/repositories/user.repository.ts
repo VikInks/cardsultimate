@@ -2,7 +2,9 @@ import { UserEntitiesInterface as User } from '../../domain/endpoints/user.entit
 import { OptionalId } from 'mongodb';
 import { UserRepositoryInterface } from '../../domain/interfaces/repositories/user.repository.interface';
 import { DatabaseInterface } from '../../domain/interfaces/adapters/database.interface';
+import {Repository} from "../../../libraries/custom/injects/frameworks/decorators/types.decorators";
 
+@Repository()
 export default class UserRepository implements UserRepositoryInterface {
     constructor(private readonly mongoAdapter: DatabaseInterface<User>) {}
 

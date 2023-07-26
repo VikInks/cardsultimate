@@ -2,7 +2,9 @@ import {DeckRepositoryInterface} from "../../domain/interfaces/repositories/deck
 import {DeckEntityInterface} from "../../domain/endpoints/decks/deck.entity.interface";
 import {DatabaseInterface} from "../../domain/interfaces/adapters/database.interface";
 import {OptionalId} from "mongodb";
+import {Repository} from "../../../libraries/custom/injects/frameworks/decorators/types.decorators";
 
+@Repository()
 export default class DeckRepository implements DeckRepositoryInterface {
 	constructor(private readonly mongoAdapter: DatabaseInterface<DeckEntityInterface>) {
 	}

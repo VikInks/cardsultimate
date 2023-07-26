@@ -4,7 +4,9 @@ import { UserEntitiesInterface as user} from "../../domain/endpoints/user.entiti
 import {LocalityInformationsInterface} from "../../domain/endpoints/locality.informations.interface";
 import {TokenInterface} from "../../domain/interfaces/adapters/token.interface";
 import {HttpRequest, HttpResponse, NextFunction} from "../../domain/interfaces/adapters/server.interface";
+import {Adapter} from "../../../libraries/custom/injects/frameworks/decorators/types.decorators";
 
+@Adapter()
 export default class AuthorizeAdapter implements AuthorizeInterface {
 	constructor(private readonly token: TokenInterface) {
 	}

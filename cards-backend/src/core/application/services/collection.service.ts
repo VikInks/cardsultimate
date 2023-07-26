@@ -4,7 +4,9 @@ import {CollectionEntityInterface} from "../../domain/endpoints/collection/colle
 import {CustomError} from "../../framework/error/customError";
 import {CardsEntityInterface} from "../../domain/endpoints/cards/cards.entity.interface";
 import {IdInterface} from "../../domain/interfaces/adapters/id.interface";
+import {Service} from "../../../libraries/custom/injects/frameworks/decorators/types.decorators";
 
+@Service(8)
 export default class CollectionService implements CollectionServiceInterface {
 	constructor(private readonly collectionRepository: CollectionRepositoryInterface, private readonly idService: IdInterface) {
 		this.collectionRepository = collectionRepository;

@@ -1,8 +1,9 @@
-
 import { Document, ObjectId } from "bson";
 import {Collection, InsertOneResult, OptionalId, WithId} from "mongodb";
 import {DatabaseInterface} from "../../domain/interfaces/adapters/database.interface";
+import {Adapter} from "../../../libraries/custom/injects/frameworks/decorators/types.decorators";
 
+@Adapter()
 export default class DbAdapter<T extends Document> implements DatabaseInterface<T> {
 	private readonly collectionName: string;
 	readonly collection: Collection;

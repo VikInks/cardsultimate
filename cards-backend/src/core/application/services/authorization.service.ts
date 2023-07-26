@@ -4,7 +4,7 @@ import { UserEntitiesInterface } from '../../domain/endpoints/user.entities.inte
 import { TokenInterface } from '../../domain/interfaces/adapters/token.interface';
 import {Service} from "../../../libraries/custom/injects/frameworks/decorators/types.decorators";
 
-@Service()
+@Service(5)
 export default class AuthorizationService implements AuthorizationServiceInterface {
     constructor(
         private readonly userService: UserServiceInterface,

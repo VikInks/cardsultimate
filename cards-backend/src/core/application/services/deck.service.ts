@@ -2,7 +2,9 @@ import {DeckServiceInterface} from "../../domain/interfaces/services/deck.servic
 import {DeckEntityInterface} from "../../domain/endpoints/decks/deck.entity.interface";
 import {DeckRepositoryInterface} from "../../domain/interfaces/repositories/deck.repository.interface";
 import {UserServiceInterface} from "../../domain/interfaces/services/user.service.interface";
+import {Service} from "../../../libraries/custom/injects/frameworks/decorators/types.decorators";
 
+@Service(6)
 export default class DeckService implements DeckServiceInterface {
 	constructor(private readonly deckRepository: DeckRepositoryInterface, private readonly userService: UserServiceInterface) {
 	}

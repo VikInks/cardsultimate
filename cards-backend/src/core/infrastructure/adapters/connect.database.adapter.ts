@@ -1,7 +1,9 @@
 import {Collection, Db, MongoClient} from 'mongodb';
 import { Document } from "mongodb";
 import {IDatabaseConnection} from "../../domain/interfaces/adapters/database.interface";
+import {Adapter} from "../../../libraries/custom/injects/frameworks/decorators/types.decorators";
 
+@Adapter()
 export default class MongoDatabaseConnection extends IDatabaseConnection {
 	client: MongoClient;
 	db!: Db;
