@@ -5,4 +5,5 @@ export interface CollectionControllerInterface {
 	getCollection: (req: any, res: any) => Promise<void>;
 	updateCollection: (req: any, res: any) => Promise<CollectionEntityInterface | null>;
 	deleteCollection: (req: any, res: any) => Promise<void>;
+	addCardToCollection: (req: any, res: any) => Promise<void>;
 }

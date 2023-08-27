@@ -1,4 +1,5 @@
 import {UserEntitiesInterface} from "../../endpoints/user.entities.interface";
+import {MiddlewareInterface} from "./middleware.interface";
 
 export type HttpMethod = 'get' | 'post' | 'put' | 'delete';
 

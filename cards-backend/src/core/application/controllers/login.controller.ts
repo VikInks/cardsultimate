@@ -59,7 +59,8 @@ export class LoginController implements LoginControllerInterface {
 						maxAge: 86400000,
 						httpOnly: true,
 						path: '/',
-						secure: process.env.NODE_ENV === 'production'
+						secure: process.env.NODE_ENV === 'production',
+						sameSite: 'strict',
 					});
 					res.status(200).json({message: "User successfully connected"});
 				}
@@ -86,6 +87,11 @@ export class LoginController implements LoginControllerInterface {
 	 */
 	@Post("/signout")
 	async disconnect(req: HttpRequest, res: HttpResponse) {
+		const existingCookie = req.cookie.cardsToken;
+		if (!existingCookie) {
+			return res.status(404).json({message: "No user connected"});
+		}
+
 		try {
 			await this.loginService.disconnect();
 			res.clearCookie('cardsToken');

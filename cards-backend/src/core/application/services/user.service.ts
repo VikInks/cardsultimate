@@ -151,8 +151,4 @@ export class UserService implements UserServiceInterface {
 		}
 		return user;
 	}
-
-	async findById(id: string): Promise<UserEntitiesInterface | null> {
-		return await this.userRepository.findById(id);
-	}
 }

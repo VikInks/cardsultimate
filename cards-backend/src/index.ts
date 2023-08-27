@@ -84,7 +84,7 @@ InitDatabase().then(async (db) => {
 	cleanupService.removeUnconfirmedUsers();
 
 	// Initialize the router
-	Router(serverAdapter, biscuitAdapter, docUiAdapter, middlewares, [loginController, userController, deckController, collectionController]).then(() => console.log("Routes configured"));
+	Router(serverAdapter, biscuitAdapter, docUiAdapter, middlewares, [loginController, userController, collectionController, deckController]).then(() => console.log("Routes configured"));
 
 	serverAdapter.start(8000, () => {
 		console.log('Server started on port 8000');

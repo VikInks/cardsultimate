@@ -6,4 +6,5 @@ export interface CollectionRepositoryInterface {
 	update(card: CardsEntityInterface, collectionId:string, ownerId: string): Promise<Collection>;
 	deleteById(id: string, ownerId: string): Promise<boolean>;
 	getById(ownerId: string): Promise<Collection | null>;
+    addCardToCollection(collectionId: string, card: CardsEntityInterface, user: string): Promise<Collection>;
 }

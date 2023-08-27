@@ -6,4 +6,5 @@ export interface CollectionServiceInterface {
 	delete(id: string, ownerId: string): Promise<boolean>;
 	update(item: CardsEntityInterface, collectionId: string, ownerId: string): Promise<CollectionEntityInterface>;
 	getCollectionByOwner(idOwner: string): Promise<CollectionEntityInterface | null>;
+    addCardToCollection(collectionId: any, cardId: any, user: any): Promise<void>;
 }

@@ -46,4 +46,11 @@ export class CollectionService implements CollectionServiceInterface {
 		}
 	}
 
+	async addCardToCollection(collectionId: string, card: CardsEntityInterface, user: string): Promise<void> {
+		try {
+			await this.collectionRepository.addCardToCollection(collectionId, card, user);
+		} catch (e) {
+			throw new CustomError(500, 'Error adding card to collection of user, please contact support');
+		}
+	}
 }

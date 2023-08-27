@@ -175,4 +175,58 @@ export class CollectionController implements CollectionControllerInterface {
 			return null;
 		}
 	}
+
+	/**
+	 * @swagger
+	 * /addCard/{id}/:
+	 *   post:
+	 *     tags:
+	 *       - Collections
+	 *     description: Adds a card to a collection.
+	 *     parameters:
+	 *       - in: path
+	 *         name: id
+	 *         required: true
+	 *         description: ID of the collection.
+	 *         schema:
+	 *           type: string
+	 *       - in: header
+	 *         name: Authorization
+	 *         required: true
+	 *         description: JWT authentication token.
+	 *         schema:
+	 *           type: string
+	 *     requestBody:
+	 *       description: Data of the card to add.
+	 *       required: true
+	 *       content:
+	 *         application/json:
+	 *           schema:
+	 *             type: object
+	 *             properties:
+	 *
+	 *     responses:
+	 *       200:
+	 *         description: Card successfully added to the collection.
+	 *       401:
+	 *         description: Unauthorized.
+	 *       500:
+	 *         description: Internal server error.
+	 */
+	@Post('/addCard/:id/', { middlewares: ['auth'] })
+	async addCardToCollection(req: HttpRequest, res: HttpRequest): Promise<void> {
+		const user = req.user?.id;
+		const owner = user == await this.collectionService.getCollectionByOwner(req.params.id).then((collection) => {return collection?.idOwner});
+		if (!owner || !user) {
+			throw new CustomError(401);
+		}
+		const collectionId = req.params.id;
+		const card = req.body;
+		try {
+			await this.collectionService.addCardToCollection(collectionId, card, user);
+			throw new CustomError(200);
+		} catch (e) {
+			throw new CustomError(500);
+		}
+	}
 }
