@@ -1,7 +1,7 @@
 import {HttpRequest, HttpResponse, NextFunction} from "../../domain/interfaces/adapters/server.interface";
 import {MiddlewareInterface} from "../../domain/interfaces/adapters/middleware.interface";
 import {UserServiceInterface} from "../../domain/interfaces/services/user.service.interface";
-import {CustomError} from "../error/customError";
+import {CustomResponse} from "../error/customResponse";
 
 export function rateLimitLoginMiddleware(userService: UserServiceInterface): MiddlewareInterface{
 	const loginAttempts = new Map<string, { count: number, lastAttempt: Date, lockedUntil: Date }>();
@@ -12,7 +12,7 @@ export function rateLimitLoginMiddleware(userService: UserServiceInterface): Mid
 			const attempts = loginAttempts.get(req.body.email) || { count: 0, lastAttempt: now, lockedUntil: new Date(0) };
 
 			if (attempts.lockedUntil > now) {
-				throw new CustomError(429, 'Too many login attempts, please try again later.');
+				throw new CustomResponse(429, 'Too many login attempts, please try again later.');
 			}
 
 			try {

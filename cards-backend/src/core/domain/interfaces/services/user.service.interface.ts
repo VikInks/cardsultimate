@@ -9,10 +9,10 @@ export interface UserServiceInterface {
         ban?: boolean,
         archive?: boolean
     ): Promise<UserEntitiesInterface>;
-    findByEmail(email: string): Promise<UserEntitiesInterface | null>;
+    findByEmail(email: string): Promise<UserEntitiesInterface>;
     getUnconfirmedUsers(): Promise<UserEntitiesInterface[]>;
     confirmUser(confirmationCode: string): Promise<UserEntitiesInterface & { message: string }>;
     deleteUnconfirmedUsers(): Promise<UserEntitiesInterface[]>;
-    findByUsername(username: string): Promise<UserEntitiesInterface | null>;
-	findById(userId: string): Promise<UserEntitiesInterface | null>;
+    findByUsername(username: string): Promise<UserEntitiesInterface>;
+	findById(userId: string): Promise<UserEntitiesInterface>;
 }

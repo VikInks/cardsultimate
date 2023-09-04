@@ -1,9 +1,9 @@
-import {UserServiceInterface} from '../../domain/interfaces/services/user.service.interface';
-import {UserRepositoryInterface} from '../../domain/interfaces/repositories/user.repository.interface';
-import {EmailServiceInterface} from '../../domain/interfaces/services/email.service.interface';
-import {UserEntitiesInterface} from '../../domain/endpoints/user.entities.interface';
-import {CustomError} from '../../framework/error/customError';
-import {HasherInterface} from "../../domain/interfaces/adapters/hasher.interface";
+import {UserServiceInterface} from '../../../domain/interfaces/services/user.service.interface';
+import {UserRepositoryInterface} from '../../../domain/interfaces/repositories/user.repository.interface';
+import {EmailServiceInterface} from '../../../domain/interfaces/services/email.service.interface';
+import {UserEntitiesInterface} from '../../../domain/endpoints/user.entities.interface';
+import {CustomResponse} from '../../../framework/error/customResponse';
+import {HasherInterface} from "../../../domain/interfaces/adapters/hasher.interface";
 import {IdService} from "./id.service";
 
 export class UserService implements UserServiceInterface {
@@ -16,15 +16,15 @@ export class UserService implements UserServiceInterface {
 	) {
 	}
 
-	async findById(userId: string): Promise<UserEntitiesInterface | null> {
-		return await this.userRepository.findById(userId);
+	async findById(userId: string): Promise<UserEntitiesInterface> {
+		let user = await this.userRepository.findById(userId);
+		if (!user) throw new CustomResponse(404);
+		return user;
     }
 
-	async findByEmail(email: string): Promise<UserEntitiesInterface | null> {
+	async findByEmail(email: string): Promise<UserEntitiesInterface> {
 		let user = await this.userRepository.findUserByEmail(email);
-		if (!user) {
-			user = null;
-		}
+		if (!user) throw new CustomResponse(404);
 		return user;
 	}
 
@@ -43,15 +43,15 @@ export class UserService implements UserServiceInterface {
 	async confirmUser(confirmationCode: string): Promise<UserEntitiesInterface & { message: string }> {
 		const user = await this.userRepository.findUserByConfirmationCode(confirmationCode);
 		if (!user) {
-			throw new CustomError(404, 'Invalid confirmation code');
+			throw new CustomResponse(404, 'Invalid confirmation code');
 		}
 
 		if (user.isConfirmed) {
-			throw new CustomError(400, 'User is already confirmed');
+			throw new CustomResponse(400, 'User is already confirmed');
 		}
 
 		if (user.confirmationExpiresAt && user.confirmationExpiresAt < new Date()) {
-			throw new CustomError(400, 'Confirmation link has expired');
+			throw new CustomResponse(400, 'Confirmation link has expired');
 		}
 
 		user.isConfirmed = true;
@@ -67,7 +67,7 @@ export class UserService implements UserServiceInterface {
 	async create(item: UserEntitiesInterface): Promise<UserEntitiesInterface> {
 		const existingUser = await this.userRepository.findUserByEmail(item.email);
 		if (existingUser) {
-			throw new CustomError(400, 'User already exists');
+			throw new CustomResponse(400, 'User already exists');
 		}
 		const confirmationExpiresIn = 24 * 60 * 60 * 1000; // 24 hours
 		const confirmationExpiresAt = new Date(Date.now() + confirmationExpiresIn);
@@ -144,11 +144,9 @@ export class UserService implements UserServiceInterface {
 		return this.userRepository.update(user.id, userUpdate);
 	}
 
-	async findByUsername(username: string): Promise<UserEntitiesInterface | null> {
+	async findByUsername(username: string): Promise<UserEntitiesInterface> {
 		const user = await this.userRepository.findUserByUsername(username);
-		if (!user) {
-			throw new Error('User not found');
-		}
+		if (!user) throw new Error('User not found');
 		return user;
 	}
 }

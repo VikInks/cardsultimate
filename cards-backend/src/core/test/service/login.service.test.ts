@@ -1,7 +1,7 @@
-import {UserService} from "../../application/services/user.service";
+import {UserService} from "../../application/services/application/user.service";
 import {AuthorizeInterface} from "../../domain/interfaces/adapters/authorize.interface";
 import {HasherInterface} from "../../domain/interfaces/adapters/hasher.interface";
-import {LoginService} from "../../application/services/login.service";
+import {LoginService} from "../../application/services/application/login.service";
 import {MockProxy, mock} from "jest-mock-extended";
 import * as testData from '../ressources/test.data.json';
 

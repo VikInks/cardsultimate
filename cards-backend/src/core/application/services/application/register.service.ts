@@ -1,11 +1,11 @@
-import {CustomError} from "../../framework/error/customError";
-import {HttpRequest, HttpResponse, NextFunction} from "../../domain/interfaces/adapters/server.interface";
+import {CustomResponse} from "../../../framework/error/customResponse";
+import {HttpRequest, HttpResponse, NextFunction} from "../../../domain/interfaces/adapters/server.interface";
 import {IdService} from "./id.service";
-import {HasherInterface} from "../../domain/interfaces/adapters/hasher.interface";
-import {EmailServiceInterface} from "../../domain/interfaces/services/email.service.interface";
-import {UserRepositoryInterface} from "../../domain/interfaces/repositories/user.repository.interface";
-import {RegisterServiceInterface} from "../../domain/interfaces/services/register.service.interface";
-import {UserEntitiesInterface} from "../../domain/endpoints/user.entities.interface";
+import {HasherInterface} from "../../../domain/interfaces/adapters/hasher.interface";
+import {EmailServiceInterface} from "../../../domain/interfaces/services/email.service.interface";
+import {UserRepositoryInterface} from "../../../domain/interfaces/repositories/user.repository.interface";
+import {RegisterServiceInterface} from "../../../domain/interfaces/services/register.service.interface";
+import {UserEntitiesInterface} from "../../../domain/endpoints/user.entities.interface";
 
 export class RegisterService implements RegisterServiceInterface {
     constructor(
@@ -22,11 +22,11 @@ export class RegisterService implements RegisterServiceInterface {
             const userData: UserEntitiesInterface = req.body;
             const user = await this.userRepository.findUserByEmail(email);
             if (user) {
-                throw new CustomError(400, 'Email already exists');
+                throw new CustomResponse(400, 'Email already exists');
             }
             const usernameExists = await this.userRepository.findUserByUsername(username);
             if (usernameExists) {
-                throw new CustomError(401, 'Username already exists');
+                throw new CustomResponse(401, 'Username already exists');
             }
             const hashedPassword = await this.hasher.hash(password, 10);
             const confirmationCode = this.id.uuid();

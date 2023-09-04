@@ -4,17 +4,16 @@ import {InitDatabase} from "./core/framework/initializer/initDatabase";
 import {serviceFactory} from "./core/framework/initializer/services.factory";
 import {controllerFactory} from "./core/framework/initializer/controllers.factory";
 import {initRepositories} from "./core/framework/initializer/repositories.factory";
-import {UserEntitiesInterface} from "./core/domain/endpoints/user.entities.interface";
 import {createSuperUserIfNotExists} from "./dev/createsuperuser";
 import { Router } from './core/framework/router/generator/router';
 import {middlewareFactory} from "./core/framework/initializer/middleware.factory";
-import {DeckEntityInterface} from "./core/domain/endpoints/decks/deck.entity.interface";
-import {CollectionEntityInterface} from "./core/domain/endpoints/collection/collection.entity.interface";
+import {utilsFactory} from "./core/framework/initializer/utils.factory";
 
 dotenv.config({path: __dirname + '/.env'});
 
 InitDatabase().then(async (db) => {
 	console.log('Database connected');
+	console.log(process.env.NODE_ENV == 'development' ? 'Development mode' : 'Production mode');
 
 	// Initialize the adapters
 	const bcryptAdapter = adapterFactory.bcrypt();
@@ -26,32 +25,27 @@ InitDatabase().then(async (db) => {
 	const biscuitAdapter = adapterFactory.biscuit();
 	const docUiAdapter = adapterFactory.docUi();
 
-	// Initialize the database user adapter for user repository
-	const mongUserAdapter = createTypedMongoAdapter<UserEntitiesInterface>({
-		entityName: 'user',
-		collection: await db.getCollection('user')
-	});
+	const mongoList = {
+		user: 'user',
+		deck: 'deck',
+		collection: 'collection'
+	};
 
-	const mongoDeckAdapter = createTypedMongoAdapter<DeckEntityInterface>({
-		entityName: 'deck',
-		collection: await db.getCollection('deck')
-	});
+	const adapters: any = {};
+	for (const [entityName, collectionName] of Object.entries(mongoList)) {
+		adapters[entityName] = createTypedMongoAdapter({
+			entityName: entityName,
+			collection: await db.getCollection(collectionName)
+		});
+	}
 
-	const mongCollectionAdapter = createTypedMongoAdapter<CollectionEntityInterface>({
-		entityName: 'collection',
-		collection: await db.getCollection('collection')
-	});
-
-	// Initialize the repositories
-	const repositoryFactory = initRepositories({
-		user: mongUserAdapter,
-		deck: mongoDeckAdapter,
-		collection: mongCollectionAdapter
-	});
+	const repositoryFactory = initRepositories(adapters);
 
 	const userRepositories = repositoryFactory.user;
 	const collectionRepositories = repositoryFactory.collection;
 	const deckRepositories = repositoryFactory.deck;
+
+	const deckManagerUtils = utilsFactory.DeckManagerUtility(deckRepositories);
 
 	// Initialize the services
 	const emailService = serviceFactory.EmailService(emailAdapter);
@@ -60,7 +54,7 @@ InitDatabase().then(async (db) => {
 	const cleanupService = serviceFactory.CleanupService(userService);
 	const loginService = serviceFactory.LoginService(userService, passportAdapter, bcryptAdapter);
 	const authorizationService = serviceFactory.AuthorizationService(userService, tokenAdapter);
-	const deckService = serviceFactory.DeckService(deckRepositories, userService);
+	const deckService = serviceFactory.DeckService(deckRepositories, userService, deckManagerUtils);
 	const collectionService = serviceFactory.CollectionService(collectionRepositories, userService, idService);
 
 	// Initialize the controllers

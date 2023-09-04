@@ -1,6 +1,6 @@
-import {CardServiceInterface} from "../../domain/interfaces/services/card.service.interface";
-import { CardsEntityInterface as Card} from "../../domain/endpoints/cards/cards.entity.interface";
-import {CardRepositoryInterface} from "../../domain/interfaces/repositories/card.repository.interface";
+import {CardServiceInterface} from "../../../domain/interfaces/services/card.service.interface";
+import { CardsEntityInterface as Card} from "../../../domain/endpoints/cards/cards.entity.interface";
+import {CardRepositoryInterface} from "../../../domain/interfaces/repositories/card.repository.interface";
 
 export class CardService implements CardServiceInterface {
 	constructor(private readonly cardRepository: CardRepositoryInterface) {

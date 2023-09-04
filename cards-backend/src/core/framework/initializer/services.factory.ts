@@ -1,12 +1,12 @@
-import { UserService } from "../../application/services/user.service";
-import { EmailService } from "../../application/services/mail.service";
-import { LoginService } from "../../application/services/login.service";
-import { IdService } from "../../application/services/id.service";
-import { CleanupService } from "../../application/services/cleanup.service";
-import {AuthorizationService} from "../../application/services/authorization.service";
-import {CardService} from "../../application/services/card.service";
-import {DeckService} from "../../application/services/deck.service";
-import {CollectionService} from "../../application/services/collection.service";
+import { UserService } from "../../application/services/application/user.service";
+import { EmailService } from "../../application/services/application/mail.service";
+import { LoginService } from "../../application/services/application/login.service";
+import { IdService } from "../../application/services/application/id.service";
+import { CleanupService } from "../../application/services/application/cleanup.service";
+import {AuthorizationService} from "../../application/services/application/authorization.service";
+import {CardService} from "../../application/services/application/card.service";
+import {DeckService} from "../../application/services/application/deck.service";
+import {CollectionService} from "../../application/services/application/collection.service";
 
 type ServiceClassMap = {
 	UserService: UserService;

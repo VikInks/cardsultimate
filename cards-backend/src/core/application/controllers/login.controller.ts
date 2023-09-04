@@ -1,10 +1,15 @@
 import {Post, Route} from "../../framework/router/custom/decorator";
 import {LoginControllerInterface} from "../../domain/interfaces/controllers/login.controller.interface";
 import {LoginServiceInterface} from "../../domain/interfaces/services/login.service.interface";
-import {CustomError} from "../../framework/error/customError";
+import {CustomResponse} from "../../framework/error/customResponse";
 import {HttpRequest, HttpResponse} from "../../domain/interfaces/adapters/server.interface";
 
-
+/**
+ * @swagger
+ * tags:
+ *   name: Login
+ *   description: Login management
+ */
 @Route("/login")
 export class LoginController implements LoginControllerInterface {
 
@@ -60,13 +65,12 @@ export class LoginController implements LoginControllerInterface {
 						httpOnly: true,
 						path: '/',
 						secure: process.env.NODE_ENV === 'production',
-						sameSite: 'strict',
 					});
 					res.status(200).json({message: "User successfully connected"});
 				}
 			});
 		} catch (error) {
-			throw new CustomError(401, "Invalid credentials")
+			throw new CustomResponse(401, "Invalid credentials")
 		}
 	}
 

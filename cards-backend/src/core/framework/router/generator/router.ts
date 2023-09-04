@@ -45,8 +45,8 @@ function setupMiddlewares(app: any, serverAdapter: HttpServer, biscuitAdapter: B
 
 async function setupSwaggerDocs(app: any, docUiAdapter: DocUiInterface) {
 	const swaggerSpec = await generateDoc();
-	app.use("/swagger-admin/docs", docUiAdapter.docUiServe);
-	app.get("/swagger-admin/docs", docUiAdapter.docUiSetup(swaggerSpec));
+	app.use("/swagger/", docUiAdapter.docUiServe);
+	app.get("/swagger/", docUiAdapter.docUiSetup(swaggerSpec));
 }
 
 function setupRoutes(serverAdapter: HttpServer, controllerInstances: ControllersInterfaces, middlewares: MiddlewaresInterfaces) {

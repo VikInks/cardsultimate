@@ -5,11 +5,11 @@ import {
 	HTTP_STATUS_SUCCESS
 } from "../status/list.status";
 
-export class CustomError extends Error {
+export class CustomResponse extends Error {
 	statusCode: number;
 
 	constructor(statusCode: number, customMessage?: string) {
-		const message = customMessage || CustomError.getMessageFromStatusCode(statusCode);
+		const message = customMessage || CustomResponse.getMessageFromStatusCode(statusCode);
 		super(message);
 		this.statusCode = statusCode;
 	}

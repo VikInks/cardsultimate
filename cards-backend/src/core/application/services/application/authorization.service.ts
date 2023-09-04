@@ -1,7 +1,7 @@
-import { AuthorizationServiceInterface } from '../../domain/interfaces/services/authorization.service.interface';
-import { UserServiceInterface } from '../../domain/interfaces/services/user.service.interface';
-import { UserEntitiesInterface } from '../../domain/endpoints/user.entities.interface';
-import { TokenInterface } from '../../domain/interfaces/adapters/token.interface';
+import { AuthorizationServiceInterface } from '../../../domain/interfaces/services/authorization.service.interface';
+import { UserServiceInterface } from '../../../domain/interfaces/services/user.service.interface';
+import { UserEntitiesInterface } from '../../../domain/endpoints/user.entities.interface';
+import { TokenInterface } from '../../../domain/interfaces/adapters/token.interface';
 
 export class AuthorizationService implements AuthorizationServiceInterface {
     constructor(

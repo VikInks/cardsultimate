@@ -1,5 +1,5 @@
-import {EmailServiceInterface} from "../../domain/interfaces/services/email.service.interface";
-import {EmailInterface} from "../../infrastructure/adapters/email.adapter";
+import {EmailServiceInterface} from "../../../domain/interfaces/services/email.service.interface";
+import {EmailInterface} from "../../../infrastructure/adapters/email.adapter";
 
 
 export class EmailService implements EmailServiceInterface {

@@ -7,9 +7,9 @@ export class DeckRepository implements DeckRepositoryInterface {
 	constructor(private readonly mongoAdapter: DatabaseInterface<DeckEntityInterface>) {
 	}
 	async copyDeck(deckId: string, userId: string, reqUserId: string): Promise<DeckEntityInterface> {
-		const idDeck = await this.mongoAdapter.stringToObjectId(deckId);
-		const idUser = await this.mongoAdapter.stringToObjectId(userId);
-		const idReqUser = await this.mongoAdapter.stringToObjectId(reqUserId);
+		const idDeck = this.mongoAdapter.stringToObjectId(deckId);
+		const idUser = this.mongoAdapter.stringToObjectId(userId);
+		const idReqUser = this.mongoAdapter.stringToObjectId(reqUserId);
 
 		const deck = await this.mongoAdapter.findOne({ _id: idDeck });
 		const user = await this.mongoAdapter.findOne({ _id: idUser });
@@ -22,8 +22,13 @@ export class DeckRepository implements DeckRepositoryInterface {
 		return await this.create(deck, userId);
 	}
 
+	/**
+	 * Create a deck
+	 * @param deck
+	 * @param id
+	 */
 	async create(deck: DeckEntityInterface, id: string): Promise<DeckEntityInterface> {
-		const objectId = await this.mongoAdapter.stringToObjectId(id);
+		const objectId = this.mongoAdapter.stringToObjectId(id);
 		const user = await this.mongoAdapter.findOne({ _id: objectId });
 		if (!user) {
 			throw new Error('User not found');
@@ -36,8 +41,8 @@ export class DeckRepository implements DeckRepositoryInterface {
 	}
 
 	async deleteById(id: string, otherId: string): Promise<boolean> {
-		const objectId = await this.mongoAdapter.stringToObjectId(id);
-		const otherObjectId = await this.mongoAdapter.stringToObjectId(otherId);
+		const objectId = this.mongoAdapter.stringToObjectId(id);
+		const otherObjectId = this.mongoAdapter.stringToObjectId(otherId);
 		const deck = await this.mongoAdapter.findOne({ _id: objectId });
 		const user = await this.mongoAdapter.findOne({ _id: otherObjectId });
 		if (!deck || !user) {
@@ -56,7 +61,7 @@ export class DeckRepository implements DeckRepositoryInterface {
 	}
 
 	async findById(id: string): Promise<DeckEntityInterface | null> {
-		const objectId = await this.mongoAdapter.stringToObjectId(id);
+		const objectId = this.mongoAdapter.stringToObjectId(id);
 		const deck = await this.mongoAdapter.findOne({ _id: objectId });
 		if (!deck) {
 			throw new Error('Deck not found');
@@ -65,7 +70,7 @@ export class DeckRepository implements DeckRepositoryInterface {
 	}
 
 	async findDeckByUserUsername(userId: string): Promise<DeckEntityInterface[]> {
-		const objectId = await this.mongoAdapter.stringToObjectId(userId);
+		const objectId = this.mongoAdapter.stringToObjectId(userId);
 		const user = await this.mongoAdapter.findOne({ _id: objectId });
 		if (!user) {
 			throw new Error('User not found');
@@ -79,7 +84,7 @@ export class DeckRepository implements DeckRepositoryInterface {
 	}
 
 	async importDeck(deck: DeckEntityInterface, userId: string): Promise<DeckEntityInterface> {
-		const objectId = await this.mongoAdapter.stringToObjectId(userId);
+		const objectId = this.mongoAdapter.stringToObjectId(userId);
 		const user = await this.mongoAdapter.findOne({ _id: objectId });
 		if (!user) {
 			throw new Error('User not found');
@@ -92,7 +97,7 @@ export class DeckRepository implements DeckRepositoryInterface {
 	}
 
 	async update(id: string, deck: DeckEntityInterface): Promise<DeckEntityInterface> {
-		const objectId = await this.mongoAdapter.stringToObjectId(id);
+		const objectId = this.mongoAdapter.stringToObjectId(id);
 		const result = await this.mongoAdapter.findOneAndUpdate({ _id: objectId }, deck);
 		if (!result) {
 			throw new Error('Deck not found');

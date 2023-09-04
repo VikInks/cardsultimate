@@ -1,6 +1,6 @@
 import {HttpRequest, HttpResponse, NextFunction} from "../../domain/interfaces/adapters/server.interface";
 import {MiddlewareInterface} from "../../domain/interfaces/adapters/middleware.interface";
-import {CustomError} from "../error/customError";
+import {CustomResponse} from "../error/customResponse";
 
 export function rateLimitRequestMiddleware(maxAttempts: number = 50, timeFrame: number = 60 * 60 * 1000, banTime: number = 5 * 60 * 1000): MiddlewareInterface {
 	const attempts = new Map<string, { count: number, lastAttempt: Date, bannedUntil: Date }>();
@@ -14,7 +14,7 @@ export function rateLimitRequestMiddleware(maxAttempts: number = 50, timeFrame: 
 			const now = new Date();
 			if (entry) {
 				if (entry.bannedUntil && entry.bannedUntil > now) {
-					throw new CustomError(429, "Too many bad requests from this IP");
+					throw new CustomResponse(429, "Too many bad requests from this IP");
 				}
 
 				if ((now.getTime() - entry.lastAttempt.getTime()) > timeFrame) {
@@ -34,7 +34,7 @@ export function rateLimitRequestMiddleware(maxAttempts: number = 50, timeFrame: 
 
 				if (entry?.count > maxAttempts) {
 					entry.bannedUntil = new Date(now.getTime() + banTime);
-					throw new CustomError(429, "Too many requests from this IP");
+					throw new CustomResponse(429, "Too many requests from this IP");
 				}
 			}
 

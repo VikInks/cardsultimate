@@ -1,232 +1,223 @@
 import {CollectionControllerInterface} from "../../domain/interfaces/controllers/collection.controller.interface";
 import {HttpRequest, HttpResponse} from "../../domain/interfaces/adapters/server.interface";
-import {CustomError} from "../../framework/error/customError";
+import {CustomResponse} from "../../framework/error/customResponse";
 import {CollectionServiceInterface} from "../../domain/interfaces/services/collection.service.interface";
 import {UserServiceInterface} from "../../domain/interfaces/services/user.service.interface";
 import {CollectionEntityInterface} from "../../domain/endpoints/collection/collection.entity.interface";
 import {Route, Post, Delete, Put, Get} from "../../framework/router/custom/decorator";
-import {CardsEntityInterface} from "../../domain/endpoints/cards/cards.entity.interface";
 
+/**
+ * @swagger
+ * tags:
+ *   name: Collection
+ *   description: Collection management
+ */
 @Route('collection')
 export class CollectionController implements CollectionControllerInterface {
-	constructor(private readonly collectionService: CollectionServiceInterface, private readonly userService: UserServiceInterface) {
-		this.collectionService = collectionService;
-		this.userService = userService;
+
+	constructor(
+		private readonly collectionService: CollectionServiceInterface,
+		private readonly userService: UserServiceInterface
+	) {}
+
+	private async checkUserOwnership(req: HttpRequest): Promise<string> {
+		const userId = req.user?.id;
+		const role = req.user?.role;
+		const ownerId = await this.collectionService.getCollectionByOwner(req.params.id);
+		console.log(userId)
+		console.log(role)
+		console.log(ownerId)
+		if (role === 'admin') return userId as string;
+		if ((role !== 'admin' && role !== 'user') || (userId !== ownerId?.idOwner)) throw new CustomResponse(401, 'Unauthorized access to collection');
+		return userId as string;
 	}
 
 	/**
 	 * @swagger
-	 * /collection/create:
-	 *   post:
-	 *     security:
-	 *     - BearerAuth: []
-	 *     tags:
-	 *     - collection
-	 *     description: Crée une nouvelle collection
-	 *     produces:
-	 *     - application/json
-	 *     parameters:
-	 *     - in: body
-	 *       name: collection
-	 *       description: La collection à créer
-	 *       schema:
-	 *         $ref: '#/components/schemas/CollectionEntityInterface'
-	 *     responses:
-	 *       200:
-	 *         description: Collection créée avec succès
+	 *  /collection/create:
+	 *    post:
+	 *      summary: Create a collection
+	 *      tags: [Collection]
+	 *      security:
+	 *        - bearerAuth: []
+	 *      responses:
+	 *        200:
+	 *          description: Collection created successfully
+	 *        401:
+	 *          description: Unauthorized access to collection
+	 *        500:
+	 *          description: Error during collection creation
 	 */
 	@Post('/create', { middlewares: ['auth'] })
 	async createCollection(req: HttpRequest, res: HttpResponse): Promise<void> {
-		const user = req.user;
-		if (!user) {
-			throw new CustomError(500, 'you must create an account to set a new collection');
-		}
+		console.log('Prout de kaiser');
+		const userId = await this.checkUserOwnership(req);
 		try {
-			await this.collectionService.create(user.id);
+			await this.collectionService.create(userId);
 			res.status(200).json({message: "Collection created successfully"});
 		} catch (e) {
-			res.status(500).json('Error creating collection of user, please contact support');
+			throw new CustomResponse(500, 'Error during collection creation');
 		}
 	}
 
 	/**
 	 * @swagger
-	 * /collection/delete/{id}:
-	 *   delete:
-	 *     security:
-	 *     - BearerAuth: []
-	 *     tags:
-	 *     - collection
-	 *     description: Supprime une collection
-	 *     produces:
-	 *     - application/json
-	 *     parameters:
-	 *     - in: path
-	 *       name: id
-	 *       required: true
-	 *       description: L'ID de la collection
-	 *       schema:
-	 *         $ref: '#/components/schemas/CollectionEntityInterface'
-	 *       type: string
-	 *     responses:
-	 *       200:
-	 *         description: Collection supprimée avec succès
+	 *  /collection/delete/{id}:
+	 *    delete:
+	 *      summary: Delete a collection by ID
+	 *      tags: [Collection]
+	 *      security:
+	 *        - bearerAuth: []
+	 *      parameters:
+	 *        - in: path
+	 *          name: id
+	 *          required: true
+	 *          description: ID of the collection to delete
+	 *      responses:
+	 *        200:
+	 *          description: Collection deleted successfully
+	 *        401:
+	 *          description: Unauthorized access to collection
+	 *        500:
+	 *          description: Error during collection deletion
 	 */
-	@Delete('/delete/', { middlewares: ['auth'] })
+	@Delete('/delete/:id', { middlewares: ['auth'] })
 	async deleteCollection(req: HttpRequest, res: HttpResponse): Promise<void> {
-		const userId = req.user?.id || await this.collectionService.getCollectionByOwner(req.params.id).then((collection) => {return collection?.idOwner});
-		if(!userId) {
-			throw new CustomError(500, 'you must create an account to set a new collection');
-		}
-		const archivedAt = await this.userService.findById(userId).then((user) => {return user?.archivedAt});
-		if (archivedAt && archivedAt.getTime() < Date.now() - 31536000000) {
-			const collection = await this.collectionService.getCollectionByOwner(userId);
-			if (!collection?.id) {
-				throw res.status(500).json('you must create an account to set a new collection');
-			}
+		const userId = await this.checkUserOwnership(req);
+		const { archivedAt } = await this.userService.findById(userId);
+		const collectionId = req.params.id;
+		if (archivedAt && archivedAt?.getTime() < Date.now() - 31536000000) {
 			try {
-				await this.collectionService.delete(collection?.id, userId);
+				await this.collectionService.delete(collectionId, userId);
 				res.status(200).json({message: "Collection deleted successfully"});
 			} catch (e) {
-				res.status(500).json('Error deleting collection of user, please contact support');
+				throw new CustomResponse(500, 'Error during collection deletion');
 			}
 		}
 	}
 
 	/**
 	 * @swagger
-	 * /collection/get/{id}:
-	 *   get:
-	 *     security:
-	 *     - BearerAuth: []
-	 *     tags:
-	 *     - collection
-	 *     description: Récupère une collection
-	 *     produces:
-	 *     - application/json
-	 *     parameters:
-	 *     - in: path
-	 *       name: id
-	 *       required: true
-	 *       description: L'ID de la collection
-	 *       schema:
-	 *         $ref: '#/components/schemas/CollectionEntityInterface'
-	 *       type: string
-	 *     responses:
-	 *       200:
-	 *         description: Collection récupérée avec succès
+	 *  /collection/getCollection/:
+	 *    get:
+	 *      summary: Get a collection by owner ID
+	 *      tags: [Collection]
+	 *      security:
+	 *        - bearerAuth: []
+	 *      responses:
+	 *        200:
+	 *          description: Returns the collection
+	 *          content:
+	 *            application/json:
+	 *              schema:
+	 *                $ref: '#/components/schemas/CollectionEntityInterface'
+	 *        401:
+	 *          description: Unauthorized access to collection
+	 *        500:
+	 *          description: Error fetching the collection
 	 */
-	@Get('/get/', { middlewares: ['auth'] })
+	@Get('/getCollection/{userId}', { middlewares: ['auth'] })
 	async getCollection(req: HttpRequest, res: HttpResponse): Promise<void> {
-		const user = req.user?.id;
-		const owner = user == await this.collectionService.getCollectionByOwner(req.params.id).then((collection) => {return collection?.idOwner});
-		if (!owner|| !user) {
-			throw new CustomError(500, 'this is not your collection, you cannot access it');
-		}
 		try {
-			const collection = await this.collectionService.getCollectionByOwner(user);
+			const collection = await this.collectionService.getCollectionByOwner(req.params.userId);
 			res.status(200).json(collection);
 		} catch (e) {
-			res.status(500).json('Error getting collection of user, please contact support');
+			throw new CustomResponse(500, 'Error fetching the collection');
 		}
 	}
 
+
 	/**
 	 * @swagger
-	 * /collection/update/{id}:
-	 *   put:
-	 *     security:
-	 *     - BearerAuth: []
-	 *     tags:
-	 *     - collection
-	 *     description: Met à jour une collection
-	 *     produces:
-	 *     - application/json
-	 *     parameters:
-	 *     - in: body
-	 *       name: collection
-	 *       description: La collection à mettre à jour
-	 *       schema:
-	 *         $ref: '#/components/schemas/CollectionEntityInterface'
-	 *     - in: path
-	 *       name: id
-	 *       required: true
-	 *       description: L'ID de la collection
-	 *       type: string
-	 *     responses:
-	 *       200:
-	 *         description: Collection mise à jour avec succès
+	 *  /collection/update/{id}:
+	 *    put:
+	 *      summary: Update a collection by ID
+	 *      tags: [Collection]
+	 *      security:
+	 *        - bearerAuth: []
+	 *      parameters:
+	 *        - in: path
+	 *          name: id
+	 *          required: true
+	 *          description: ID of the collection to update
+	 *      requestBody:
+	 *        required: true
+	 *        content:
+	 *          application/json:
+	 *            schema:
+	 *              $ref: '#/components/schemas/CollectionEntityInterface'
+	 *      responses:
+	 *        200:
+	 *          description: Returns the updated collection
+	 *          content:
+	 *            application/json:
+	 *              schema:
+	 *                $ref: '#/components/schemas/CollectionEntityInterface'
+	 *        401:
+	 *          description: Unauthorized access to collection
+	 *        500:
+	 *          description: Error updating collection
 	 */
 	@Put('/update/:id', { middlewares: ['auth'] })
 	async updateCollection(req: HttpRequest, res: HttpResponse): Promise<CollectionEntityInterface | null> {
-		const user = req.user?.id;
-		const owner = user == await this.collectionService.getCollectionByOwner(req.params.id).then((collection) => {return collection?.idOwner});
-		if (!owner || !user) {
-			throw new CustomError(500, 'this is not your collection, you cannot access it');
-		}
-		const item = req.body as CardsEntityInterface;
-		const collectionId = req.params.id;
+		const userId = await this.checkUserOwnership(req);
+		const item = req.body;
 		try {
-			const collection = await this.collectionService.update(item, collectionId, user);
+			const collection = await this.collectionService.update(item, req.params.id, userId);
 			res.status(200).json(collection);
 			return collection;
 		} catch (e) {
-			res.status(500).json('Error updating collection of user, please contact support');
-			return null;
+			throw new CustomResponse(500, 'Error updating collection');
 		}
 	}
 
 	/**
 	 * @swagger
-	 * /addCard/{id}/:
-	 *   post:
-	 *     tags:
-	 *       - Collections
-	 *     description: Adds a card to a collection.
-	 *     parameters:
-	 *       - in: path
-	 *         name: id
-	 *         required: true
-	 *         description: ID of the collection.
-	 *         schema:
-	 *           type: string
-	 *       - in: header
-	 *         name: Authorization
-	 *         required: true
-	 *         description: JWT authentication token.
-	 *         schema:
-	 *           type: string
-	 *     requestBody:
-	 *       description: Data of the card to add.
-	 *       required: true
-	 *       content:
-	 *         application/json:
-	 *           schema:
-	 *             type: object
-	 *             properties:
-	 *
-	 *     responses:
-	 *       200:
-	 *         description: Card successfully added to the collection.
-	 *       401:
-	 *         description: Unauthorized.
-	 *       500:
-	 *         description: Internal server error.
+	 *  /collection/setPublic/{id}:
+	 *    post:
+	 *      summary: Set collection visibility to public
+	 *      tags: [Collection]
+	 *      security:
+	 *        - bearerAuth: []
+	 *      parameters:
+	 *        - in: path
+	 *          name: id
+	 *          required: true
+	 *          description: ID of the collection to set visibility
+	 *      requestBody:
+	 *        required: true
+	 *        content:
+	 *          application/json:
+	 *            schema:
+	 *              type: object
+	 *              properties:
+	 *                isPrivate:
+	 *                  type: boolean
+	 *                  description: A flag to determine if the collection should be private. Set to 'true' to make the collection private and 'false' otherwise.
+	 *      responses:
+	 *        200:
+	 *          description: Collection is now public
+	 *          content:
+	 *            application/json:
+	 *              schema:
+	 *                type: object
+	 *                properties:
+	 *                  message:
+	 *                    type: string
+	 *                    example: Collection is now public
+	 *        401:
+	 *          description: Unauthorized access to collection
+	 *        500:
+	 *          description: Error setting collection public
 	 */
-	@Post('/addCard/:id/', { middlewares: ['auth'] })
-	async addCardToCollection(req: HttpRequest, res: HttpRequest): Promise<void> {
-		const user = req.user?.id;
-		const owner = user == await this.collectionService.getCollectionByOwner(req.params.id).then((collection) => {return collection?.idOwner});
-		if (!owner || !user) {
-			throw new CustomError(401);
-		}
-		const collectionId = req.params.id;
-		const card = req.body;
+	@Post('/setPublic/:id', { middlewares: ['auth'] })
+	async setPublic(req: HttpRequest, res: HttpResponse): Promise<void> {
+		const userId = await this.checkUserOwnership(req);
 		try {
-			await this.collectionService.addCardToCollection(collectionId, card, user);
-			throw new CustomError(200);
+			await this.collectionService.publicCanView(userId, req.params.id, req.body.isPrivate);
+			res.status(200).json({message: "Collection is now public"});
 		} catch (e) {
-			throw new CustomError(500);
+			throw new CustomResponse(500, 'Error setting collection public');
 		}
 	}
 }

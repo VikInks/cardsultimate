@@ -1,11 +1,11 @@
 import {HttpRequest, HttpResponse, NextFunction} from "../../domain/interfaces/adapters/server.interface";
-import { CustomError } from "../error/customError";
+import { CustomResponse } from "../error/customResponse";
 
 export function ErrorHandlerMiddleware(err: Error, req: HttpRequest, res: HttpResponse, next: NextFunction) {
     const isDevelopment = process.env.NODE_ENV === 'development';
     console.log('Inside ErrorHandlerMiddleware:', res);
 
-    if (err instanceof CustomError) {
+    if (err instanceof CustomResponse) {
         res.status(err.statusCode).json({ message: err.message });
     } else {
         const errorMessage = isDevelopment ? `
