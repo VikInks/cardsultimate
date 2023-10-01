@@ -1,0 +1,107 @@
+import {DeckRepositoryInterface} from "../../config/interfaces/repositories/deck.repository.interface";
+import {DeckEntityInterface} from "../../domain/decks/deck.entity.interface";
+import {DatabaseInterface} from "../../config/interfaces/adapters/database.interface";
+import {OptionalId} from "mongodb";
+
+export class DeckRepository implements DeckRepositoryInterface {
+	constructor(private readonly mongoAdapter: DatabaseInterface<DeckEntityInterface>) {
+	}
+	async copyDeck(deckId: string, userId: string, reqUserId: string): Promise<DeckEntityInterface> {
+		const idDeck = this.mongoAdapter.stringToObjectId(deckId);
+		const idUser = this.mongoAdapter.stringToObjectId(userId);
+		const idReqUser = this.mongoAdapter.stringToObjectId(reqUserId);
+
+		const deck = await this.mongoAdapter.findOne({ _id: idDeck });
+		const user = await this.mongoAdapter.findOne({ _id: idUser });
+		const reqUser = await this.mongoAdapter.findOne({ _id: idReqUser });
+
+		if (!deck || !user || !reqUser) {
+			throw new Error('Deck not found');
+		}
+
+		return await this.create(deck, userId);
+	}
+
+	/**
+	 * Create a deck
+	 * @param deck
+	 * @param id
+	 */
+	async create(deck: DeckEntityInterface, id: string): Promise<DeckEntityInterface> {
+		const objectId = this.mongoAdapter.stringToObjectId(id);
+		const user = await this.mongoAdapter.findOne({ _id: objectId });
+		if (!user) {
+			throw new Error('User not found');
+		}
+		const result = await this.mongoAdapter.insertOne(deck);
+		if (!result.insertedId) {
+			throw new Error('Failed to insert deck.');
+		}
+		return { ...deck, id: result.insertedId.toHexString() };
+	}
+
+	async deleteById(id: string, otherId: string): Promise<boolean> {
+		const objectId = this.mongoAdapter.stringToObjectId(id);
+		const otherObjectId = this.mongoAdapter.stringToObjectId(otherId);
+		const deck = await this.mongoAdapter.findOne({ _id: objectId });
+		const user = await this.mongoAdapter.findOne({ _id: otherObjectId });
+		if (!deck || !user) {
+			throw new Error('Deck not found');
+		}
+		return await this.mongoAdapter.deleteOne({ id: objectId });
+	}
+
+	async findAll(): Promise<DeckEntityInterface[]> {
+		const decks = await this.mongoAdapter.find();
+		return decks.map((deck: OptionalId<DeckEntityInterface>) => {
+			const id = deck._id?.toHexString() || deck.id;
+			if (!id) throw new Error('Deck id is missing.');
+			return { ...deck, id, _id: undefined };
+		});
+	}
+
+	async findById(id: string): Promise<DeckEntityInterface | null> {
+		const objectId = this.mongoAdapter.stringToObjectId(id);
+		const deck = await this.mongoAdapter.findOne({ _id: objectId });
+		if (!deck) {
+			throw new Error('Deck not found');
+		}
+		return deck;
+	}
+
+	async findDeckByUserUsername(userId: string): Promise<DeckEntityInterface[]> {
+		const objectId = this.mongoAdapter.stringToObjectId(userId);
+		const user = await this.mongoAdapter.findOne({ _id: objectId });
+		if (!user) {
+			throw new Error('User not found');
+		}
+		const decks = await this.mongoAdapter.find();
+		return decks.map((deck: OptionalId<DeckEntityInterface>) => {
+			const id = deck._id?.toHexString() || deck.id;
+			if (!id) throw new Error('Deck id is missing.');
+			return { ...deck, id, _id: undefined };
+		});
+	}
+
+	async importDeck(deck: DeckEntityInterface, userId: string): Promise<DeckEntityInterface> {
+		const objectId = this.mongoAdapter.stringToObjectId(userId);
+		const user = await this.mongoAdapter.findOne({ _id: objectId });
+		if (!user) {
+			throw new Error('User not found');
+		}
+		const result = await this.mongoAdapter.insertOne(deck);
+		if (!result.insertedId) {
+			throw new Error('Failed to insert deck.');
+		}
+		return { ...deck, id: result.insertedId.toHexString() };
+	}
+
+	async update(id: string, deck: DeckEntityInterface): Promise<DeckEntityInterface> {
+		const objectId = this.mongoAdapter.stringToObjectId(id);
+		const result = await this.mongoAdapter.findOneAndUpdate({ _id: objectId }, deck);
+		if (!result) {
+			throw new Error('Deck not found');
+		}
+		return { ...deck, id };
+	}
+}
