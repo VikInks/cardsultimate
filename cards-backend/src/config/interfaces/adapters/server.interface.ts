@@ -1,5 +1,5 @@
-import {UserEntitiesInterface} from "../../endpoints/user.entities.interface";
-import {MiddlewareInterface} from "./middleware.interface";
+import {UserEntitiesInterface} from "../../../domain/user.entities.interface";
+
 
 export type HttpMethod = 'get' | 'post' | 'put' | 'delete';
 
