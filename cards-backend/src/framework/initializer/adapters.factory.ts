@@ -24,8 +24,7 @@ type AdapterClassMap<T extends Document> = {
 	biscuit: BiscuitAdapter,
 	docUi: DocUiAdapter,
 	discord: DiscordAdapter,
-	axios: AxiosAdapter,
-	card: CardRepository
+	axios: AxiosAdapter
 };
 
 type AdapterConstructorMap<T extends Document> = {
@@ -43,8 +42,7 @@ const adapterClasses: AdapterConstructorMap<Document> = {
 	biscuit: BiscuitAdapter,
 	docUi: DocUiAdapter,
 	discord: DiscordAdapter,
-	axios: AxiosAdapter,
-	card: CardRepository
+	axios: AxiosAdapter
 };
 
 type AdapterInstanceMap<T> = {

@@ -28,14 +28,13 @@ InitDatabase().then(async (db) => {
 	const docUiAdapter = adapterFactory.docUi();
 	const discordAdapter = adapterFactory.discord();
 	const axiosAdapter = adapterFactory.axios();
-	const cardAdapter = adapterFactory.card();
 
-	await cardAdapter.initializeCards().then(() => console.log('cards initialized'));
 
 	const mongoList = {
 		user: 'user',
 		deck: 'deck',
-		collection: 'collection'
+		collection: 'collection',
+		card: 'card'
 	};
 
 	const adapters: any = {};
@@ -51,6 +50,7 @@ InitDatabase().then(async (db) => {
 	const userRepositories = repositoryFactory.user;
 	const collectionRepositories = repositoryFactory.collection;
 	const deckRepositories = repositoryFactory.deck;
+	const cardRepositories = repositoryFactory.card;
 
 	const deckManagerUtils = utilsFactory.DeckManagerUtility(deckRepositories);
 
@@ -65,8 +65,14 @@ InitDatabase().then(async (db) => {
 	const collectionService = serviceFactory.CollectionService(collectionRepositories, userService, idService);
 	const discordService = serviceFactory.DiscordService(discordAdapter);
 	const redisService = serviceFactory.RedisService();
-	const cardService = serviceFactory.CardService(cardAdapter);
+	const cardService = serviceFactory.CardService(cardRepositories, redisService);
 	const bulkService = serviceFactory.BulkDataService(cardService, redisService, axiosAdapter);
+
+	await bulkService.getBulkData().then(async () => {
+		// todo vérifier que le téléchargement du bulk json est réalisé avant d'initialiser les cartes
+		timeupService.refreshCardDatabase();
+		await cardRepositories.initializeCards().then(() => console.log('cards initialized'));
+	});
 
 	// Initialize the controllers
 	const loginController = controllerFactory.LoginController(loginService);
@@ -91,10 +97,6 @@ InitDatabase().then(async (db) => {
 	}
 
 	await createSuperUserIfNotExists(userRepositories, bcryptAdapter, uuidAdapter).then(() => console.log('user initialized'));
-
-	await bulkService.getBulkData().then(() => {
-		timeupService.refreshCardDatabase();
-	});
 
 	timeupService.removeUnconfirmedUsers();
 

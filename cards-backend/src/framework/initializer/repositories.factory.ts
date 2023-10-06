@@ -5,11 +5,14 @@ import {DeckRepositoryInterface} from "../../config/interfaces/repositories/deck
 import {DeckRepository} from "../../infrastructure/repositories/deck.repository";
 import {CollectionRepositoryInterface} from "../../config/interfaces/repositories/collection.repository.interface";
 import {CollectionRepository} from "../../infrastructure/repositories/collection.repository";
+import {CardRepositoryInterface} from "../../config/interfaces/repositories/card.repository.interface";
+import {CardRepository} from "../../infrastructure/repositories/card.repository";
 
 type RepositoriesInterface = {
 	user: UserRepositoryInterface;
 	deck: DeckRepositoryInterface;
 	collection: CollectionRepositoryInterface;
+	card: CardRepositoryInterface;
 };
 
 type DatabaseAdapters = {
@@ -21,6 +24,7 @@ export function initRepositories(databaseAdapters: DatabaseAdapters): Repositori
 	return {
 		user: new UserRepository(databaseAdapters.user),
 		deck: new DeckRepository(databaseAdapters.deck),
-		collection: new CollectionRepository(databaseAdapters.collection)
+		collection: new CollectionRepository(databaseAdapters.collection),
+		card: new CardRepository(databaseAdapters.card)
 	};
 }
