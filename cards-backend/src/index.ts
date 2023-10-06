@@ -92,9 +92,10 @@ InitDatabase().then(async (db) => {
 
 	await createSuperUserIfNotExists(userRepositories, bcryptAdapter, uuidAdapter).then(() => console.log('user initialized'));
 
-	await bulkService.getBulkData();
+	await bulkService.getBulkData().then(() => {
+		timeupService.refreshCardDatabase();
+	});
 
-	timeupService.refreshCardDatabase();
 	timeupService.removeUnconfirmedUsers();
 
 	// Initialize the router

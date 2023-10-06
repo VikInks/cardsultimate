@@ -1,6 +1,15 @@
 import {RedisServiceInterface} from "../../../config/interfaces/services/redis.service.interface";
 import {RedisInterface} from "../../../config/interfaces/adapters/redis.interface";
 
+/**
+ * @implements {RedisServiceInterface}
+ * @param {RedisInterface} redisAdapter
+ * @public
+ * @version 1.0.0
+ * @description Redis service
+ * @returns {void}
+ * @author VikInks
+ */
 export class RedisService implements RedisServiceInterface {
     constructor(private readonly redisAdapter: RedisInterface) {}
 

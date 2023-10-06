@@ -1,23 +1,34 @@
-import {CardServiceInterface} from "../../../config/interfaces/services/card.service.interface";
-import {RedisServiceInterface} from "../../../config/interfaces/services/redis.service.interface";
-import {REDIS_TIMER} from "../../../config/redis.config";
 import {spawn} from 'child_process';
-import {AxiosInterface} from "../../../config/interfaces/adapters/axios.interface";
 import {BulkDataServiceInterface} from "../../../config/interfaces/services/bulk.data.service.interface";
+import {CardRepositoryInterface} from "../../../config/interfaces/repositories/card.repository.interface"; // Importez votre interface de repository de cartes
 
+/**
+ * @class BulkDataService
+ * @public
+ * @implements {BulkDataServiceInterface}
+ * @description BulkDataService class that implements BulkDataServiceInterface. This class is used to get bulk data from scryfall. It also has a method to get a card image from scryfall.
+ * @author VikInks
+ * @version 1.0.0
+ */
 export class BulkDataService implements BulkDataServiceInterface {
-    constructor(
-        private readonly cardService: CardServiceInterface,
-        private readonly redisClient: RedisServiceInterface,
-        private readonly axios: AxiosInterface
-    ) {
-    }
+    constructor(private readonly cardRepository: CardRepositoryInterface) {} // Injectez votre repository de cartes
 
+    /**
+     * @public
+     * @method getBulkData
+     * @description Method that gets bulk data from scryfall. It uses a python script to get the data and then stores it in a json file.
+     * @returns {Promise<void>}
+     * @throws {Error}
+     * @version 1.0.0
+     * @author VikInks
+     */
     async getBulkData(): Promise<void> {
         return new Promise((resolve, reject) => {
             const python = spawn("python", ["./cards-backend/src/framework/script/scryfall_bulk.py"]);
-            python.stdout.on("data", (data: any) => {
+            python.stdout.on("data", async (data: any) => {
                 console.log(data.toString());
+                const bulkData = JSON.parse(data.toString()); // Assurez-vous que les données sont au format JSON
+                await this.checkUpdateData(bulkData);
                 resolve();
             });
             python.stderr.on("error", (error: any) => {
@@ -26,31 +37,18 @@ export class BulkDataService implements BulkDataServiceInterface {
         });
     }
 
-    async getCardImage(card_name: string): Promise<void | null> {
-        const json_file: string = '../../src/scryfall/data/all_cards.json';
-        if (!json_file) {
-            try {
-                await this.getBulkData();
-                return this.getCardImage(card_name);
-            } catch (error) {
-                console.error("Error while fetching data from scryfall:", error);
-                return null;
+    private async checkUpdateData(bulkData: any[]): Promise<void> {
+        const json = require("../../../data/scryfall-default-cards.json");
+        if(!json) return;
+        const newCards = [];
+        for(let i = 0; i < bulkData.length; i++) {
+            if(bulkData[i].id !== json[i].id) {
+                newCards.push(bulkData[i]);
             }
         }
 
-        const card = await this.cardService.getCards({name: card_name}).then((card) => card instanceof Array ? card[0] : card);
-
-        if (!card) return null;
-
-        try {
-            const response = await this.axios.request.get(card.image_uris.small, {responseType: 'arraybuffer'});
-            if (!response.data) return null;
-
-            const imageBuffer = Buffer.from(response.data, 'binary');
-            await this.redisClient.cacheData(`card_image_small_id:${card.id}`, imageBuffer, REDIS_TIMER.ONE_DAY);
-        } catch (error) {
-            console.error("Error while getting card image:", error);
-            return null;
+        if(newCards.length > 0) {
+            await this.cardRepository.update(newCards);
         }
     }
 }
