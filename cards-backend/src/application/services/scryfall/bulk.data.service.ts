@@ -37,6 +37,14 @@ export class BulkDataService implements BulkDataServiceInterface {
         });
     }
 
+    /**
+     * @private
+     * @method checkUpdateData
+     * @description Method that checks if the data in the database is up to date with the data from scryfall. If it is not, it updates the database.
+     * @param {any[]} bulkData
+     * @returns {Promise<void>}
+     * @version 1.0.0
+     */
     private async checkUpdateData(bulkData: any[]): Promise<void> {
         const json = require("../../../data/scryfall-default-cards.json");
         if(!json) return;

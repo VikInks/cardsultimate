@@ -53,6 +53,14 @@ export class CardService implements CardServiceInterface {
         }
     }
 
+    /**
+     * Initialize the cards in the database
+     * @public
+     * @method initializeCards
+     * @memberOf CardService
+     * @returns {Promise<void>}
+     * @author VikInks
+     */
     async initializeCards(): Promise<void> {
         const filePath = path.resolve(__dirname, '../../src/scryfall/data/all_cards.json');
         if (!filePath) {
@@ -68,6 +76,20 @@ export class CardService implements CardServiceInterface {
         }
     }
 
+    /**
+     * Refresh the card database
+     * @public
+     * @method refreshCardDatabase
+     * @memberOf CardService
+     * @returns {Promise<void>}
+     * @description
+     * This method is used to refresh the card database.
+     * It first gets the bulk data from scryfall.
+     * Then it checks if the data is different from the data in the database.
+     * If it is different, it updates the database.
+     * If it is not different, it does nothing.
+     * @author VikInks
+     */
     async refreshCardDatabase(): Promise<void> {
         try {
             await this.initializeCards();
