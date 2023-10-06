@@ -63,6 +63,5 @@ export interface cardParameters {
 
 export interface CardRepositoryInterface {
 	find(params: cardParameters): Promise<CardsEntityInterface | CardsEntityInterface[] | null>
-	initializeCards(): Promise<void>
 	update(cards: any[]): Promise<void>
 }

@@ -1,11 +1,14 @@
+import path from 'path';
+import fs from 'fs';
 import {CardServiceInterface} from "../../../config/interfaces/services/card.service.interface";
-import {CardsEntityInterface} from "../../../domain/cards/cards.entity.interface";
+import {CardsEntityInterface as Card, CardsEntityInterface} from "../../../domain/cards/cards.entity.interface";
 import {
     cardParameters,
     CardRepositoryInterface
 } from "../../../config/interfaces/repositories/card.repository.interface";
 import {RedisServiceInterface} from "../../../config/interfaces/services/redis.service.interface";
 import {REDIS_TIMER} from "../../../config/redis.config";
+import {BulkDataServiceInterface} from "../../../config/interfaces/services/bulk.data.service.interface";
 
 /**
  * Card service
@@ -18,6 +21,7 @@ import {REDIS_TIMER} from "../../../config/redis.config";
 export class CardService implements CardServiceInterface {
     constructor(
         private readonly cardRepository: CardRepositoryInterface,
+        private readonly bulkService: BulkDataServiceInterface,
         private readonly redisService: RedisServiceInterface
     ) {
     }
@@ -49,9 +53,24 @@ export class CardService implements CardServiceInterface {
         }
     }
 
+    async initializeCards(): Promise<void> {
+        const filePath = path.resolve(__dirname, '../../src/scryfall/data/all_cards.json');
+        if (!filePath) {
+            await this.bulkService.getBulkData();
+            return this.initializeCards();
+        }
+        const rawData = fs.readFileSync(filePath, 'utf8');
+        const cards: Card[] = JSON.parse(rawData);
+        try {
+            await this.cardRepository.update(cards);
+        } catch (error) {
+            console.error("Error in initializeCards:", error);
+        }
+    }
+
     async refreshCardDatabase(): Promise<void> {
         try {
-            await this.cardRepository.initializeCards();
+            await this.initializeCards();
         } catch (error) {
             console.error("Error in refreshCardDatabase:", error);
         }

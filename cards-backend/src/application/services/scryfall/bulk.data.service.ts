@@ -11,7 +11,7 @@ import {CardRepositoryInterface} from "../../../config/interfaces/repositories/c
  * @version 1.0.0
  */
 export class BulkDataService implements BulkDataServiceInterface {
-    constructor(private readonly cardRepository: CardRepositoryInterface) {} // Injectez votre repository de cartes
+    constructor(private readonly cardRepository: CardRepositoryInterface) {}
 
     /**
      * @public
@@ -27,7 +27,7 @@ export class BulkDataService implements BulkDataServiceInterface {
             const python = spawn("python", ["./cards-backend/src/framework/script/scryfall_bulk.py"]);
             python.stdout.on("data", async (data: any) => {
                 console.log(data.toString());
-                const bulkData = JSON.parse(data.toString()); // Assurez-vous que les données sont au format JSON
+                const bulkData = JSON.parse(data.toString());
                 await this.checkUpdateData(bulkData);
                 resolve();
             });

@@ -65,13 +65,11 @@ InitDatabase().then(async (db) => {
 	const collectionService = serviceFactory.CollectionService(collectionRepositories, userService, idService);
 	const discordService = serviceFactory.DiscordService(discordAdapter);
 	const redisService = serviceFactory.RedisService();
-	const cardService = serviceFactory.CardService(cardRepositories, redisService);
-	const bulkService = serviceFactory.BulkDataService(cardService, redisService, axiosAdapter);
+	const bulkService = serviceFactory.BulkDataService(cardRepositories, redisService, axiosAdapter);
+	const cardService = serviceFactory.CardService(cardRepositories, bulkService, redisService);
 
-	await bulkService.getBulkData().then(async () => {
-		// todo vérifier que le téléchargement du bulk json est réalisé avant d'initialiser les cartes
+	await cardService.initializeCards().then(async () => {
 		timeupService.refreshCardDatabase();
-		await cardRepositories.initializeCards().then(() => console.log('cards initialized'));
 	});
 
 	// Initialize the controllers
