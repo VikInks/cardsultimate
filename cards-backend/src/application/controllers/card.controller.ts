@@ -12,7 +12,50 @@ export class CardController implements CardControllerInterface {
         private readonly cardService: CardServiceInterface
     ) {}
 
-    @Post(`/:cards`, {middlewares: ['rateLimitCards', 'auth']})
+    /**
+     * @swagger
+     * /cards/{cards}:
+     *   post:
+     *     tags:
+     *       - Cards
+     *     summary: Get cards based on query parameters
+     *     description: Fetches cards from the database based on query parameters and returns them.
+     *     parameters:
+     *       - in: path
+     *         name: cards
+     *         required: true
+     *         schema:
+     *           type: string
+     *         description: The cards to fetch
+     *       - in: query
+     *         name: id
+     *         schema:
+     *           type: string
+     *         description: Optional card ID
+     *       - in: query
+     *         name: name
+     *         schema:
+     *           type: string
+     *         description: Optional card name
+     *       - in: query
+     *         name: foil
+     *         schema:
+     *           type: boolean
+     *         description: Optional foil status
+     *       # Add other query parameters here
+     *     responses:
+     *       200:
+     *         description: Successfully fetched cards
+     *         content:
+     *           application/json:
+     *             schema:
+     *               type: array
+     *               items:
+     *                 $ref: '#/components/schemas/Card'
+     *       500:
+     *         description: Internal Server Error
+     */
+    @Post(`/:cards`, {middlewares: ['auth', 'rateLimitCards']})
     async getCards(req: HttpRequest, res: HttpResponse, next: NextFunction): Promise<void> {
         const params: cardParameters | cardParameters[] = req.query;
         try {

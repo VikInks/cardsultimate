@@ -23,7 +23,7 @@ export function rateLimitRequestMiddleware(maxAttempts: number = 50, timeFrame: 
 			}
 
 			try {
-				await next();
+				next();
 			} catch (error) {
 				if (!entry) {
 					entry = {count: 1, lastAttempt: now, bannedUntil: new Date(0)};
