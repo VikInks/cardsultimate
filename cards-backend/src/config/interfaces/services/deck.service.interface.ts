@@ -1,4 +1,5 @@
-import {DeckEntityInterface} from "../../endpoints/decks/deck.entity.interface";
+import {DeckEntityInterface} from "../../../domain/decks/deck.entity.interface";
+
 
 export interface DeckServiceInterface {
 	createDeck: (item: DeckEntityInterface, userId: string) => Promise<any>;

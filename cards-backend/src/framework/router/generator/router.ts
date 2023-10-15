@@ -24,23 +24,22 @@ export async function Router(
 	biscuitAdapter: BiscuitInterface,
 	docUiAdapter: DocUiInterface,
 	middlewares: MiddlewaresInterfaces,
-	errorHandlerMiddleware: (err: Error, req: HttpRequest, res: HttpResponse, next: NextFunction) => Promise<void>,
 	controllerInstances: ControllersInterfaces
 ) {
 	const app = serverAdapter.getApp();
 	await setupSwaggerDocs(app, docUiAdapter);
-	setupMiddlewares(app, serverAdapter, biscuitAdapter, middlewares, errorHandlerMiddleware);
+	setupMiddlewares(app, serverAdapter, biscuitAdapter, middlewares);
 	setupRoutes(serverAdapter, controllerInstances, middlewares);
 	return app;
 }
 
-function setupMiddlewares(app: any, serverAdapter: HttpServer, biscuitAdapter: BiscuitInterface, middlewares: MiddlewaresInterfaces, errorHandlerMiddleware: (err: Error, req: HttpRequest, res: HttpResponse, next: NextFunction) => Promise<void>) {
+function setupMiddlewares(app: any, serverAdapter: HttpServer, biscuitAdapter: BiscuitInterface, middlewares: MiddlewaresInterfaces) {
 	app.use(serverAdapter.json());
 	app.use(serverAdapter.urlencoded({ extended: false }));
 	app.use(cors());
 	app.use(middlewares.rateLimitRequest.handle);
+	app.use(middlewares.logging.handle);
 	app.use(biscuitAdapter.biscuitParser());
-	app.use(errorHandlerMiddleware);
 }
 
 async function setupSwaggerDocs(app: any, docUiAdapter: DocUiInterface) {

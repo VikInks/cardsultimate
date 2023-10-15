@@ -1,5 +1,6 @@
 import {BaseRepositoryInterface} from "./base.repository.interface";
-import {DeckEntityInterface} from "../../endpoints/decks/deck.entity.interface";
+import {DeckEntityInterface} from "../../../domain/decks/deck.entity.interface";
+
 
 export interface DeckRepositoryInterface extends BaseRepositoryInterface<DeckEntityInterface> {
 	// inherited from BaseRepositoryInterface

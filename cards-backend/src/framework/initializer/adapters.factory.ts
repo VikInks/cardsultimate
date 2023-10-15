@@ -11,7 +11,7 @@ import {BiscuitAdapter} from "../../infrastructure/adapters/biscuit.adapter";
 import {DocUiAdapter} from "../../infrastructure/adapters/docui.adapter";
 import {DiscordAdapter} from "../../infrastructure/adapters/discord.adapter";
 import {AxiosAdapter} from "../../infrastructure/adapters/axios.adapter";
-import {CardRepository} from "../../infrastructure/repositories/card.repository";
+import {WinstonAdapter} from "../../infrastructure/adapters/winston.adapter";
 
 type AdapterClassMap<T extends Document> = {
 	bcrypt: HasherAdapter,
@@ -24,7 +24,8 @@ type AdapterClassMap<T extends Document> = {
 	biscuit: BiscuitAdapter,
 	docUi: DocUiAdapter,
 	discord: DiscordAdapter,
-	axios: AxiosAdapter
+	axios: AxiosAdapter,
+	winston: WinstonAdapter
 };
 
 type AdapterConstructorMap<T extends Document> = {
@@ -42,7 +43,8 @@ const adapterClasses: AdapterConstructorMap<Document> = {
 	biscuit: BiscuitAdapter,
 	docUi: DocUiAdapter,
 	discord: DiscordAdapter,
-	axios: AxiosAdapter
+	axios: AxiosAdapter,
+	winston: WinstonAdapter
 };
 
 type AdapterInstanceMap<T> = {

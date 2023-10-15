@@ -1,4 +1,4 @@
-import {UserEntitiesInterface} from "../../endpoints/user.entities.interface";
+import {UserEntitiesInterface} from "../../../domain/user.entities.interface";
 
 export interface AuthorizationServiceInterface {
 	verifyToken(token: string): Promise<UserEntitiesInterface | null>;

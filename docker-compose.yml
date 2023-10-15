@@ -44,6 +44,18 @@ services:
     networks:
       - cards-network
 
+  python:
+    build:
+      context: ./cards-backend/container_py
+    ports:
+      - "5000:5000"
+    networks:
+      - cards-network
+    volumes:
+      - "./python-container:/app"
+    environment:
+      - PYTHON_ENV=development
+
 networks:
   cards-network:
     driver: bridge

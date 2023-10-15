@@ -7,6 +7,8 @@ import { CheckUserStatusMiddleware } from "../middleware/user.status.middleware"
 import { UserServiceInterface } from "../../config/interfaces/services/user.service.interface";
 import { rateLimitLoginMiddleware } from "../middleware/rate.limit.login.middleware";
 import {rateLimitRequestMiddleware} from "../middleware/rate.limit.request.middleware";
+import {loggingMiddleware} from "../middleware/logging.middleware";
+import {WinstonAdapterInterface} from "../../config/interfaces/adapters/winston.adapter.interface";
 
 type middlewares = {
 	isSuperUser: () => MiddlewareInterface;
@@ -15,9 +17,14 @@ type middlewares = {
 	CheckUserStatus: () => MiddlewareInterface;
 	rateLimitLogin: () => MiddlewareInterface;
 	rateLimitRequest: () => MiddlewareInterface;
+	logging: () => MiddlewareInterface;
 };
 
-export function middlewareFactory(authService: AuthorizationServiceInterface, userService: UserServiceInterface): middlewares {
+export function middlewareFactory(
+	authService: AuthorizationServiceInterface,
+	userService: UserServiceInterface,
+	loggerAdapter: WinstonAdapterInterface
+	): middlewares {
 	return {
 		isAdmin: (): MiddlewareInterface => {
 			return AdminMiddleware(authService);
@@ -36,6 +43,9 @@ export function middlewareFactory(authService: AuthorizationServiceInterface, us
 		},
 		rateLimitRequest: (): MiddlewareInterface => {
 			return rateLimitRequestMiddleware();
+		},
+		logging: (): MiddlewareInterface => {
+			return loggingMiddleware(loggerAdapter);
 		}
 	};
 }

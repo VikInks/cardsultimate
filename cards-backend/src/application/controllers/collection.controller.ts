@@ -33,16 +33,18 @@ export class CollectionController implements CollectionControllerInterface {
 	 *          description: Collection created successfully
 	 *        401:
 	 *          description: Unauthorized access to collection
+	 *        403:
+	 *	        description: A collection already exists for this user
 	 *        500:
 	 *          description: Error during collection creation
 	 */
 	@Post('/create', { middlewares: ['auth'] })
 	async createCollection(req: HttpRequest, res: HttpResponse, next: NextFunction): Promise<void> {
 		try {
-			const userId = req.user?.id;
-			if (!userId) next(new CustomResponse(401, 'Unauthorized access'));
+			const userId = req.user?.id ? req.user.id : null;
+			if (userId === null) return next(new CustomResponse(401));
 			const isCollection = await this.collectionService.getCollectionByOwner(userId);
-			if(userId === undefined) next(new CustomResponse(500));
+			if (isCollection) return next(new CustomResponse(403, 'A collection already exists for this user'));
 			await this.collectionService.create(userId);
 			res.status(200).json({message: "Collection created successfully"});
 		} catch (e) {
@@ -73,7 +75,9 @@ export class CollectionController implements CollectionControllerInterface {
 	 */
 	@Delete('/delete/:id', { middlewares: ['auth'] })
 	async deleteCollection(req: HttpRequest, res: HttpResponse, next: NextFunction): Promise<void> {
-		const userId = await checkUserOwnership(req, this.collectionService);
+		const user = req.user?.id ? req.user.id : null;
+		if (user === null) return next(new CustomResponse(401));
+		const userId = await checkUserOwnership(req, this.collectionService.getCollectionByOwner);
 		const { archivedAt } = await this.userService.findById(userId);
 		const collectionId = req.params.id;
 		if (archivedAt && archivedAt?.getTime() < Date.now() - 31536000000) {
@@ -150,7 +154,7 @@ export class CollectionController implements CollectionControllerInterface {
 	 */
 	@Put('/update/:id', { middlewares: ['auth'] })
 	async updateCollection(req: HttpRequest, res: HttpResponse, next: NextFunction): Promise<void> {
-		const userId = await checkUserOwnership(req, this.collectionService);
+		const userId = await checkUserOwnership(req, this.collectionService.getCollectionByOwner);
 		const item = req.body;
 		try {
 			const collection = await this.collectionService.update(item, req.params.id, userId);
@@ -202,7 +206,7 @@ export class CollectionController implements CollectionControllerInterface {
 	 */
 	@Post('/setPublic/:id', { middlewares: ['auth'] })
 	async setPublic(req: HttpRequest, res: HttpResponse, next: NextFunction): Promise<void> {
-		const userId = await checkUserOwnership(req, this.collectionService);
+		const userId = await checkUserOwnership(req, this.collectionService.getCollectionByOwner);
 		try {
 			await this.collectionService.publicCanView(userId, req.params.id, req.body.isPrivate);
 			res.status(200).json({message: "Collection is now public"});
@@ -213,7 +217,7 @@ export class CollectionController implements CollectionControllerInterface {
 
 	@Post('/sellManagerCollection/:id', { middlewares: ['auth'] })
 	async sellManagerCollection(req: HttpRequest, res: HttpResponse, next: NextFunction): Promise<void> {
-		const userId = await checkUserOwnership(req, this.collectionService);
+		const userId = await checkUserOwnership(req, this.collectionService.getCollectionByOwner);
 		try {
 			const state = await this.collectionService.sellManagerCollection(userId, req.body);
 			res.status(200).json({message: `Collection is now ${state ? 'for sale' : 'not for sale'}`});

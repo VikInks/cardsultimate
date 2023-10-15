@@ -22,7 +22,7 @@ export class DeckManagerUtility implements DeckManagerUtilityInterface {
         const deck = JSON.parse(jsonString.toString());
 
         const cardDetailsPromises: Promise<CardsEntityInterface>[] = deck.map(async (cardEntry: any) => {
-            const cardDetail = await this.cardRepositoryInterface.findById(cardEntry.id);
+            const cardDetail = await this.cardRepositoryInterface.find(cardEntry.id);
             return {
                 ...cardDetail,
                 count: cardEntry.count

@@ -1,3 +1,5 @@
+// discord.adapter.ts
+
 import { Client, TextChannel, GatewayIntentBits } from 'discord.js';
 import {DiscordInterface} from "../../config/interfaces/adapters/discord.interface";
 

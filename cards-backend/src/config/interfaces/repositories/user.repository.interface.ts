@@ -1,20 +1,21 @@
-import {UserEntitiesInterface as User} from "../../endpoints/user.entities.interface";
-import {BaseRepositoryInterface} from "./base.repository.interface";
 
-export interface UserRepositoryInterface extends BaseRepositoryInterface<User> {
+import {BaseRepositoryInterface} from "./base.repository.interface";
+import {UserEntitiesInterface} from "../../../domain/user.entities.interface";
+
+export interface UserRepositoryInterface extends BaseRepositoryInterface<UserEntitiesInterface> {
 	// inherited from BaseRepositoryInterface
-	create(user: User): Promise<User>;
-	findById(id: string): Promise<User | null>;
-	update(id: string, user: User): Promise<User>;
+	create(user: UserEntitiesInterface): Promise<UserEntitiesInterface>;
+	findById(id: string): Promise<UserEntitiesInterface | null>;
+	update(id: string, user: UserEntitiesInterface): Promise<UserEntitiesInterface>;
 	deleteById(id: string): Promise<boolean>;
-	findAll(): Promise<User[]>;
+	findAll(): Promise<UserEntitiesInterface[]>;
 
 	// custom methods
-	findUserByEmail(email: string): Promise<User | null>;
-	getUserByEmail(email: string): Promise<User | null>;
-	getUserById(id: string): Promise<User | null>;
-	findUserByConfirmationCode(confirmationCode: string): Promise<User | null>;
-	findUnconfirmedUsersWithExpiredLinks(): Promise<User[]>;
-	findByRole(role: string): Promise<User| null>;
-	findUserByUsername(username: string): Promise<User | null>;
+	findUserByEmail(email: string): Promise<UserEntitiesInterface | null>;
+	getUserByEmail(email: string): Promise<UserEntitiesInterface | null>;
+	getUserById(id: string): Promise<UserEntitiesInterface | null>;
+	findUserByConfirmationCode(confirmationCode: string): Promise<UserEntitiesInterface | null>;
+	findUnconfirmedUsersWithExpiredLinks(): Promise<UserEntitiesInterface[]>;
+	findByRole(role: string): Promise<UserEntitiesInterface| null>;
+	findUserByUsername(username: string): Promise<UserEntitiesInterface | null>;
 }

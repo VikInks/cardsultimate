@@ -1,4 +1,5 @@
-import {CardsEntityInterface} from "../../endpoints/cards/cards.entity.interface";
+import {CardsEntityInterface} from "../../../domain/cards/cards.entity.interface";
+
 
 export interface DeckManagerUtilityInterface {
     compressDeck(deck: CardsEntityInterface[]): Promise<string>;

@@ -7,7 +7,6 @@ import {AuthorizationService} from "../../application/services/application/autho
 import {CardService} from "../../application/services/application/card.service";
 import {DeckService} from "../../application/services/application/deck.service";
 import {CollectionService} from "../../application/services/application/collection.service";
-import {DiscordService} from "../../application/services/application/discord.service";
 import {BulkDataService} from "../../application/services/scryfall/bulk.data.service";
 import {RedisService} from "../../application/services/redis/redis.service";
 
@@ -21,7 +20,6 @@ type ServiceClassMap = {
 	CollectionService: CollectionService;
 	CardService: CardService;
 	DeckService: DeckService;
-	DiscordService: DiscordService;
 	BulkDataService: BulkDataService;
 	RedisService: RedisService;
 };
@@ -40,7 +38,6 @@ const serviceClasses: ServiceConstructorMap = {
 	CardService,
 	DeckService,
 	CollectionService,
-	DiscordService,
 	BulkDataService,
 	RedisService
 };

@@ -4,7 +4,7 @@ import {SchemaGenerator} from "./schema.generator.doc";
 
 
 export async function generateSchemasJson() {
-	const folderPath = './src/core/domain/';
+	const folderPath = './src/domain/';
 	const fileExtension = '.ts';
 
 	const filesFinder = new FilesFinder(folderPath, fileExtension);
@@ -17,5 +17,5 @@ export async function generateSchemasJson() {
 		Object.assign(allSchemas, schemas);
 	});
 
-	fs.writeFileSync('./src/core/doc/swagger/swagger.json', JSON.stringify(allSchemas, null, 2));
+	fs.writeFileSync('./src/config/doc/swagger/swagger.json', JSON.stringify(allSchemas, null, 2));
 }

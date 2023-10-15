@@ -18,7 +18,7 @@ export class DeckController implements DeckControllerInterface {
         await this.deckService.createDeck(req.body, req.user.id).then((deck) => {
             res.status(201).json(deck);
         }).catch((err) => {
-            next(new CustomResponse(500, err, req.user));
+            next(new CustomResponse(500, err));
         });
     }
 
@@ -28,7 +28,7 @@ export class DeckController implements DeckControllerInterface {
         await this.deckService.deleteDeck(req.params.id, req.user.id).then((deck) => {
             res.status(200).json(deck);
         }).catch((err) => {
-            next(new CustomResponse(500, err, req.user));
+            next(new CustomResponse(500, err));
         });
     }
 
@@ -37,7 +37,7 @@ export class DeckController implements DeckControllerInterface {
         await this.deckService.getDeck(req.params.id).then((deck) => {
             res.status(200).json(deck);
         }).catch((err) => {
-            next(new CustomResponse(500, err, req.user));
+            next(new CustomResponse(500, err));
         });
     }
 
@@ -47,22 +47,18 @@ export class DeckController implements DeckControllerInterface {
         return this.deckService.getDecks(req.user.id).then((decks) => {
             res.status(200).json(decks);
         }).catch((err) => {
-            next(new CustomResponse(500, err, req.user));
+            next(new CustomResponse(500, err));
         });
     }
 
     @Post("/update/:id")
     async updateDeck(req: HttpRequest, res: HttpResponse, next: NextFunction): Promise<void> {
-        try {
-            if (!req.user?.id) return next(new CustomResponse(401, 'Unauthorized access'));
-            await this.deckService.updateDeck(req.body, req.user.id).then((deck) => {
-                res.status(200).json(deck);
-            }).catch((err) => {
-                next(new CustomResponse(500, err));
-            });
-        } catch (err) {
-            next(new CustomResponse(500, 'Error updating deck', req.user));
-        }
+        if (!req.user?.id) return next(new CustomResponse(401, 'Unauthorized access'));
+        await this.deckService.updateDeck(req.body, req.user.id).then((deck) => {
+            res.status(200).json(deck);
+        }).catch((err) => {
+            next(new CustomResponse(500, err));
+        });
     }
 
 }

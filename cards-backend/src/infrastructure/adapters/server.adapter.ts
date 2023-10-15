@@ -70,7 +70,8 @@ export class ServerAdapter implements HttpServer {
 			clearCookie: (name: string, options?: any) => res.clearCookie(name, options),
 			cookie: (name: string, value: string, options?: any) => res.cookie(name, value, options),
 			json: (data: any) => res.json(data),
-			send: (data: any) => res.send(data)
+			send: (data: any) => res.send(data),
+			on: (event: string, listener: (...args: any[]) => void) => res.on(event, listener),
 		};
 	}
 }

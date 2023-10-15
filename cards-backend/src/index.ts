@@ -8,8 +8,8 @@ import {createSuperUserIfNotExists} from "./config/dev/createsuperuser";
 import { Router } from './framework/router/generator/router';
 import {middlewareFactory} from "./framework/initializer/middleware.factory";
 import {utilsFactory} from "./framework/initializer/utils.factory";
-import {DiscordNotifier} from "./config/utils/discord.notifier";
-import {ErrorHandlerMiddlewareFactory} from "./framework/middleware/error.handler.middleware";
+// import {DiscordNotifier} from "./config/utils/discord.notifier";
+// import {ErrorHandlerMiddlewareFactory} from "./framework/middleware/error.handler.middleware";
 
 dotenv.config({path: __dirname + '/.env'});
 
@@ -26,9 +26,9 @@ InitDatabase().then(async (db) => {
 	const uuidAdapter = adapterFactory.uuid();
 	const biscuitAdapter = adapterFactory.biscuit();
 	const docUiAdapter = adapterFactory.docUi();
-	const discordAdapter = adapterFactory.discord();
+	// const discordAdapter = adapterFactory.discord();
 	const axiosAdapter = adapterFactory.axios();
-
+	const winstonAdapter = adapterFactory.winston();
 
 	const mongoList = {
 		user: 'user',
@@ -63,7 +63,6 @@ InitDatabase().then(async (db) => {
 	const authorizationService = serviceFactory.AuthorizationService(userService, tokenAdapter);
 	const deckService = serviceFactory.DeckService(deckRepositories, userService, deckManagerUtils);
 	const collectionService = serviceFactory.CollectionService(collectionRepositories, userService, idService);
-	const discordService = serviceFactory.DiscordService(discordAdapter);
 	const redisService = serviceFactory.RedisService();
 	const bulkService = serviceFactory.BulkDataService(cardRepositories, redisService, axiosAdapter);
 	const cardService = serviceFactory.CardService(cardRepositories, bulkService, redisService);
@@ -78,20 +77,21 @@ InitDatabase().then(async (db) => {
 	const userController = controllerFactory.UserController(bcryptAdapter, userService, loginService, idService, emailService, collectionService);
 	const collectionController = controllerFactory.CollectionController(collectionService, userService, idService);
 
-	// initialize connexion to discord
-	await discordService.initialize(process.env.DISCORD_TOKEN!);
-	const discordNotifier = new DiscordNotifier(discordAdapter);
-	const errorHandlerMiddleware = ErrorHandlerMiddlewareFactory(discordNotifier);
+	// // initialize connexion to discord
+	// await discordService.initialize(process.env.DISCORD_TOKEN!);
+	// const discordNotifier = new DiscordNotifier(discordAdapter);
+	// const errorHandlerMiddleware = ErrorHandlerMiddlewareFactory(discordNotifier);
 
 	// Initialize the middlewares
-	const middlewaresFactory = middlewareFactory(authorizationService, userService);
+	const middlewaresFactory = middlewareFactory(authorizationService, userService, winstonAdapter);
 	const middlewares = {
 		isAdmin: middlewaresFactory.isAdmin(),
 		isSuperUser: middlewaresFactory.isSuperUser(),
 		isAuthenticated: middlewaresFactory.isAuthenticated(),
 		CheckUserStatus: middlewaresFactory.CheckUserStatus(),
 		rateLimitLogin: middlewaresFactory.rateLimitLogin(),
-		rateLimitRequest: middlewaresFactory.rateLimitRequest()
+		rateLimitRequest: middlewaresFactory.rateLimitRequest(),
+		logging: middlewaresFactory.logging()
 	}
 
 	await createSuperUserIfNotExists(userRepositories, bcryptAdapter, uuidAdapter).then(() => console.log('user initialized'));
@@ -99,7 +99,7 @@ InitDatabase().then(async (db) => {
 	timeupService.removeUnconfirmedUsers();
 
 	// Initialize the router
-	Router(serverAdapter, biscuitAdapter, docUiAdapter, middlewares, errorHandlerMiddleware, [loginController, userController, collectionController, deckController]).then(() => console.log("Routes configured"));
+	Router(serverAdapter, biscuitAdapter, docUiAdapter, middlewares, [loginController, userController, collectionController, deckController]).then(() => console.log("Routes configured"));
 
 	serverAdapter.start(8000, () => {
 		console.log('Server started on port 8000');
