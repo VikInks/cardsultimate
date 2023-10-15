@@ -1,7 +1,7 @@
-import path from 'path';
-import fs from 'fs';
+import * as fs from 'fs';
+import * as path from 'path';
 import {CardServiceInterface} from "../../../config/interfaces/services/card.service.interface";
-import {CardsEntityInterface as Card, CardsEntityInterface} from "../../../domain/cards/cards.entity.interface";
+import {CardsEntityInterface} from "../../../domain/cards/cards.entity.interface";
 import {
     cardParameters,
     CardRepositoryInterface
@@ -19,6 +19,7 @@ import {BulkDataServiceInterface} from "../../../config/interfaces/services/bulk
  * @author VikInks
  */
 export class CardService implements CardServiceInterface {
+    private readonly MAX_RETRIES = 3;
     constructor(
         private readonly cardRepository: CardRepositoryInterface,
         private readonly bulkService: BulkDataServiceInterface,
@@ -63,17 +64,26 @@ export class CardService implements CardServiceInterface {
      */
     async initializeCards(): Promise<void> {
         const filePath = path.resolve(__dirname, '../../src/scryfall/data/all_cards.json');
-        if (!filePath) {
-            await this.bulkService.getBulkData();
-            return this.initializeCards();
+
+        for (let retries = 0; retries < this.MAX_RETRIES; retries++) {
+            try {
+                console.log(`Attempt ${retries + 1}: Initializing cards...`);
+
+                if (!fs.existsSync(filePath)) {
+                    console.log("File not found. Fetching data...");
+                    await this.bulkService.getBulkData();
+                }
+
+                const rawData = fs.readFileSync(filePath, 'utf8');
+                await this.cardRepository.update(JSON.parse(rawData));
+                return;
+            } catch (error) {
+                console.error("Error in initializeCards:", error);
+                console.log(`Attempt ${retries + 1} failed. Retrying...`);
+            }
         }
-        const rawData = fs.readFileSync(filePath, 'utf8');
-        const cards: Card[] = JSON.parse(rawData);
-        try {
-            await this.cardRepository.update(cards);
-        } catch (error) {
-            console.error("Error in initializeCards:", error);
-        }
+
+        console.error(`Failed to initialize cards after ${this.MAX_RETRIES} attempts.`);
     }
 
     /**

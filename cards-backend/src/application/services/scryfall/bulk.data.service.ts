@@ -1,6 +1,20 @@
-import {spawn} from 'child_process';
 import {BulkDataServiceInterface} from "../../../config/interfaces/services/bulk.data.service.interface";
-import {CardRepositoryInterface} from "../../../config/interfaces/repositories/card.repository.interface"; // Importez votre interface de repository de cartes
+import {CardRepositoryInterface} from "../../../config/interfaces/repositories/card.repository.interface";
+import axios from 'axios';
+
+type ResponseData = {
+    object: string,
+    id: string,
+    type: string,
+    updated_at: string,
+    uri: string,
+    name: string,
+    description: string,
+    size: number,
+    download_uri: string,
+    content_type: string,
+    content_encoding: string,
+};
 
 /**
  * @class BulkDataService
@@ -13,50 +27,53 @@ import {CardRepositoryInterface} from "../../../config/interfaces/repositories/c
 export class BulkDataService implements BulkDataServiceInterface {
     constructor(private readonly cardRepository: CardRepositoryInterface) {}
 
-    /**
-     * @public
-     * @method getBulkData
-     * @description Method that gets bulk data from scryfall. It uses a python script to get the data and then stores it in a json file.
-     * @returns {Promise<void>}
-     * @throws {Error}
-     * @version 1.0.0
-     * @author VikInks
-     */
     async getBulkData(): Promise<void> {
-        return new Promise((resolve, reject) => {
-            const python = spawn("python", ["./cards-backend/src/framework/script/scryfall_bulk.py"]);
-            python.stdout.on("data", async (data: any) => {
-                console.log(data.toString());
-                const bulkData = JSON.parse(data.toString());
-                await this.checkUpdateData(bulkData);
-                resolve();
-            });
-            python.stderr.on("error", (error: any) => {
-                reject(error);
-            });
-        });
+        await this.getCardData();
     }
 
-    /**
-     * @private
-     * @method checkUpdateData
-     * @description Method that checks if the data in the database is up to date with the data from scryfall. If it is not, it updates the database.
-     * @param {any[]} bulkData
-     * @returns {Promise<void>}
-     * @version 1.0.0
-     */
-    private async checkUpdateData(bulkData: any[]): Promise<void> {
+    private async checkUpdateData(bulkData: string): Promise<void> {
         const json = require("../../../data/scryfall-default-cards.json");
-        if(!json) return;
-        const newCards = [];
-        for(let i = 0; i < bulkData.length; i++) {
-            if(bulkData[i].id !== json[i].id) {
-                newCards.push(bulkData[i]);
+        if (!json) return;
+
+        const newCards: any[] = [];
+        const bulkDataArray = bulkData.split('\n');
+
+        const oldCardsMap = new Map(json.map((c: any) => [c.id, c]));
+
+        for (const line of bulkDataArray) {
+            const card = JSON.parse(line);
+            if (!card) continue;
+
+            if (!oldCardsMap.has(card.id)) {
+                newCards.push(card);
             }
         }
 
-        if(newCards.length > 0) {
+        if (newCards.length > 0) {
             await this.cardRepository.update(newCards);
+        }
+    }
+
+    private async getCardData(): Promise<void> {
+        try {
+            const { data: bulkData } = await axios.get('https://api.scryfall.com/bulk-data');
+            const allCardsData = bulkData.data.find((data: ResponseData) => data.name === 'All Cards');
+
+            if (allCardsData) {
+                await this.callPythonService(allCardsData.download_uri);
+            }
+        } catch (error) {
+            console.error(`Failed to fetch bulk data: ${error}`);
+        }
+    }
+
+    private async callPythonService(url: string): Promise<any> {
+        try {
+            const response = await axios.post('http://python:5000/get_card_data', {url});
+            return response.data;
+        } catch (error) {
+            console.error(`Failed to fetch bulk data: ${error}`);
+            return null;
         }
     }
 }
