@@ -1,0 +1,4 @@
+Requests
+Flask
+tqdm
+websocket-client

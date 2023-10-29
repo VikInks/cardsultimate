@@ -1,0 +1,24 @@
+# Utilise une image Node.js
+FROM node:14-slim
+
+# Installer pnpm
+RUN npm install -g pnpm
+
+# Crée le répertoire de travail dans le conteneur
+WORKDIR /app
+
+# Copie pnpm-lock.yaml et pnpm-workspace.yaml du répertoire cardsultimate
+COPY ./pnpm-lock.yaml ./pnpm-workspace.yaml /app/
+
+# Copie package.json dans /app et installe les dépendances
+COPY package.json ./
+RUN pnpm install
+
+# Copie le reste du code source dans /app
+COPY . .
+
+# Expose le port 5003
+EXPOSE 5003
+
+# Commande pour démarrer ton service
+CMD ["pnpm", "start"]
