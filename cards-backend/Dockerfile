@@ -8,15 +8,11 @@ WORKDIR /app
 COPY package*.json tsconfig.json ./
 COPY src ./src
 
-# Installer les dépendances Node.js
+# Installer les dépendances
 RUN npm install
 
-# Installer les dépendances de compilation pour bcrypt et Python
-RUN apt-get update && apt-get install -y build-essential python3 python3-venv
-
-# Créer et activer un environnement virtuel Python
-RUN python3 -m venv /app/myenv
-RUN /app/myenv/bin/pip install --upgrade pip
+# Installer les dépendances de compilation pour bcrypt
+RUN apt-get update && apt-get install -y build-essential python
 
 # Reconstruire bcrypt pour l'environnement actuel
 RUN npm rebuild bcrypt --build-from-source

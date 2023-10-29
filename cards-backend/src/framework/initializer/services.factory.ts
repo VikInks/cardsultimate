@@ -1,12 +1,12 @@
-import { UserService } from "../../application/services/application/user.service";
-import { EmailService } from "../../application/services/application/mail.service";
-import { LoginService } from "../../application/services/application/login.service";
-import { IdService } from "../../application/services/application/id.service";
-import { TimeupService } from "../../application/services/application/timeup.service";
-import {AuthorizationService} from "../../application/services/application/authorization.service";
-import {CardService} from "../../application/services/application/card.service";
-import {DeckService} from "../../application/services/application/deck.service";
-import {CollectionService} from "../../application/services/application/collection.service";
+import { UserService } from "../../application/services/application/user/user.service";
+import { EmailService } from "../../application/services/application/mail/mail.service";
+import { LoginService } from "../../application/services/application/login/login.service";
+import { IdService } from "../../application/services/application/id/id.service";
+import { TimeupService } from "../../application/services/application/timeup/timeup.service";
+import {AuthorizationService} from "../../application/services/application/authorization/authorization.service";
+import {CardService} from "../../application/services/application/card/card.service";
+import {DeckService} from "../../application/services/application/deck/deck.service";
+import {CollectionService} from "../../application/services/application/collection/collection.service";
 import {BulkDataService} from "../../application/services/scryfall/bulk.data.service";
 import {RedisService} from "../../application/services/redis/redis.service";
 

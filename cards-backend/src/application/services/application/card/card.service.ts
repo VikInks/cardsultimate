@@ -1,14 +1,9 @@
-import * as fs from 'fs';
-import * as path from 'path';
-import {CardServiceInterface} from "../../../config/interfaces/services/card.service.interface";
-import {CardsEntityInterface} from "../../../domain/cards/cards.entity.interface";
-import {
-    cardParameters,
-    CardRepositoryInterface
-} from "../../../config/interfaces/repositories/card.repository.interface";
-import {RedisServiceInterface} from "../../../config/interfaces/services/redis.service.interface";
-import {REDIS_TIMER} from "../../../config/redis.config";
-import {BulkDataServiceInterface} from "../../../config/interfaces/services/bulk.data.service.interface";
+import { CardServiceInterface } from "../../../../config/interfaces/services/card.service.interface";
+import { CardsEntityInterface } from "../../../../domain/cards/cards.entity.interface";
+import { cardParameters, CardRepositoryInterface } from "../../../../config/interfaces/repositories/card.repository.interface";
+import { RedisServiceInterface } from "../../../../config/interfaces/services/redis.service.interface";
+import { REDIS_TIMER } from "../../../../config/redis.config";
+import { BulkDataServiceInterface } from "../../../../config/interfaces/services/bulk.data.service.interface";
 
 /**
  * Card service
@@ -19,13 +14,12 @@ import {BulkDataServiceInterface} from "../../../config/interfaces/services/bulk
  * @author VikInks
  */
 export class CardService implements CardServiceInterface {
-    private readonly MAX_RETRIES = 3;
+
     constructor(
         private readonly cardRepository: CardRepositoryInterface,
         private readonly bulkService: BulkDataServiceInterface,
         private readonly redisService: RedisServiceInterface
-    ) {
-    }
+    ) {}
 
     /**
      * Get cards from the database
@@ -51,60 +45,6 @@ export class CardService implements CardServiceInterface {
         } catch (error) {
             console.error("Error in getCards:", error);
             return null;
-        }
-    }
-
-    /**
-     * Initialize the cards in the database
-     * @public
-     * @method initializeCards
-     * @memberOf CardService
-     * @returns {Promise<void>}
-     * @author VikInks
-     */
-    async initializeCards(): Promise<void> {
-        const filePath = path.resolve(__dirname, '../../src/scryfall/data/all_cards.json');
-
-        for (let retries = 0; retries < this.MAX_RETRIES; retries++) {
-            try {
-                console.log(`Attempt ${retries + 1}: Initializing cards...`);
-
-                if (!fs.existsSync(filePath)) {
-                    console.log("File not found. Fetching data...");
-                    await this.bulkService.getBulkData();
-                }
-
-                const rawData = fs.readFileSync(filePath, 'utf8');
-                await this.cardRepository.update(JSON.parse(rawData));
-                return;
-            } catch (error) {
-                console.error("Error in initializeCards:", error);
-                console.log(`Attempt ${retries + 1} failed. Retrying...`);
-            }
-        }
-
-        console.error(`Failed to initialize cards after ${this.MAX_RETRIES} attempts.`);
-    }
-
-    /**
-     * Refresh the card database
-     * @public
-     * @method refreshCardDatabase
-     * @memberOf CardService
-     * @returns {Promise<void>}
-     * @description
-     * This method is used to refresh the card database.
-     * It first gets the bulk data from scryfall.
-     * Then it checks if the data is different from the data in the database.
-     * If it is different, it updates the database.
-     * If it is not different, it does nothing.
-     * @author VikInks
-     */
-    async refreshCardDatabase(): Promise<void> {
-        try {
-            await this.initializeCards();
-        } catch (error) {
-            console.error("Error in refreshCardDatabase:", error);
         }
     }
 

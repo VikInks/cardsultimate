@@ -1,11 +1,11 @@
-import {CustomResponse} from "../../../framework/error/customResponse";
-import {HttpRequest, HttpResponse, NextFunction} from "../../../config/interfaces/adapters/server.interface";
-import {IdService} from "./id.service";
-import {HasherInterface} from "../../../config/interfaces/adapters/hasher.interface";
-import {EmailServiceInterface} from "../../../config/interfaces/services/email.service.interface";
-import {UserRepositoryInterface} from "../../../config/interfaces/repositories/user.repository.interface";
-import {RegisterServiceInterface} from "../../../config/interfaces/services/register.service.interface";
-import {UserEntitiesInterface} from "../../../domain/user.entities.interface";
+import {CustomResponse} from "../../../../framework/error/customResponse";
+import {HttpRequest, HttpResponse, NextFunction} from "../../../../config/interfaces/adapters/server.interface";
+import {IdService} from "../id/id.service";
+import {HasherInterface} from "../../../../config/interfaces/adapters/hasher.interface";
+import {EmailServiceInterface} from "../../../../config/interfaces/services/email.service.interface";
+import {UserRepositoryInterface} from "../../../../config/interfaces/repositories/user.repository.interface";
+import {RegisterServiceInterface} from "../../../../config/interfaces/services/register.service.interface";
+import {UserEntitiesInterface} from "../../../../domain/user.entities.interface";
 
 export class RegisterService implements RegisterServiceInterface {
     constructor(

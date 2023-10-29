@@ -1,4 +1,4 @@
-import {IdInterface} from "../../../config/interfaces/adapters/id.interface";
+import {IdInterface} from "../../../../config/interfaces/adapters/id.interface";
 
 
 export class IdService implements IdInterface{

@@ -1,9 +1,9 @@
-import {UserServiceInterface} from '../../../config/interfaces/services/user.service.interface';
-import {UserRepositoryInterface} from '../../../config/interfaces/repositories/user.repository.interface';
-import {UserEntitiesInterface} from '../../../domain/user.entities.interface';
-import {CustomResponse} from '../../../framework/error/customResponse';
-import {HasherInterface} from "../../../config/interfaces/adapters/hasher.interface";
-import {IdService} from "./id.service";
+import {UserServiceInterface} from '../../../../config/interfaces/services/user.service.interface';
+import {UserRepositoryInterface} from '../../../../config/interfaces/repositories/user.repository.interface';
+import {UserEntitiesInterface} from '../../../../domain/user.entities.interface';
+import {CustomResponse} from '../../../../framework/error/customResponse';
+import {HasherInterface} from "../../../../config/interfaces/adapters/hasher.interface";
+import {IdService} from "../id/id.service";
 
 export class UserService implements UserServiceInterface {
 

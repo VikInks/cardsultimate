@@ -1,21 +1,20 @@
 import * as dotenv from "dotenv";
-import {adapterFactory, createTypedMongoAdapter} from "./framework/initializer/adapters.factory";
-import {InitDatabase} from "./framework/initializer/initDatabase";
-import {serviceFactory} from "./framework/initializer/services.factory";
-import {controllerFactory} from "./framework/initializer/controllers.factory";
-import {initRepositories} from "./framework/initializer/repositories.factory";
-import {createSuperUserIfNotExists} from "./config/dev/createsuperuser";
-import { Router } from './framework/router/generator/router';
-import {middlewareFactory} from "./framework/initializer/middleware.factory";
-import {utilsFactory} from "./framework/initializer/utils.factory";
-// import {DiscordNotifier} from "./config/utils/discord.notifier";
-// import {ErrorHandlerMiddlewareFactory} from "./framework/middleware/error.handler.middleware";
+import {adapterFactory, createTypedMongoAdapter} from "./core/framework/initializer/adapters.factory";
+import {InitDatabase} from "./core/framework/initializer/initDatabase";
+import {serviceFactory} from "./core/framework/initializer/services.factory";
+import {controllerFactory} from "./core/framework/initializer/controllers.factory";
+import {initRepositories} from "./core/framework/initializer/repositories.factory";
+import {UserEntitiesInterface} from "./core/domain/endpoints/user.entities.interface";
+import {createSuperUserIfNotExists} from "./dev/createsuperuser";
+import { Router } from './core/framework/router/generator/router';
+import {middlewareFactory} from "./core/framework/initializer/middleware.factory";
+import {DeckEntityInterface} from "./core/domain/endpoints/decks/deck.entity.interface";
+import {CollectionEntityInterface} from "./core/domain/endpoints/collection/collection.entity.interface";
 
 dotenv.config({path: __dirname + '/.env'});
 
 InitDatabase().then(async (db) => {
 	console.log('Database connected');
-	console.log(process.env.NODE_ENV == 'development' ? 'Development mode' : 'Production mode');
 
 	// Initialize the adapters
 	const bcryptAdapter = adapterFactory.bcrypt();
@@ -26,50 +25,43 @@ InitDatabase().then(async (db) => {
 	const uuidAdapter = adapterFactory.uuid();
 	const biscuitAdapter = adapterFactory.biscuit();
 	const docUiAdapter = adapterFactory.docUi();
-	// const discordAdapter = adapterFactory.discord();
-	const axiosAdapter = adapterFactory.axios();
-	const winstonAdapter = adapterFactory.winston();
 
-	const mongoList = {
-		user: 'user',
-		deck: 'deck',
-		collection: 'collection',
-		card: 'card'
-	};
+	// Initialize the database user adapter for user repository
+	const mongUserAdapter = createTypedMongoAdapter<UserEntitiesInterface>({
+		entityName: 'user',
+		collection: await db.getCollection('user')
+	});
 
-	const adapters: any = {};
-	for (const [entityName, collectionName] of Object.entries(mongoList)) {
-		adapters[entityName] = createTypedMongoAdapter({
-			entityName: entityName,
-			collection: await db.getCollection(collectionName)
-		});
-	}
+	const mongoDeckAdapter = createTypedMongoAdapter<DeckEntityInterface>({
+		entityName: 'deck',
+		collection: await db.getCollection('deck')
+	});
 
-	const repositoryFactory = initRepositories(adapters);
+	const mongCollectionAdapter = createTypedMongoAdapter<CollectionEntityInterface>({
+		entityName: 'collection',
+		collection: await db.getCollection('collection')
+	});
+
+	// Initialize the repositories
+	const repositoryFactory = initRepositories({
+		user: mongUserAdapter,
+		deck: mongoDeckAdapter,
+		collection: mongCollectionAdapter
+	});
 
 	const userRepositories = repositoryFactory.user;
 	const collectionRepositories = repositoryFactory.collection;
 	const deckRepositories = repositoryFactory.deck;
-	const cardRepositories = repositoryFactory.card;
-
-	const deckManagerUtils = utilsFactory.DeckManagerUtility(deckRepositories);
 
 	// Initialize the services
 	const emailService = serviceFactory.EmailService(emailAdapter);
 	const idService = serviceFactory.IdService(uuidAdapter);
 	const userService = serviceFactory.UserService(userRepositories, emailService, bcryptAdapter, idService)
-	const timeupService = serviceFactory.TimeupService(userService);
+	const cleanupService = serviceFactory.CleanupService(userService);
 	const loginService = serviceFactory.LoginService(userService, passportAdapter, bcryptAdapter);
 	const authorizationService = serviceFactory.AuthorizationService(userService, tokenAdapter);
-	const deckService = serviceFactory.DeckService(deckRepositories, userService, deckManagerUtils);
+	const deckService = serviceFactory.DeckService(deckRepositories, userService);
 	const collectionService = serviceFactory.CollectionService(collectionRepositories, userService, idService);
-	const redisService = serviceFactory.RedisService();
-	const bulkService = serviceFactory.BulkDataService(cardRepositories, redisService, axiosAdapter);
-	const cardService = serviceFactory.CardService(cardRepositories, bulkService, redisService);
-
-	await cardService.initializeCards().then(async () => {
-		timeupService.refreshCardDatabase();
-	});
 
 	// Initialize the controllers
 	const loginController = controllerFactory.LoginController(loginService);
@@ -77,13 +69,7 @@ InitDatabase().then(async (db) => {
 	const userController = controllerFactory.UserController(bcryptAdapter, userService, loginService, idService, emailService, collectionService);
 	const collectionController = controllerFactory.CollectionController(collectionService, userService, idService);
 
-	// // initialize connexion to discord
-	// await discordService.initialize(process.env.DISCORD_TOKEN!);
-	// const discordNotifier = new DiscordNotifier(discordAdapter);
-	// const errorHandlerMiddleware = ErrorHandlerMiddlewareFactory(discordNotifier);
-
-	// Initialize the middlewares
-	const middlewaresFactory = middlewareFactory(authorizationService, userService, winstonAdapter);
+	const middlewaresFactory = middlewareFactory(authorizationService, userService);
 	const middlewares = {
 		isAdmin: middlewaresFactory.isAdmin(),
 		isSuperUser: middlewaresFactory.isSuperUser(),
@@ -91,15 +77,14 @@ InitDatabase().then(async (db) => {
 		CheckUserStatus: middlewaresFactory.CheckUserStatus(),
 		rateLimitLogin: middlewaresFactory.rateLimitLogin(),
 		rateLimitRequest: middlewaresFactory.rateLimitRequest(),
-		logging: middlewaresFactory.logging()
 	}
 
 	await createSuperUserIfNotExists(userRepositories, bcryptAdapter, uuidAdapter).then(() => console.log('user initialized'));
 
-	timeupService.removeUnconfirmedUsers();
+	cleanupService.removeUnconfirmedUsers();
 
 	// Initialize the router
-	Router(serverAdapter, biscuitAdapter, docUiAdapter, middlewares, [loginController, userController, collectionController, deckController]).then(() => console.log("Routes configured"));
+	Router(serverAdapter, biscuitAdapter, docUiAdapter, middlewares, [loginController, userController, deckController, collectionController]).then(() => console.log("Routes configured"));
 
 	serverAdapter.start(8000, () => {
 		console.log('Server started on port 8000');

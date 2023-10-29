@@ -1,19 +1,18 @@
-import {CollectionServiceInterface} from "../../../config/interfaces/services/collection.service.interface";
-import {CollectionRepositoryInterface} from "../../../config/interfaces/repositories/collection.repository.interface";
-import {CollectionEntityInterface} from "../../../domain/collection/collection.entity.interface";
-import {CardsEntityInterface} from "../../../domain/cards/cards.entity.interface";
-import {IdInterface} from "../../../config/interfaces/adapters/id.interface";
-import {RedisServiceInterface} from "../../../config/interfaces/services/redis.service.interface";
-import {REDIS_TIMER} from "../../../config/redis.config";
+import {CollectionServiceInterface} from "../../../../config/interfaces/services/collection.service.interface";
+import {CollectionRepositoryInterface} from "../../../../config/interfaces/repositories/collection.repository.interface";
+import {CollectionEntityInterface} from "../../../../domain/collection/collection.entity.interface";
+import {CardsEntityInterface} from "../../../../domain/cards/cards.entity.interface";
+import {IdInterface} from "../../../../config/interfaces/adapters/id.interface";
+import {RedisServiceInterface} from "../../../../config/interfaces/services/redis.service.interface";
+import {REDIS_TIMER} from "../../../../config/redis.config";
 
 export class CollectionService implements CollectionServiceInterface {
+
     constructor(
         private readonly collectionRepository: CollectionRepositoryInterface,
         private readonly idService: IdInterface,
-        private readonly redisClient: RedisServiceInterface
-    ) {
-        this.collectionRepository = collectionRepository;
-    }
+        private readonly redisClient: RedisServiceInterface,
+    ) {}
 
     async sellManagerCollection(id: string, ownerId: string): Promise<CollectionEntityInterface | null> {
         try {

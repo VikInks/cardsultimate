@@ -20,7 +20,7 @@ node_modules/
 /cards-neurone/data/
 
 
-/cards-backend/src/config/doc/swagger/swagger.json
+/cards-backend/src/core/doc/swagger/swagger.json
 /cards-backend/src/email/
 /decklist/
 /cards-builder/data/train/data-apr23/

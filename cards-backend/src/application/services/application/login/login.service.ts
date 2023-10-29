@@ -1,7 +1,7 @@
-import {LoginServiceInterface} from "../../../config/interfaces/services/login.service.interface";
-import {UserServiceInterface} from "../../../config/interfaces/services/user.service.interface";
-import {AuthorizeInterface} from "../../../config/interfaces/adapters/authorize.interface";
-import {HasherInterface} from "../../../config/interfaces/adapters/hasher.interface";
+import {LoginServiceInterface} from "../../../../config/interfaces/services/login.service.interface";
+import {UserServiceInterface} from "../../../../config/interfaces/services/user.service.interface";
+import {AuthorizeInterface} from "../../../../config/interfaces/adapters/authorize.interface";
+import {HasherInterface} from "../../../../config/interfaces/adapters/hasher.interface";
 
 
 export class LoginService implements LoginServiceInterface {

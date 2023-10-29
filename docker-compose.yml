@@ -17,13 +17,6 @@ services:
       - JWT_SECRET=YYWz1EBc78%mqUX2xSUh%pv56#F6M3K3$7&6uk3v
       - NODE_ENV=development
 
-  redis:
-    image: redis:latest
-    ports:
-      - "6379:6379"
-    networks:
-      - cards-network
-
   client:
     build:
       context: ./cards-web-platform
@@ -43,18 +36,6 @@ services:
       - "./data/db:/data/db"
     networks:
       - cards-network
-
-  python:
-    build:
-      context: ./cards-backend/container_py
-    ports:
-      - "5000:5000"
-    networks:
-      - cards-network
-    volumes:
-      - "./python-container:/app"
-    environment:
-      - PYTHON_ENV=development
 
 networks:
   cards-network:

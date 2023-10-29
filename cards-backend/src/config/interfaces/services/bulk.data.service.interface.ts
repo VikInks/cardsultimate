@@ -1,3 +1,3 @@
 export interface BulkDataServiceInterface {
-    getBulkData(): Promise<void>;
+    updateBulkData(): Promise<void>;
 }

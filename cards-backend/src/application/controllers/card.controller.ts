@@ -42,7 +42,6 @@ export class CardController implements CardControllerInterface {
      *         schema:
      *           type: boolean
      *         description: Optional foil status
-     *       # Add other query parameters here
      *     responses:
      *       200:
      *         description: Successfully fetched cards
