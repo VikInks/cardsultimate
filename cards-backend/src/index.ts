@@ -1,15 +1,15 @@
 import * as dotenv from "dotenv";
-import {adapterFactory, createTypedMongoAdapter} from "./core/framework/initializer/adapters.factory";
-import {InitDatabase} from "./core/framework/initializer/initDatabase";
-import {serviceFactory} from "./core/framework/initializer/services.factory";
-import {controllerFactory} from "./core/framework/initializer/controllers.factory";
-import {initRepositories} from "./core/framework/initializer/repositories.factory";
-import {UserEntitiesInterface} from "./core/domain/endpoints/user.entities.interface";
+import {InitDatabase} from "./framework/initializer/initDatabase";
+import {adapterFactory, createTypedMongoAdapter} from "./framework/initializer/adapters.factory";
+import {UserEntitiesInterface} from "./domain/user.entities.interface";
+import {DeckEntityInterface} from "./domain/decks/deck.entity.interface";
+import {CollectionEntityInterface} from "./domain/collection/collection.entity.interface";
+import {initRepositories} from "./framework/initializer/repositories.factory";
+import {serviceFactory} from "./framework/initializer/services.factory";
+import {controllerFactory} from "./framework/initializer/controllers.factory";
+import {middlewareFactory} from "./framework/initializer/middleware.factory";
 import {createSuperUserIfNotExists} from "./dev/createsuperuser";
-import { Router } from './core/framework/router/generator/router';
-import {middlewareFactory} from "./core/framework/initializer/middleware.factory";
-import {DeckEntityInterface} from "./core/domain/endpoints/decks/deck.entity.interface";
-import {CollectionEntityInterface} from "./core/domain/endpoints/collection/collection.entity.interface";
+import {Router} from "./framework/router/generator/router";
 
 dotenv.config({path: __dirname + '/.env'});
 
@@ -57,7 +57,7 @@ InitDatabase().then(async (db) => {
 	const emailService = serviceFactory.EmailService(emailAdapter);
 	const idService = serviceFactory.IdService(uuidAdapter);
 	const userService = serviceFactory.UserService(userRepositories, emailService, bcryptAdapter, idService)
-	const cleanupService = serviceFactory.CleanupService(userService);
+	const cleanupService = serviceFactory.TimeupService(userService);
 	const loginService = serviceFactory.LoginService(userService, passportAdapter, bcryptAdapter);
 	const authorizationService = serviceFactory.AuthorizationService(userService, tokenAdapter);
 	const deckService = serviceFactory.DeckService(deckRepositories, userService);
@@ -69,7 +69,7 @@ InitDatabase().then(async (db) => {
 	const userController = controllerFactory.UserController(bcryptAdapter, userService, loginService, idService, emailService, collectionService);
 	const collectionController = controllerFactory.CollectionController(collectionService, userService, idService);
 
-	const middlewaresFactory = middlewareFactory(authorizationService, userService);
+	const middlewaresFactory = middlewareFactory(authorizationService, userService, );
 	const middlewares = {
 		isAdmin: middlewaresFactory.isAdmin(),
 		isSuperUser: middlewaresFactory.isSuperUser(),

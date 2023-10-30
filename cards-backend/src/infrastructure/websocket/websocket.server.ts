@@ -8,9 +8,18 @@ export class WebSocketServer implements WebSocketServerInterface {
         this.wss = new Server({ port });
     }
 
-    onConnection(callback: (ws: WebSocket) => void): void { // Use the same WebSocket type
+    onConnection(callback: (ws: WebSocket) => void): void {
         this.wss.on('connection', (ws) => {
             callback(ws);
         });
     }
+
+    broadcast(data: string): void {
+        this.wss.clients.forEach((client) => {
+            if (client.readyState === WebSocket.OPEN) {
+                client.send(data);
+            }
+        });
+    }
 }
+

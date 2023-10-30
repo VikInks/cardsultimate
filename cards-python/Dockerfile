@@ -20,4 +20,4 @@ COPY app.py ./
 EXPOSE 5000
 
 # Lancer l'application
-CMD ["python", "app.py"]
+CMD ["python", "main.py"]
