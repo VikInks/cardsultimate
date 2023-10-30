@@ -4,6 +4,7 @@ import logging
 
 
 def register(app):
+    """Register routes for the Flask app"""
     @app.route('/update_data', methods=['POST'])
     def update_data_route():
         try:

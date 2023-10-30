@@ -5,6 +5,7 @@ import logging
 
 
 def notify_server():
+    """Notify the Node.js server that the JSON files have been downloaded"""
     ws = None
     ws_url = 'ws://nodejs-service:8081'
     data = 'JSON files successfully downloaded'

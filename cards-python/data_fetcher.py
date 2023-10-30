@@ -8,6 +8,7 @@ import logging
 
 
 def fetch_bulk_data():
+    """Fetch the bulk data URLs from the Scryfall API"""
     api_url = "https://api.scryfall.com/bulk-data"
     response = requests.get(api_url)
     if response.status_code != 200:
@@ -16,6 +17,7 @@ def fetch_bulk_data():
 
 
 def download_and_update_json(url: str, filepath: str) -> None:
+    """Download the JSON file from the given URL and update the existing JSON file"""
     os.makedirs(os.path.dirname(filepath), exist_ok=True)
     temp_filepath = f"{filepath}.tmp"
     streaming_download(url, temp_filepath)
@@ -32,6 +34,7 @@ def download_and_update_json(url: str, filepath: str) -> None:
 
 
 def initial_fetch():
+    """Fetch the bulk data from the Scryfall API and update the existing JSON files"""
     try:
         bulk_urls = fetch_bulk_data()
         for data_type, url in bulk_urls.items():
