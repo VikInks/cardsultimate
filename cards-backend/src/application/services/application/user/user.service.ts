@@ -4,13 +4,15 @@ import {UserEntitiesInterface} from '../../../../domain/user.entities.interface'
 import {CustomResponse} from '../../../../framework/error/customResponse';
 import {HasherInterface} from "../../../../config/interfaces/adapters/hasher.interface";
 import {IdService} from "../id/id.service";
+import {WebSocketServerInterface} from "../../../../config/interfaces/services/websocket.interface";
 
 export class UserService implements UserServiceInterface {
 
 	constructor(
 		private readonly userRepository: UserRepositoryInterface,
 		private readonly hasher: HasherInterface,
-		private readonly id: IdService
+		private readonly id: IdService,
+		private readonly websocket: WebSocketServerInterface
 	) {}
 
 	async findById(userId: string): Promise<UserEntitiesInterface> {

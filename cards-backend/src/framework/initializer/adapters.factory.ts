@@ -12,6 +12,7 @@ import {DocUiAdapter} from "../../infrastructure/adapters/docui.adapter";
 import {DiscordAdapter} from "../../infrastructure/adapters/discord.adapter";
 import {AxiosAdapter} from "../../infrastructure/adapters/axios.adapter";
 import {WinstonAdapter} from "../../infrastructure/adapters/winston.adapter";
+import {RedisAdapter} from "../../infrastructure/adapters/redis.adapter";
 
 type AdapterClassMap<T extends Document> = {
 	bcrypt: HasherAdapter,
@@ -25,7 +26,8 @@ type AdapterClassMap<T extends Document> = {
 	docUi: DocUiAdapter,
 	discord: DiscordAdapter,
 	axios: AxiosAdapter,
-	winston: WinstonAdapter
+	winston: WinstonAdapter,
+	redis: RedisAdapter
 };
 
 type AdapterConstructorMap<T extends Document> = {
@@ -44,7 +46,8 @@ const adapterClasses: AdapterConstructorMap<Document> = {
 	docUi: DocUiAdapter,
 	discord: DiscordAdapter,
 	axios: AxiosAdapter,
-	winston: WinstonAdapter
+	winston: WinstonAdapter,
+	redis: RedisAdapter
 };
 
 type AdapterInstanceMap<T> = {

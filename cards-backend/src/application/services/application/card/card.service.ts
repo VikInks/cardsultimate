@@ -3,7 +3,7 @@ import { CardsEntityInterface } from "../../../../domain/cards/cards.entity.inte
 import { cardParameters, CardRepositoryInterface } from "../../../../config/interfaces/repositories/card.repository.interface";
 import { RedisServiceInterface } from "../../../../config/interfaces/services/redis.service.interface";
 import { REDIS_TIMER } from "../../../../config/redis.config";
-import { BulkDataServiceInterface } from "../../../../config/interfaces/services/bulk.data.service.interface";
+import {WebSocketServerInterface} from "../../../../config/interfaces/services/websocket.interface";
 
 /**
  * Card service
@@ -17,8 +17,8 @@ export class CardService implements CardServiceInterface {
 
     constructor(
         private readonly cardRepository: CardRepositoryInterface,
-        private readonly bulkService: BulkDataServiceInterface,
-        private readonly redisService: RedisServiceInterface
+        private readonly redisService: RedisServiceInterface,
+        private readonly websocket: WebSocketServerInterface
     ) {}
 
     /**

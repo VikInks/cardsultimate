@@ -1,7 +1,7 @@
 import { BulkDataServiceInterface } from "../../../config/interfaces/services/bulk.data.service.interface";
 import { CardRepositoryInterface } from "../../../config/interfaces/repositories/card.repository.interface";
 import {AxiosAdapter} from "../../../infrastructure/adapters/axios.adapter";
-import {WebSocketServerInterface} from "../websocket/websocket.interface";
+import {WebSocketServerInterface} from "../../../config/interfaces/services/websocket.interface";
 
 export class BulkDataService implements BulkDataServiceInterface {
 

@@ -10,8 +10,11 @@ import {controllerFactory} from "./framework/initializer/controllers.factory";
 import {middlewareFactory} from "./framework/initializer/middleware.factory";
 import {createSuperUserIfNotExists} from "./dev/createsuperuser";
 import {Router} from "./framework/router/generator/router";
+import {WebSocketServer} from "./infrastructure/websocket/websocket.server";
 
 dotenv.config({path: __dirname + '/.env'});
+
+const websocketServer = new WebSocketServer(8081);
 
 InitDatabase().then(async (db) => {
 	console.log('Database connected');
@@ -25,6 +28,8 @@ InitDatabase().then(async (db) => {
 	const uuidAdapter = adapterFactory.uuid();
 	const biscuitAdapter = adapterFactory.biscuit();
 	const docUiAdapter = adapterFactory.docUi();
+	const redisAdapter = adapterFactory.redis();
+	const axiosAdapter = adapterFactory.axios();
 
 	// Initialize the database user adapter for user repository
 	const mongUserAdapter = createTypedMongoAdapter<UserEntitiesInterface>({
@@ -37,31 +42,41 @@ InitDatabase().then(async (db) => {
 		collection: await db.getCollection('deck')
 	});
 
-	const mongCollectionAdapter = createTypedMongoAdapter<CollectionEntityInterface>({
+	const mongoCollectionAdapter = createTypedMongoAdapter<CollectionEntityInterface>({
 		entityName: 'collection',
 		collection: await db.getCollection('collection')
+	});
+
+	const mongoCardAdapter = createTypedMongoAdapter<CollectionEntityInterface>({
+		entityName: 'card',
+		collection: await db.getCollection('card')
 	});
 
 	// Initialize the repositories
 	const repositoryFactory = initRepositories({
 		user: mongUserAdapter,
 		deck: mongoDeckAdapter,
-		collection: mongCollectionAdapter
+		collection: mongoCollectionAdapter,
+		card: mongoCardAdapter
 	});
 
 	const userRepositories = repositoryFactory.user;
 	const collectionRepositories = repositoryFactory.collection;
 	const deckRepositories = repositoryFactory.deck;
+	const cardRepositories = repositoryFactory.card;
 
 	// Initialize the services
+	const redisService = serviceFactory.RedisService(redisAdapter);
 	const emailService = serviceFactory.EmailService(emailAdapter);
 	const idService = serviceFactory.IdService(uuidAdapter);
-	const userService = serviceFactory.UserService(userRepositories, emailService, bcryptAdapter, idService)
+	const userService = serviceFactory.UserService(userRepositories, emailService, bcryptAdapter, idService, websocketServer)
 	const cleanupService = serviceFactory.TimeupService(userService);
 	const loginService = serviceFactory.LoginService(userService, passportAdapter, bcryptAdapter);
 	const authorizationService = serviceFactory.AuthorizationService(userService, tokenAdapter);
 	const deckService = serviceFactory.DeckService(deckRepositories, userService);
 	const collectionService = serviceFactory.CollectionService(collectionRepositories, userService, idService);
+	const cardService = serviceFactory.CardService(cardRepositories, redisService, websocketServer);
+	const bulkDataService = serviceFactory.BulkDataService(cardRepositories, axiosAdapter, websocketServer);
 
 	// Initialize the controllers
 	const loginController = controllerFactory.LoginController(loginService);
@@ -69,15 +84,20 @@ InitDatabase().then(async (db) => {
 	const userController = controllerFactory.UserController(bcryptAdapter, userService, loginService, idService, emailService, collectionService);
 	const collectionController = controllerFactory.CollectionController(collectionService, userService, idService);
 
-	const middlewaresFactory = middlewareFactory(authorizationService, userService, );
-	const middlewares = {
-		isAdmin: middlewaresFactory.isAdmin(),
-		isSuperUser: middlewaresFactory.isSuperUser(),
-		isAuthenticated: middlewaresFactory.isAuthenticated(),
-		CheckUserStatus: middlewaresFactory.CheckUserStatus(),
-		rateLimitLogin: middlewaresFactory.rateLimitLogin(),
-		rateLimitRequest: middlewaresFactory.rateLimitRequest(),
+	// TODO : corriger ici et ajouter la logique de logging à l'application
+	function initMiddlewares(authorizationService : any, userService : any, any: any) {
+		const factory = middlewareFactory(authorizationService, userService, any);
+		return {
+			isAdmin: factory.isAdmin(),
+			isSuperUser: factory.isSuperUser(),
+			isAuthenticated: factory.isAuthenticated(),
+			CheckUserStatus: factory.CheckUserStatus(),
+			rateLimitLogin: factory.rateLimitLogin(),
+			rateLimitRequest: factory.rateLimitRequest(),
+		};
 	}
+
+	const middlewares = initMiddlewares(authorizationService, userService, null);
 
 	await createSuperUserIfNotExists(userRepositories, bcryptAdapter, uuidAdapter).then(() => console.log('user initialized'));
 

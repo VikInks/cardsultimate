@@ -1,5 +1,5 @@
 import { Server, WebSocket } from 'ws';
-import {WebSocketServerInterface} from "../../application/services/websocket/websocket.interface";
+import {WebSocketServerInterface} from "../../config/interfaces/services/websocket.interface";
 
 export class WebSocketServer implements WebSocketServerInterface {
     private wss: Server;
