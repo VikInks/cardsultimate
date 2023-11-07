@@ -4,6 +4,7 @@ import {UserServiceInterface} from "../../../../config/interfaces/services/user.
 import {DeckManagerUtilityInterface} from "../../../../config/interfaces/utils/deckManagerUtilityInterface";
 import {DeckEntityInterface} from "../../../../domain/decks/deck.entity.interface";
 import {CustomResponse} from "../../../../framework/error/customResponse";
+import {RedisServiceInterface} from "../../../../config/interfaces/services/redis.service.interface";
 
 export class DeckService implements DeckServiceInterface {
 
@@ -11,9 +12,11 @@ export class DeckService implements DeckServiceInterface {
         private readonly deckRepository: DeckRepositoryInterface,
         private readonly userService: UserServiceInterface,
         private readonly deckManager: DeckManagerUtilityInterface,
-    ) {}
+        private readonly redisService: RedisServiceInterface
+    ) {
+    }
 
-    async createDeck(item: DeckEntityInterface, userId: string): Promise<DeckEntityInterface | { message: string }> {
+    async createDeck(item: DeckEntityInterface, userId: string): Promise<DeckEntityInterface> {
         try {
             const user = await this.userService.findById(userId);
             if (!user) throw new CustomResponse(404);
@@ -21,15 +24,30 @@ export class DeckService implements DeckServiceInterface {
             item.compressedCards = await this.deckManager.compressDeck(item.cards);
             item.ownerId = user.id;
 
-            return await this.deckRepository.create(item, user.id);
+            const newDeck = await this.deckRepository.create(item, user.id);
+            if (!newDeck) throw new CustomResponse(404);
+            // put the new deck into redis layer
+            await this.redisService.cacheData(`deck_${newDeck.id}_owner_${newDeck.ownerId}`, newDeck);
+            return newDeck;
         } catch (err) {
-            return {message: `Error creating deck ${err}`};
+            throw new CustomResponse(500);
         }
     }
 
     async deleteDeck(deckId: string, userId: string): Promise<void> {
-        const delDeck = this.deckRepository.deleteById(deckId, userId);
-        if (!delDeck) throw new CustomResponse(404);
+        try {
+            await this.deckRepository.findById(deckId);
+        } catch (err) {
+            throw new CustomResponse(404, "Deck not found");
+        }
+
+        try {
+            await this.deckRepository.deleteById(deckId, userId);
+            await this.redisService.deleteCachedData(`deck_${deckId}_owner_${userId}`);
+            console.log(`Deck ${deckId} owned by ${userId} deleted from redis layer`)
+        } catch (err) {
+            throw new CustomResponse(500);
+        }
     }
 
     async getDeck(deckId: string): Promise<DeckEntityInterface> {

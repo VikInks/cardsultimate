@@ -17,7 +17,7 @@ import cors from "cors";
 import {RouteDefinitionInterface} from "../../../config/interfaces/route/route.definition.interface";
 import {MiddlewareInterface} from "../../../config/interfaces/adapters/middleware.interface";
 
-type ControllersInterfaces = [LoginControllerInterface, UserControllerInterface, CollectionControllerInterface, DeckControllerInterface];
+type ControllersInterfaces = [LoginControllerInterface, UserControllerInterface, DeckControllerInterface, CollectionControllerInterface];
 
 export async function Router(
 	serverAdapter: HttpServer,

@@ -9,7 +9,6 @@ import {Collection} from "mongodb";
 import {TokenAdapter} from "../../infrastructure/adapters/token.adapter";
 import {BiscuitAdapter} from "../../infrastructure/adapters/biscuit.adapter";
 import {DocUiAdapter} from "../../infrastructure/adapters/docui.adapter";
-import {DiscordAdapter} from "../../infrastructure/adapters/discord.adapter";
 import {AxiosAdapter} from "../../infrastructure/adapters/axios.adapter";
 import {WinstonAdapter} from "../../infrastructure/adapters/winston.adapter";
 import {RedisAdapter} from "../../infrastructure/adapters/redis.adapter";
@@ -24,7 +23,6 @@ type AdapterClassMap<T extends Document> = {
 	token: TokenAdapter,
 	biscuit: BiscuitAdapter,
 	docUi: DocUiAdapter,
-	discord: DiscordAdapter,
 	axios: AxiosAdapter,
 	winston: WinstonAdapter,
 	redis: RedisAdapter
@@ -44,7 +42,6 @@ const adapterClasses: AdapterConstructorMap<Document> = {
 	token: TokenAdapter,
 	biscuit: BiscuitAdapter,
 	docUi: DocUiAdapter,
-	discord: DiscordAdapter,
 	axios: AxiosAdapter,
 	winston: WinstonAdapter,
 	redis: RedisAdapter

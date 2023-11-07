@@ -69,14 +69,14 @@ InitDatabase().then(async (db) => {
 	const redisService = serviceFactory.RedisService(redisAdapter);
 	const emailService = serviceFactory.EmailService(emailAdapter);
 	const idService = serviceFactory.IdService(uuidAdapter);
-	const userService = serviceFactory.UserService(userRepositories, emailService, bcryptAdapter, idService, websocketServer)
-	const cleanupService = serviceFactory.TimeupService(userService);
+	const userService = serviceFactory.UserService(userRepositories, emailService, bcryptAdapter, idService);
 	const loginService = serviceFactory.LoginService(userService, passportAdapter, bcryptAdapter);
 	const authorizationService = serviceFactory.AuthorizationService(userService, tokenAdapter);
 	const deckService = serviceFactory.DeckService(deckRepositories, userService);
-	const collectionService = serviceFactory.CollectionService(collectionRepositories, userService, idService);
-	const cardService = serviceFactory.CardService(cardRepositories, redisService, websocketServer);
+	const collectionService = serviceFactory.CollectionService(collectionRepositories, userService, redisService);
+	const cardService = serviceFactory.CardService(cardRepositories, redisService);
 	const bulkDataService = serviceFactory.BulkDataService(cardRepositories, axiosAdapter, websocketServer);
+	const TimeUpService = serviceFactory.TimeupService(userService, bulkDataService);
 
 	// Initialize the controllers
 	const loginController = controllerFactory.LoginController(loginService);
@@ -94,6 +94,7 @@ InitDatabase().then(async (db) => {
 			CheckUserStatus: factory.CheckUserStatus(),
 			rateLimitLogin: factory.rateLimitLogin(),
 			rateLimitRequest: factory.rateLimitRequest(),
+			logging: factory.logging()
 		};
 	}
 
@@ -101,7 +102,8 @@ InitDatabase().then(async (db) => {
 
 	await createSuperUserIfNotExists(userRepositories, bcryptAdapter, uuidAdapter).then(() => console.log('user initialized'));
 
-	cleanupService.removeUnconfirmedUsers();
+	TimeUpService.removeUnconfirmedUsers();
+	TimeUpService.updateCardDatabase();
 
 	// Initialize the router
 	Router(serverAdapter, biscuitAdapter, docUiAdapter, middlewares, [loginController, userController, deckController, collectionController]).then(() => console.log("Routes configured"));

@@ -17,8 +17,7 @@ export class CardService implements CardServiceInterface {
 
     constructor(
         private readonly cardRepository: CardRepositoryInterface,
-        private readonly redisService: RedisServiceInterface,
-        private readonly websocket: WebSocketServerInterface
+        private readonly redisService: RedisServiceInterface
     ) {}
 
     /**

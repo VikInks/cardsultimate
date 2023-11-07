@@ -1,42 +1,72 @@
-version: '3'
+version: '3.1'
 
 services:
+
+  mongodb:
+    image: mongo
+    volumes:
+      - "./data/db:/data/db"
+    secrets:
+      - secret
+    healthcheck:
+      test: ["CMD", "mongo", "--eval", "db.runCommand('ping').ok"]
+      interval: 30s
+      timeout: 30s
+      retries: 10
+    networks:
+      - cards-network
+    env_file:
+      - ./cards-backend/mongo.env
+
+  redis:
+    image: redis
+    ports:
+      - "6379:6379"
+    networks:
+      - cards-network
+
   backend:
     build:
       context: ./cards-backend
     ports:
       - "8000:8000"
+    depends_on:
+      mongodb:
+        condition: service_healthy
     networks:
       - cards-network
     volumes:
       - "./cards-backend:/app"
       - "/app/node_modules"
-    environment:
-      - MONGO_URL=mongodb://mongodb:27017/cards
-      - MONGO_DB_NAME=cards
-      - JWT_SECRET=YYWz1EBc78%mqUX2xSUh%pv56#F6M3K3$7&6uk3v
-      - NODE_ENV=development
+    env_file:
+      - ./cards-backend/.env
 
-  client:
-    build:
-      context: ./cards-web-platform
-    ports:
-      - "3000:3000"
-    networks:
-      - cards-network
-    volumes:
-      - "./cards-web-platform:/app"
-      - "/app/node_modules"
+#  python:
+#    build:
+#      context: ./cards-python
+#    ports:
+#        - "5000:5000"
+#    networks:
+#      - cards-network
+#    volumes:
+#      - "./cards-python:/app"
 
-  mongodb:
-    image: mongo
-    ports:
-      - "27017:27017"
-    volumes:
-      - "./data/db:/data/db"
-    networks:
-      - cards-network
+
+#  client:
+#    build:
+#      context: ./cards-web-platform
+#    ports:
+#      - "3000:3000"
+#    networks:
+#      - cards-network
+#    volumes:
+#      - "./cards-web-platform:/app"
+#      - "/app/node_modules"
 
 networks:
   cards-network:
     driver: bridge
+
+secrets:
+  secret:
+    external: true

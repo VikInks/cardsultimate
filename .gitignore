@@ -39,3 +39,5 @@ node_modules/
 /cards-builder/script/custom/game_data.json
 /cards-builder/script/custom/rules_text.txt
 /cards-builder/script/custom/txtTojson.py
+/cards-backend/mongo.env
+/cards-backend/.env

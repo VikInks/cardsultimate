@@ -12,7 +12,7 @@ COPY src ./src
 RUN npm install
 
 # Installer les dépendances de compilation pour bcrypt
-RUN apt-get update && apt-get install -y build-essential python
+RUN apt-get update && apt-get install -y build-essential python3
 
 # Reconstruire bcrypt pour l'environnement actuel
 RUN npm rebuild bcrypt --build-from-source

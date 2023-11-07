@@ -9,6 +9,7 @@ def register(app):
     def update_data_route():
         try:
             initial_fetch()
+            print("Updated data")
             return jsonify({"status": "success"}), 200
         except Exception as e:
             logging.error(f"Error: {e}")

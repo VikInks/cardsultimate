@@ -2,10 +2,7 @@
 FROM python:3.11-alpine
 
 # Définir le répertoire de travail
-WORKDIR /container_py
-
-# Installer les dépendances système si nécessaire
-# RUN apk add --no-cache <nom_du_paquet>
+WORKDIR /app
 
 # Copier les fichiers du projet
 COPY requirements.txt ./
@@ -14,7 +11,11 @@ COPY requirements.txt ./
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copier le fichier de l'application
-COPY app.py ./
+COPY main.py ./
+COPY data_fetcher.py ./
+COPY routes.py ./
+COPY utils.py ./
+COPY websocket_client.py ./
 
 # Exposer le port utilisé par l'application
 EXPOSE 5000

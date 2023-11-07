@@ -1,5 +1,5 @@
 export const REDIS_CONFIG : any = {
-    host: process.env.REDIS_HOST || 'localhost',
+    host: process.env.REDIS_HOST || '0.0.0.0',
     port: parseInt(process.env.REDIS_PORT || '6379')
 };
 
